@@ -24,7 +24,7 @@ class SignupScreen extends StatelessWidget {
               height: size.height * 0.22,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.primaryBlue, AppColors.darkBlue, AppColors.primaryRed],
+                  colors: [AppColors.darkRed, AppColors.primaryRed, AppColors.primaryBlue],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

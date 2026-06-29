@@ -36,16 +36,32 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
+
+                  // ── Logo Image instead of Icon ──
                   Container(
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: ClipOval(child: Image.asset("assets/images/logo.png", width: 42, height: 42)),
+                    clipBehavior: Clip.antiAlias,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
+
                   const SizedBox(height: 12),
                   const Text(
                     'Nibangsh Consultancy',
@@ -182,43 +198,42 @@ class LoginScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Social buttons
+                    // ── Circular Social Buttons ──
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Google
-                        Expanded(
-                          child: _buildSocialButton(
-                            label: 'Google',
-                            bgColor: Colors.white,
-                            borderColor: Colors.grey.shade300,
-                            textColor: AppColors.textDark,
-                            icon: _googleIcon(),
-                            onTap: controller.signInWithGoogle,
+                        // Google (Authentic Multi-color Icon)
+                        _buildSocialCircle(
+                          onTap: controller.signInWithGoogle,
+                          child: CustomPaint(
+                            size: const Size(22, 22),
+                            painter: _GoogleGPainter(),
                           ),
+                          shadow: Colors.grey.withOpacity(0.2),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 20),
+
                         // Facebook
-                        Expanded(
-                          child: _buildSocialButton(
-                            label: 'Facebook',
-                            bgColor: const Color(0xFF1877F2),
-                            borderColor: const Color(0xFF1877F2),
-                            textColor: Colors.white,
-                            icon: const Icon(Icons.facebook_rounded, color: Colors.white, size: 20),
-                            onTap: controller.signInWithFacebook,
+                        _buildSocialCircle(
+                          onTap: controller.signInWithFacebook,
+                          child: const Icon(
+                            Icons.facebook_rounded,
+                            color: Color(0xFF1877F2),
+                            size: 26,
                           ),
+                          shadow: const Color(0xFF1877F2).withOpacity(0.2),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 20),
+
                         // Email
-                        Expanded(
-                          child: _buildSocialButton(
-                            label: 'Email',
-                            bgColor: const Color(0xFFEA4335),
-                            borderColor: const Color(0xFFEA4335),
-                            textColor: Colors.white,
-                            icon: const Icon(Icons.mail_rounded, color: Colors.white, size: 20),
-                            onTap: controller.signInWithEmail,
+                        _buildSocialCircle(
+                          onTap: controller.signInWithEmail,
+                          child: const Icon(
+                            Icons.mail_rounded,
+                            color: AppColors.primaryRed,
+                            size: 22,
                           ),
+                          shadow: AppColors.primaryRed.withOpacity(0.2),
                         ),
                       ],
                     ),
@@ -312,59 +327,84 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialButton({
-    required String label,
-    required Color bgColor,
-    required Color borderColor,
-    required Color textColor,
-    required Widget icon,
+  // ── Helper for circular social design ──
+  Widget _buildSocialCircle({
     required VoidCallback onTap,
+    required Widget child,
+    required Color shadow,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48,
+        width: 50,
+        height: 50,
         decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor, width: 1.2),
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.grey.shade200, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: shadow,
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon,
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
+        child: Center(child: child),
       ),
+    );
+  }
+}
+
+// ── Google multicolor G Painter ──
+class _GoogleGPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r = size.width / 2;
+    final sw = size.width * 0.25;
+
+    final segs = [
+      [const Color(0xFF4285F4), -90.0, 90.0],
+      [const Color(0xFF34A853), 0.0, 90.0],
+      [const Color(0xFFFBBC05), 90.0, 90.0],
+      [const Color(0xFFEA4335), 180.0, 90.0],
+    ];
+
+    final p = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = sw;
+
+    for (final s in segs) {
+      p.color = s[0] as Color;
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: r * 0.62),
+        (s[1] as double) * 3.14159 / 180,
+        (s[2] as double) * 3.14159 / 180,
+        false,
+        p,
+      );
+    }
+
+    // White cutout
+    canvas.drawRect(
+      Rect.fromLTWH(cx, cy - r * 0.28, r * 0.75, r * 0.56),
+      Paint()..color = Colors.white,
+    );
+    // Blue horizontal bar
+    canvas.drawRect(
+      Rect.fromLTWH(cx, cy - r * 0.16, r * 0.75, r * 0.32),
+      Paint()..color = const Color(0xFF4285F4),
     );
   }
 
-  // Hand-drawn Google "G" using a styled text widget
-  Widget _googleIcon() {
-    return const Text(
-      'G',
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF4285F4),
-        fontFamily: 'serif',
-      ),
-    );
-  }
+  @override
+  bool shouldRepaint(covariant CustomPainter o) => false;
 }
