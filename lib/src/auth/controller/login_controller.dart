@@ -19,13 +19,25 @@ class LoginController extends GetxController {
 
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) return 'Email is required';
-    if (!GetUtils.isEmail(value)) return 'Enter a valid email';
+    if (!GetUtils.isEmail(value)) return 'Enter a valid email address';
     return null;
   }
 
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) return 'Password is required';
-    if (value.length < 6) return 'Password must be at least 6 characters';
+    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Must contain at least one uppercase letter (A-Z)';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Must contain at least one lowercase letter (a-z)';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Must contain at least one number (0-9)';
+    }
+    if (!RegExp(r'[!@#\$&*~%^()_\-+=\[\]{};:,.<>?/\\|`]').hasMatch(value)) {
+      return 'Must contain at least one special character (!@#\$&*~)';
+    }
     return null;
   }
 
@@ -48,11 +60,9 @@ class LoginController extends GetxController {
   Future<void> signInWithGoogle() async {
     isLoading.value = true;
     try {
-      final GoogleSignIn _googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
       if (account != null) Get.offAllNamed(AppRoute.home);
-      await Future.delayed(const Duration(milliseconds: 800));
-      _showInfo('Google Sign-In', 'Add google_sign_in package to enable.');
     } catch (e) {
       _showError('Google Sign-In Failed', e.toString());
     } finally {
@@ -66,8 +76,6 @@ class LoginController extends GetxController {
     try {
       final LoginResult result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) Get.offAllNamed(AppRoute.home);
-      await Future.delayed(const Duration(milliseconds: 800));
-      _showInfo('Facebook Sign-In', 'Add flutter_facebook_auth package to enable.');
     } catch (e) {
       _showError('Facebook Sign-In Failed', e.toString());
     } finally {
@@ -75,7 +83,7 @@ class LoginController extends GetxController {
     }
   }
 
-  // Email button — focuses the email field
+  // Email button
   void signInWithEmail() {
     _showInfo('Email Sign-In', 'Enter your email and password above to sign in.');
   }
