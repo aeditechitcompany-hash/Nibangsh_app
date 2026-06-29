@@ -14,10 +14,11 @@ class SignupScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Header
             Container(
               width: double.infinity,
               height: size.height * 0.3,
@@ -36,8 +37,6 @@ class SignupScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-
-                  // ── Logo Image instead of Icon ──
                   Container(
                     width: 80,
                     height: 80,
@@ -83,273 +82,271 @@ class SignupScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            Transform.translate(
-              offset: const Offset(0, -24),
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF5F6FA),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
-                  child: Form(
-                    key: controller.formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            // Form
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Form(
+                key: controller.formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    // ── Personal Info Section ──
+                    _sectionHeader('Personal Information', Icons.person_outline),
+                    const SizedBox(height: 12),
+
+                    // Full Name
+                    _buildLabel('Full Name'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      ctrl: controller.fullNameController,
+                      hint: 'Enter your full name',
+                      icon: Icons.badge_outlined,
+                      type: TextInputType.name,
+                      validator: controller.validateFullName,
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Phone Number
+                    _buildLabel('Phone Number'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      ctrl: controller.phoneController,
+                      hint: 'Enter your 10-digit number',
+                      icon: Icons.phone_outlined,
+                      type: TextInputType.phone,
+                      validator: controller.validatePhone,
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Email
+                    _buildLabel('Email Address'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      ctrl: controller.emailController,
+                      hint: 'Enter your email address',
+                      icon: Icons.email_outlined,
+                      type: TextInputType.emailAddress,
+                      validator: controller.validateEmail,
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Password
+                    _buildLabel('Password'),
+                    const SizedBox(height: 8),
+                    Obx(() => _buildTextField(
+                      ctrl: controller.passwordController,
+                      hint: 'Create a password',
+                      icon: Icons.lock_outline,
+                      obscure: !controller.isPasswordVisible.value,
+                      validator: controller.validatePassword,
+                      suffix: IconButton(
+                        icon: Icon(
+                          controller.isPasswordVisible.value
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: AppColors.textGrey,
+                          size: 20,
+                        ),
+                        onPressed: controller.togglePasswordVisibility,
+                      ),
+                    )),
+                    const SizedBox(height: 14),
+
+                    // Confirm Password
+                    _buildLabel('Confirm Password'),
+                    const SizedBox(height: 8),
+                    Obx(() => _buildTextField(
+                      ctrl: controller.confirmPasswordController,
+                      hint: 'Re-enter your password',
+                      icon: Icons.lock_outline,
+                      obscure: !controller.isConfirmPasswordVisible.value,
+                      validator: controller.validateConfirmPassword,
+                      suffix: IconButton(
+                        icon: Icon(
+                          controller.isConfirmPasswordVisible.value
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: AppColors.textGrey,
+                          size: 20,
+                        ),
+                        onPressed: controller.toggleConfirmPasswordVisibility,
+                      ),
+                    )),
+
+                    const SizedBox(height: 24),
+
+                    // ── Location Section ──
+                    _sectionHeader('Location Details', Icons.location_on_outlined),
+                    const SizedBox(height: 12),
+
+                    // Street Address
+                    _buildLabel('Street Address'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      ctrl: controller.addressController,
+                      hint: 'Enter your street address',
+                      icon: Icons.home_outlined,
+                      type: TextInputType.streetAddress,
+                      validator: controller.validateAddress,
+                    ),
+                    const SizedBox(height: 14),
+
+                    // District
+                    _buildLabel('District'),
+                    const SizedBox(height: 8),
+                    Obx(() => _buildDropdown(
+                      value: controller.selectedDistrict.value.isEmpty
+                          ? null
+                          : controller.selectedDistrict.value,
+                      hint: 'Select your district',
+                      icon: Icons.location_city_outlined,
+                      items: AppConstants.districts,
+                      onChanged: controller.setDistrict,
+                      validator: (_) => controller.selectedDistrict.value.isEmpty
+                          ? 'Please select a district'
+                          : null,
+                    )),
+                    const SizedBox(height: 14),
+
+                    // Province
+                    _buildLabel('Province'),
+                    const SizedBox(height: 8),
+                    Obx(() => _buildDropdown(
+                      value: controller.selectedProvince.value.isEmpty
+                          ? null
+                          : controller.selectedProvince.value,
+                      hint: 'Select your province',
+                      icon: Icons.map_outlined,
+                      items: AppConstants.provinces,
+                      onChanged: controller.setProvince,
+                      validator: (_) => controller.selectedProvince.value.isEmpty
+                          ? 'Please select a province'
+                          : null,
+                    )),
+
+                    const SizedBox(height: 32),
+
+                    // Sign Up button
+                    Obx(() => SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: controller.isLoading.value ? null : controller.signup,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryRed,
+                          disabledBackgroundColor: AppColors.primaryRed.withOpacity(0.6),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 3,
+                        ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                            : const Text(
+                          'Create Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    )),
+
+                    const SizedBox(height: 24),
+                    // OR divider
+                    Row(
                       children: [
-
-                        // ── Personal Info Section ──
-                        _sectionHeader('Personal Information', Icons.person_outline),
-                        const SizedBox(height: 12),
-
-                        // Full Name
-                        _buildLabel('Full Name'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          ctrl: controller.fullNameController,
-                          hint: 'Enter your full name',
-                          icon: Icons.badge_outlined,
-                          type: TextInputType.name,
-                          validator: controller.validateFullName,
-                        ),
-                        const SizedBox(height: 14),
-
-                        // Phone Number
-                        _buildLabel('Phone Number'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          ctrl: controller.phoneController,
-                          hint: 'Enter your 10-digit number',
-                          icon: Icons.phone_outlined,
-                          type: TextInputType.phone,
-                          validator: controller.validatePhone,
-                        ),
-                        const SizedBox(height: 14),
-
-                        // Email
-                        _buildLabel('Email Address'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          ctrl: controller.emailController,
-                          hint: 'Enter your email address',
-                          icon: Icons.email_outlined,
-                          type: TextInputType.emailAddress,
-                          validator: controller.validateEmail,
-                        ),
-                        const SizedBox(height: 14),
-
-                        // Password
-                        _buildLabel('Password'),
-                        const SizedBox(height: 8),
-                        Obx(() => _buildTextField(
-                          ctrl: controller.passwordController,
-                          hint: 'Create a password',
-                          icon: Icons.lock_outline,
-                          obscure: !controller.isPasswordVisible.value,
-                          validator: controller.validatePassword,
-                          suffix: IconButton(
-                            icon: Icon(
-                              controller.isPasswordVisible.value
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: AppColors.textGrey,
-                              size: 20,
-                            ),
-                            onPressed: controller.togglePasswordVisibility,
+                        Expanded(child: Divider(color: Colors.grey.shade300)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'Or continue with',
+                            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                           ),
-                        )),
-                        const SizedBox(height: 14),
-
-                        // Confirm Password
-                        _buildLabel('Confirm Password'),
-                        const SizedBox(height: 8),
-                        Obx(() => _buildTextField(
-                          ctrl: controller.confirmPasswordController,
-                          hint: 'Re-enter your password',
-                          icon: Icons.lock_outline,
-                          obscure: !controller.isConfirmPasswordVisible.value,
-                          validator: controller.validateConfirmPassword,
-                          suffix: IconButton(
-                            icon: Icon(
-                              controller.isConfirmPasswordVisible.value
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: AppColors.textGrey,
-                              size: 20,
-                            ),
-                            onPressed: controller.toggleConfirmPasswordVisibility,
-                          ),
-                        )),
-
-                        const SizedBox(height: 24),
-
-                        // ── Location Section ──
-                        _sectionHeader('Location Details', Icons.location_on_outlined),
-                        const SizedBox(height: 12),
-
-                        // Street Address
-                        _buildLabel('Street Address'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          ctrl: controller.addressController,
-                          hint: 'Enter your street address',
-                          icon: Icons.home_outlined,
-                          type: TextInputType.streetAddress,
-                          validator: controller.validateAddress,
                         ),
-                        const SizedBox(height: 14),
-
-                        // District
-                        _buildLabel('District'),
-                        const SizedBox(height: 8),
-                        Obx(() => _buildDropdown(
-                          value: controller.selectedDistrict.value.isEmpty
-                              ? null
-                              : controller.selectedDistrict.value,
-                          hint: 'Select your district',
-                          icon: Icons.location_city_outlined,
-                          items: AppConstants.districts,
-                          onChanged: controller.setDistrict,
-                          validator: (_) => controller.selectedDistrict.value.isEmpty
-                              ? 'Please select a district'
-                              : null,
-                        )),
-                        const SizedBox(height: 14),
-
-                        // Province
-                        _buildLabel('Province'),
-                        const SizedBox(height: 8),
-                        Obx(() => _buildDropdown(
-                          value: controller.selectedProvince.value.isEmpty
-                              ? null
-                              : controller.selectedProvince.value,
-                          hint: 'Select your province',
-                          icon: Icons.map_outlined,
-                          items: AppConstants.provinces,
-                          onChanged: controller.setProvince,
-                          validator: (_) => controller.selectedProvince.value.isEmpty
-                              ? 'Please select a province'
-                              : null,
-                        )),
-
-                        const SizedBox(height: 32),
-
-                        // ── Sign Up button (pill gradient style) ──
-                        Obx(() => SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: controller.isLoading.value ? null : controller.signup,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryRed,
-                              disabledBackgroundColor: AppColors.primaryRed.withOpacity(0.6),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 3,
-                            ),
-                            child: controller.isLoading.value
-                                ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                                : const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ),
-                        )),
-
-                        const SizedBox(height: 20),
-
-                        // ── Sign in with ──
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Divider(color: Colors.grey.shade300, thickness: 1),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                'Or sign up with',
-                                style: TextStyle(
-                                  color: AppColors.textGrey,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(color: Colors.grey.shade300, thickness: 1),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Social icons row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _socialIconButton(
-                              svgPath: null,
-                              icon: Icons.facebook_rounded,
-                              color: const Color(0xFF1877F2),
-                            ),
-                            const SizedBox(width: 20),
-                            _socialIconButton(
-                              svgPath: null,
-                              icon: Icons.g_mobiledata_rounded,
-                              color: const Color(0xFFDB4437),
-                            ),
-                            const SizedBox(width: 20),
-                            _socialIconButton(
-                              svgPath: null,
-                              icon: Icons.apple_rounded,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Already have account
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Already have an account? ',
-                              style: TextStyle(color: AppColors.textGrey, fontSize: 14),
-                            ),
-                            GestureDetector(
-                              onTap: () => Get.offNamed(AppRoute.login),
-                              child: const Text(
-                                'Log In',
-                                style: TextStyle(
-                                  color: AppColors.primaryBlue,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 45),
+                        Expanded(child: Divider(color: Colors.grey.shade300)),
                       ],
                     ),
-                  ),
+
+                    const SizedBox(height: 20),
+
+                    // ── Circular Social Buttons ──
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Google
+                        _buildSocialCircle(
+                          onTap: controller.signInWithGoogle,
+                          child: Image.asset(
+                            'assets/icons/google.png',
+                            width: 22,
+                            height: 22,
+                          ),
+                          shadow: Colors.grey.withOpacity(0.2),
+                        ),
+                        const SizedBox(width: 20),
+
+                        // Facebook
+                        _buildSocialCircle(
+                          onTap: controller.signInWithFacebook,
+                          child: Image.asset(
+                            'assets/icons/facebook.png',
+                            width: 22,
+                            height: 22,
+                          ),
+                          shadow: const Color(0xFF1877F2).withOpacity(0.2),
+                        ),
+                        const SizedBox(width: 20),
+
+                        // Gmail
+                        _buildSocialCircle(
+                          onTap: controller.signInWithEmail,
+                          child: Image.asset(
+                            'assets/icons/gmail.png',
+                            width: 22,
+                            height: 22,
+                          ),
+                          shadow: AppColors.primaryRed.withOpacity(0.2),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // Already have account
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Already have an account? ',
+                          style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                        ),
+                        GestureDetector(
+                          onTap: () => Get.offNamed(AppRoute.login),
+                          child: const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: AppColors.primaryRed,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 50),
+                  ],
                 ),
               ),
             ),
@@ -359,36 +356,13 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Widget _socialIconButton({
-    String? svgPath,
-    IconData? icon,
-    required Color color,
-  }) {
-    return Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Icon(icon ?? Icons.circle, color: color, size: 28),
-    );
-  }
-
   Widget _sectionHeader(String title, IconData icon) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: AppColors.primaryRed.withOpacity(0.10),
+            color: AppColors.primaryRed.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: AppColors.primaryRed, size: 18),
@@ -443,20 +417,18 @@ class SignupScreen extends StatelessWidget {
         suffixIcon: suffix,
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: AppColors.borderGrey),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(color: AppColors.borderGrey),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide:
-          const BorderSide(color: AppColors.primaryBlue, width: 1.8),
+          borderSide: const BorderSide(color: AppColors.primaryBlue, width: 1.8),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -464,8 +436,7 @@ class SignupScreen extends StatelessWidget {
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide:
-          const BorderSide(color: AppColors.errorColor, width: 1.8),
+          borderSide: const BorderSide(color: AppColors.errorColor, width: 1.8),
         ),
       ),
     );
@@ -483,47 +454,53 @@ class SignupScreen extends StatelessWidget {
       value: value,
       validator: validator,
       onChanged: onChanged,
+
       isExpanded: true,
       menuMaxHeight: 320,
       borderRadius: BorderRadius.circular(18),
       dropdownColor: Colors.white,
       elevation: 8,
-      icon: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Icon(
-          Icons.keyboard_arrow_down_rounded,
-          color: AppColors.primaryBlue,
-          size: 25,
-        ),
+
+      icon: const Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: AppColors.primaryBlue,
+        size: 25,
       ),
+
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(
           color: AppColors.textGrey,
-          fontSize: 13,
+          fontSize: 14,
         ),
         prefixIcon: Icon(
           icon,
           color: AppColors.primaryBlue,
           size: 20,
         ),
+
         filled: true,
         fillColor: Colors.white,
+
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(
+            color: AppColors.borderGrey,
+          ),
         ),
+
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(
+            color: AppColors.borderGrey,
+          ),
         ),
+
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
@@ -531,6 +508,7 @@ class SignupScreen extends StatelessWidget {
             width: 1.8,
           ),
         ),
+
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
@@ -538,6 +516,7 @@ class SignupScreen extends StatelessWidget {
           ),
         ),
       ),
+
       items: items.map((item) {
         return DropdownMenuItem(
           value: item,
@@ -561,6 +540,40 @@ class SignupScreen extends StatelessWidget {
           ),
         );
       }).toList(),
+    );
+  }
+
+  // ── Helper for circular social design ──
+  Widget _buildSocialCircle({
+    required VoidCallback onTap,
+    required Widget child,
+    required Color shadow,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.grey.shade200, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: shadow,
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Center(child: child),
+      ),
     );
   }
 }

@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
             // Header with gradient
             Container(
               width: double.infinity,
-              height: size.height * 0.32,
+              height: size.height * 0.31,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.darkRed, AppColors.primaryRed, AppColors.primaryBlue],
@@ -202,12 +202,13 @@ class LoginScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Google (Authentic Multi-color Icon)
+                        // Google
                         _buildSocialCircle(
                           onTap: controller.signInWithGoogle,
-                          child: CustomPaint(
-                            size: const Size(22, 22),
-                            painter: _GoogleGPainter(),
+                          child: Image.asset(
+                            'assets/icons/google.png',
+                            width: 22,
+                            height: 22,
                           ),
                           shadow: Colors.grey.withOpacity(0.2),
                         ),
@@ -216,22 +217,22 @@ class LoginScreen extends StatelessWidget {
                         // Facebook
                         _buildSocialCircle(
                           onTap: controller.signInWithFacebook,
-                          child: const Icon(
-                            Icons.facebook_rounded,
-                            color: Color(0xFF1877F2),
-                            size: 26,
+                          child: Image.asset(
+                            'assets/icons/facebook.png',
+                            width: 22,
+                            height: 22,
                           ),
                           shadow: const Color(0xFF1877F2).withOpacity(0.2),
                         ),
                         const SizedBox(width: 20),
 
-                        // Email
+                        // Gmail
                         _buildSocialCircle(
                           onTap: controller.signInWithEmail,
-                          child: const Icon(
-                            Icons.mail_rounded,
-                            color: AppColors.primaryRed,
-                            size: 22,
+                          child: Image.asset(
+                            'assets/icons/gmail.png',
+                            width: 22,
+                            height: 22,
                           ),
                           shadow: AppColors.primaryRed.withOpacity(0.2),
                         ),
@@ -262,7 +263,7 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 50),
                   ],
                 ),
               ),
@@ -360,51 +361,4 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-// ── Google multicolor G Painter ──
-class _GoogleGPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final r = size.width / 2;
-    final sw = size.width * 0.25;
-
-    final segs = [
-      [const Color(0xFF4285F4), -90.0, 90.0],
-      [const Color(0xFF34A853), 0.0, 90.0],
-      [const Color(0xFFFBBC05), 90.0, 90.0],
-      [const Color(0xFFEA4335), 180.0, 90.0],
-    ];
-
-    final p = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = sw;
-
-    for (final s in segs) {
-      p.color = s[0] as Color;
-      canvas.drawArc(
-        Rect.fromCircle(center: Offset(cx, cy), radius: r * 0.62),
-        (s[1] as double) * 3.14159 / 180,
-        (s[2] as double) * 3.14159 / 180,
-        false,
-        p,
-      );
-    }
-
-    // White cutout
-    canvas.drawRect(
-      Rect.fromLTWH(cx, cy - r * 0.28, r * 0.75, r * 0.56),
-      Paint()..color = Colors.white,
-    );
-    // Blue horizontal bar
-    canvas.drawRect(
-      Rect.fromLTWH(cx, cy - r * 0.16, r * 0.75, r * 0.32),
-      Paint()..color = const Color(0xFF4285F4),
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter o) => false;
 }

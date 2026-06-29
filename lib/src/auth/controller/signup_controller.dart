@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../../const/constants.dart';
 
@@ -129,6 +132,63 @@ class SignupController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // Google Sign-In
+  Future<void> signInWithGoogle() async {
+    isLoading.value = true;
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
+      if (account != null) Get.offAllNamed(AppRoute.home);
+    } catch (e) {
+      _showError('Google Sign-In Failed', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Facebook Sign-In
+  Future<void> signInWithFacebook() async {
+    isLoading.value = true;
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) Get.offAllNamed(AppRoute.home);
+    } catch (e) {
+      _showError('Facebook Sign-In Failed', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Email button
+  void signInWithEmail() {
+    _showInfo('Email Sign-In', 'Enter your email and password above to sign in.');
+  }
+
+  void _showError(String title, String message) {
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red.shade700,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+    );
+  }
+
+  void _showInfo(String title, String message) {
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.primaryBlue,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+    );
+  }
+
 
   @override
   void onClose() {
