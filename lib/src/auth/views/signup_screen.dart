@@ -59,7 +59,7 @@ class SignupScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           'Join Nibangsh Consultancy',
                           style: TextStyle(

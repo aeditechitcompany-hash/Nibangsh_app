@@ -44,7 +44,7 @@ class LoginScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
                     ),
-                    child: const Icon(Icons.school_rounded, color: Colors.white, size: 42),
+                    child: ClipOval(child: Image.asset("assets/images/logo.png", width: 42, height: 42)),
                   ),
                   const SizedBox(height: 12),
                   const Text(
