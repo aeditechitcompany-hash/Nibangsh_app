@@ -64,13 +64,38 @@ class SignupController extends GetxController {
 
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) return 'Password is required';
-    if (value.length < 6) return 'Password must be at least 6 characters';
+    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Must contain at least one uppercase letter (A-Z)';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Must contain at least one lowercase letter (a-z)';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Must contain at least one number (0-9)';
+    }
+    if (!RegExp(r'[!@#\$&*~%^()_\-+=\[\]{};:,.<>?/\\|`]').hasMatch(value)) {
+      return 'Must contain at least one special character (!@#\$&*~)';
+    }
     return null;
   }
 
   String? validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) return 'Please confirm your password';
     if (value != passwordController.text) return 'Passwords do not match';
+    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Must contain at least one uppercase letter (A-Z)';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Must contain at least one lowercase letter (a-z)';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Must contain at least one number (0-9)';
+    }
+    if (!RegExp(r'[!@#\$&*~%^()_\-+=\[\]{};:,.<>?/\\|`]').hasMatch(value)) {
+      return 'Must contain at least one special character (!@#\$&*~)';
+    }
     return null;
   }
 
