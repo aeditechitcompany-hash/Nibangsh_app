@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nibangsh_consultancy/const/resources.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 
@@ -7,6 +8,7 @@ class OnboardingData {
   final String title;
   final String subtitle;
   final String description;
+  final String image;
   final IconData icon;
   final List<Color> gradientColors;
 
@@ -14,6 +16,7 @@ class OnboardingData {
     required this.title,
     required this.subtitle,
     required this.description,
+    required this.image,
     required this.icon,
     required this.gradientColors,
   });
@@ -21,26 +24,29 @@ class OnboardingData {
 
 const List<OnboardingData> onboardingPages = [
   OnboardingData(
-    title: 'Boarding Screen',
+    title: 'About Us',
     subtitle: 'Trusted Consultancy',
     description:
     'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
+    image: AppResources.onboarding1,
     icon: Icons.verified_rounded,
-    gradientColors: [Color(0xFFB71C1C), Color(0xFFD32F2F), Color(0xFF1565C0)],
+    gradientColors: [Color(0xFFD32F2F), Color(0xFF1452B3), Color(0xFF0D47A1)],
   ),
   OnboardingData(
     title: 'Explore Countries',
     subtitle: 'Countries',
     description:
     'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
+    image: AppResources.onboarding2,
     icon: Icons.public_rounded,
-    gradientColors: [Color(0xFF1565C0), Color(0xFF1E88E5), Color(0xFFD32F2F)],
+    gradientColors: [Color(0xFF0D47A1), Color(0xFF1565C0), Color(0xFFD32F2F)],
   ),
   OnboardingData(
     title: 'Join Nibangsh',
     subtitle: 'Join to Nibangsh',
     description:
     'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
+    image: AppResources.logoPath,
     icon: Icons.group_rounded,
     gradientColors: [Color(0xFFD32F2F), Color(0xFF1565C0), Color(0xFF0D47A1)],
   ),
@@ -123,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(28, 24, 28, 40),
+              padding: const EdgeInsets.fromLTRB(28, 24, 28, 50),
               child: Column(
                 children: [
                   // Dot indicators
@@ -228,22 +234,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               const SizedBox(height: 60),
 
-              // Big icon in circle
+              // Big image in circle
               Container(
                 width: 160,
                 height: 160,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  // color: Colors.white.withOpacity(0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 2,
-                  ),
+                  // border: Border.all(
+                  //   color: Colors.white.withOpacity(0.3),
+                  //   width: 2,
+                  // ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.16),
+                      blurRadius: 28,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
                 ),
-                child: Icon(
-                  page.icon,
-                  color: Colors.white,
-                  size: 80,
+                child: ClipOval(
+                  child: Image.asset(
+                    page.image,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      page.icon,
+                      color: Colors.white,
+                      size: 76,
+                    ),
+                  ),
                 ),
               ),
 
