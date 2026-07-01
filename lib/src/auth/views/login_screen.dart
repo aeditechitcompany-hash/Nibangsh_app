@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nibangsh_consultancy/const/resources.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/login_controller.dart';
@@ -56,7 +57,7 @@ class LoginScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Image.asset(
-                        'assets/images/logo.png',
+                        AppResources.logoPath,
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -188,7 +189,7 @@ class LoginScreen extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            'Or continue with',
+                            'or continue with',
                             style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                           ),
                         ),
@@ -206,7 +207,7 @@ class LoginScreen extends StatelessWidget {
                         _buildSocialCircle(
                           onTap: controller.signInWithGoogle,
                           child: Image.asset(
-                            'assets/icons/google.png',
+                            AppResources.googleIcon,
                             width: 22,
                             height: 22,
                           ),
@@ -218,7 +219,7 @@ class LoginScreen extends StatelessWidget {
                         _buildSocialCircle(
                           onTap: controller.signInWithFacebook,
                           child: Image.asset(
-                            'assets/icons/facebook.png',
+                            AppResources.fbIcon,
                             width: 22,
                             height: 22,
                           ),
@@ -230,7 +231,7 @@ class LoginScreen extends StatelessWidget {
                         _buildSocialCircle(
                           onTap: controller.signInWithEmail,
                           child: Image.asset(
-                            'assets/icons/gmail.png',
+                            AppResources.emailIcon,
                             width: 22,
                             height: 22,
                           ),
