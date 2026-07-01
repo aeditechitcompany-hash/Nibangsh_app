@@ -7,42 +7,47 @@ class OnboardingData {
   final String title;
   final String subtitle;
   final String description;
-  final IconData icon;
-  final List<Color> gradientColors;
+  final String imagePath;
+  final Color topColor;
+  final Color bottomColor;
 
   const OnboardingData({
     required this.title,
     required this.subtitle,
     required this.description,
-    required this.icon,
-    required this.gradientColors,
+    required this.imagePath,
+    required this.topColor,
+    required this.bottomColor,
   });
 }
 
 const List<OnboardingData> onboardingPages = [
   OnboardingData(
-    title: 'Boarding Screen',
+    title: 'About Us',
     subtitle: 'Trusted Consultancy',
     description:
     'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
-    icon: Icons.verified_rounded,
-    gradientColors: [Color(0xFFB71C1C), Color(0xFFD32F2F), Color(0xFF1565C0)],
+    imagePath: 'assets/images/logo.png',
+    topColor: Color(0xFFD32F2F),
+    bottomColor: Color(0xFF0D47A1),
   ),
   OnboardingData(
     title: 'Explore Countries',
     subtitle: 'Countries',
     description:
     'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
-    icon: Icons.public_rounded,
-    gradientColors: [Color(0xFF1565C0), Color(0xFF1E88E5), Color(0xFFD32F2F)],
+    imagePath: 'assets/images/world.png',
+    topColor:  Color(0xFF0D47A1),
+    bottomColor:Color(0xFFD32F2F),
   ),
   OnboardingData(
     title: 'Join Nibangsh',
     subtitle: 'Join to Nibangsh',
     description:
     'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
-    icon: Icons.group_rounded,
-    gradientColors: [Color(0xFFD32F2F), Color(0xFF1565C0), Color(0xFF0D47A1)],
+    imagePath: 'assets/images/ni2.png',
+    topColor: Color(0xFFD32F2F),
+    bottomColor: Color(0xFF0D47A1),
   ),
 ];
 
@@ -80,19 +85,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Stack(
         children: [
-          // PageView
+          // Smooth Gradient Background (animated based on page scroll)
+          AnimatedBuilder(
+            animation: _pageController,
+            builder: (context, child) {
+              double page = _currentPage.toDouble();
+              if (_pageController.position.haveDimensions) {
+                page = _pageController.page ?? _currentPage.toDouble();
+              }
+
+              final int currentIndex = page.floor().clamp(0, onboardingPages.length - 1);
+              final int nextIndex = (currentIndex + 1 < onboardingPages.length)
+                  ? currentIndex + 1
+                  : currentIndex;
+              final double transitionProgress = (page - currentIndex).clamp(0.0, 1.0);
+
+              final Color currentTopColor = onboardingPages[currentIndex].topColor;
+              final Color nextTopColor = onboardingPages[nextIndex].topColor;
+              final Color interpolatedTopColor =
+                  Color.lerp(currentTopColor, nextTopColor, transitionProgress) ??
+                      currentTopColor;
+
+              final Color currentBottomColor = onboardingPages[currentIndex].bottomColor;
+              final Color nextBottomColor = onboardingPages[nextIndex].bottomColor;
+              final Color interpolatedBottomColor =
+                  Color.lerp(currentBottomColor, nextBottomColor, transitionProgress) ??
+                      currentBottomColor;
+
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    stops: const [0.3, 0.7],
+                    colors: [interpolatedTopColor, interpolatedBottomColor],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // PageView for Content
           PageView.builder(
             controller: _pageController,
             itemCount: onboardingPages.length,
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemBuilder: (context, index) {
               final page = onboardingPages[index];
-              return _buildPage(page, size);
+              return _buildPageContent(page);
             },
           ),
 
@@ -212,92 +255,95 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage(OnboardingData page, Size size) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: page.gradientColors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
+  Widget _buildPageContent(OnboardingData page) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Column(
+          children: [
+            const SizedBox(height: 60),
 
-              // Big icon in circle
-              Container(
-                width: 160,
-                height: 160,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 2,
+            // Circular Image Container
+            Container(
+              height: 180,
+              width: 180,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
                   ),
-                ),
-                child: Icon(
-                  page.icon,
-                  color: Colors.white,
-                  size: 80,
-                ),
+                ],
               ),
-
-              const SizedBox(height: 48),
-
-              // Slide number badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.4)),
-                ),
-                child: Text(
-                  page.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
+              clipBehavior: Clip.antiAlias,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Image.asset(
+                  page.imagePath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey.withOpacity(0.3),
+                    child: const Center(
+                      child: Icon(Icons.image, size: 50, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),
+            ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 48),
 
-              // Subtitle
-              Text(
-                page.subtitle,
-                textAlign: TextAlign.center,
+            // Slide number badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.4)),
+              ),
+              child: Text(
+                page.title,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1,
                 ),
               ),
+            ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-              // Description
-              Text(
-                page.description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
-                  fontSize: 14.5,
-                  height: 1.6,
-                ),
+            // Subtitle
+            Text(
+              page.subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
               ),
+            ),
 
-              const Spacer(),
-            ],
-          ),
+            const SizedBox(height: 16),
+
+            // Description
+            Text(
+              page.description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: 14.5,
+                height: 1.6,
+              ),
+            ),
+
+            const Spacer(),
+          ],
         ),
       ),
     );
