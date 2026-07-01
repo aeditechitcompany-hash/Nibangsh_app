@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:nibangsh_consultancy/src/academic_details/views/academic_details_screen.dart';
 import 'common/util/app_colors.dart';
 import 'common/util/app_route.dart';
 import 'src/auth/views/login_screen.dart';
@@ -10,6 +12,7 @@ import 'src/profile/views/profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await GetStorage.init();
   runApp(const MyApp());
 }
 
@@ -37,6 +40,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: AppRoute.signup, page: () => const SignupScreen()),
         GetPage(name: AppRoute.home, page: () => const HomeScreen()),
         GetPage(name: AppRoute.profile, page: () => const ProfileScreen()),
+        GetPage(name: AppRoute.academicDetails, page: () => const AcademicDetailsScreen()),
       ],
     );
   }
