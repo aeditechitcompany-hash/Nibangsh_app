@@ -9,10 +9,25 @@ class AcademicConstants {
     'Japan',
   ];
 
+  static const Map<String, String> countryFlags = {
+    'South Korea': '🇰🇷',
+    'United States': '🇺🇸',
+    'United Kingdom': '🇬🇧',
+    'Canada': '🇨🇦',
+    'Australia': '🇦🇺',
+    'Japan': '🇯🇵',
+  };
+
   static const List<String> degrees = [
     'Bachelors',
     'Masters',
     'PHD',
+  ];
+
+  static const List<String> languageTests = [
+    'IELTS',
+    'Basic IELTS',
+    'TOPIK',
   ];
 
   static List<String> get passoutYears {

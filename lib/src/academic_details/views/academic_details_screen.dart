@@ -13,7 +13,7 @@ class AcademicDetailsScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return PopScope(
-      canPop: false,
+      canPop: controller.isEditMode,
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SingleChildScrollView(
@@ -23,6 +23,7 @@ class AcademicDetailsScreen extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: size.height * 0.26,
+                padding: const EdgeInsets.only(top: 44),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppColors.darkRed, AppColors.primaryRed, AppColors.primaryBlue],
@@ -34,28 +35,47 @@ class AcademicDetailsScreen extends StatelessWidget {
                     bottomRight: Radius.circular(40),
                   ),
                 ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Icon(Icons.school_outlined, color: Colors.white, size: 46),
-                    SizedBox(height: 12),
-                    Text(
-                      'Tell Us About Yourself',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.3,
+                    if (controller.isEditMode)
+                      Positioned(
+                        left: 8,
+                        top: 0,
+                        child: IconButton(
+                          onPressed: () => Get.back(),
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 6),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
-                      child: Text(
-                        'A few quick details so we can personalize your journey',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white70, fontSize: 12.5),
-                      ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.school_outlined, color: Colors.white, size: 46),
+                        const SizedBox(height: 12),
+                        Text(
+                          controller.isEditMode
+                              ? 'Update Your Academic Details'
+                              : 'Tell Us About Yourself',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            controller.isEditMode
+                                ? 'Keep your profile accurate and up to date'
+                                : 'A few quick details so we can personalize your journey',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white70, fontSize: 12.5),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -89,7 +109,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 18),
 
                       // GPA
-                      _buildLabel('Enter GPA'),
+                      _buildLabel('Enter your GPA'),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: controller.gpaController,
@@ -201,9 +221,9 @@ class AcademicDetailsScreen extends StatelessWidget {
                               strokeWidth: 2.5,
                             ),
                           )
-                              : const Text(
-                            'Continue',
-                            style: TextStyle(
+                              : Text(
+                            controller.isEditMode ? 'Save Changes' : 'Continue',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,

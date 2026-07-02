@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+
 import '../../../common/util/app_colors.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class DocsScreen extends StatefulWidget {
+  const DocsScreen({super.key});
 
+  @override
+  State<DocsScreen> createState() => _DocsScreenState();
+}
+
+class _DocsScreenState extends State<DocsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
-          'My Profile',
+          'Docs',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColors.primaryBlue,
@@ -18,7 +24,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: const Center(
         child: Text(
-          'Profile Screen — Coming Soon',
+          'Docs Screen — Coming Soon',
           style: TextStyle(fontSize: 16, color: AppColors.textGrey),
         ),
       ),

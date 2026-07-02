@@ -1,60 +1,116 @@
 import 'package:get/get.dart';
+import '../../../common/models/application_step_model.dart';
 
 class HomeController extends GetxController {
   final selectedNavIndex = 0.obs;
 
-  String savedCountry = '';
-  String savedDegree = '';
-  String savedGpa = '';
-  String savedPassoutYear = '';
+  // Academic profile
+  final country = ''.obs;
+  final gpa = ''.obs;
+  final passoutYear = ''.obs;
+  final degree = ''.obs;
+
+  // Application journey
+  final steps = <ApplicationStepModel>[].obs;
+  final progressPercent = 0.obs;
+
+  bool _step1Done = false;
+  String _step2LanguageTest = '';
+  bool _step3Done = false;
+
+  // TODO: replace with the real logged-in user's name once auth exists.
+  final userName = 'Student'.obs;
+
+  String get greeting {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  String get initials {
+    final parts = userName.value.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+  }
 
   @override
   void onInit() {
     super.onInit();
     final args = Get.arguments;
     if (args is Map) {
-      savedCountry = args['country']?.toString() ?? '';
-      savedDegree = args['degree']?.toString() ?? '';
-      savedGpa = args['gpa']?.toString() ?? '';
-      savedPassoutYear = args['passoutYear']?.toString() ?? '';
+      country.value = args['country']?.toString() ?? '';
+      gpa.value = args['gpa']?.toString() ?? '';
+      passoutYear.value = args['passoutYear']?.toString() ?? '';
+      degree.value = args['degree']?.toString() ?? '';
     }
+    _rebuildSteps();
   }
 
-  final List<Map<String, String>> services = const [
-    {'title': 'Universities', 'icon': 'school'},
-    {'title': 'Visa Guide', 'icon': 'flight_takeoff'},
-    {'title': 'Test Prep', 'icon': 'menu_book'},
-    {'title': 'Scholarships', 'icon': 'card_giftcard'},
-  ];
+  void _rebuildSteps() {
+    final doneFlags = <int, bool>{
+      1: _step1Done,
+      2: _step2LanguageTest.isNotEmpty,
+      3: _step3Done,
+      for (final def in ApplicationStepsCatalog.definitions.skip(3)) def['id'] as int: false,
+    };
 
-  final List<Map<String, String>> destinations = const [
-    {'name': 'United States', 'unis': '1200+ Universities'},
-    {'name': 'United Kingdom', 'unis': '400+ Universities'},
-    {'name': 'Canada', 'unis': '350+ Universities'},
-    {'name': 'Australia', 'unis': '280+ Universities'},
-    {'name': 'Germany', 'unis': '320+ Universities'},
-  ];
+    var activeAssigned = false;
+    final built = <ApplicationStepModel>[];
 
-  final List<Map<String, String>> recommendedUniversities = const [
-    {
-      'name': 'University of Toronto',
-      'location': 'Toronto, Canada',
-      'rating': '4.8',
-      'course': 'MSc Computer Science',
-    },
-    {
-      'name': 'University of Melbourne',
-      'location': 'Melbourne, Australia',
-      'rating': '4.7',
-      'course': 'MBA',
-    },
-    {
-      'name': 'Technical University of Munich',
-      'location': 'Munich, Germany',
-      'rating': '4.6',
-      'course': 'MSc Data Engineering',
-    },
-  ];
+    for (final def in ApplicationStepsCatalog.definitions) {
+      final id = def['id'] as int;
+      final done = doneFlags[id] ?? false;
+
+      StepStatus status;
+      if (done) {
+        status = StepStatus.done;
+      } else if (!activeAssigned) {
+        status = StepStatus.active;
+        activeAssigned = true;
+      } else {
+        status = StepStatus.pending;
+      }
+
+      var subtitle = def['subtitle'] as String;
+      if (id == 2 && _step2LanguageTest.isNotEmpty) {
+        subtitle = '$_step2LanguageTest selected';
+      }
+
+      built.add(ApplicationStepModel(
+        id: id,
+        title: def['title'] as String,
+        subtitle: subtitle,
+        icon: def['icon'],
+        owner: def['owner'] as StepOwner,
+        status: status,
+      ));
+    }
+
+    steps.assignAll(built);
+
+    final doneCount = doneFlags.values.where((v) => v).length;
+    progressPercent.value = ((doneCount / ApplicationStepsCatalog.definitions.length) * 100).round();
+  }
+
+  // ── Step 1: document (marksheet/transcript) upload ──
+  void markStep1Done() {
+    _step1Done = true;
+    _rebuildSteps();
+  }
+
+  // ── Step 2: language test selection ──
+  void selectLanguageTest(String test) {
+    _step2LanguageTest = test;
+    _rebuildSteps();
+  }
+
+  // ── Step 3: all documents upload ──
+  void markStep3Done() {
+    _step3Done = true;
+    _rebuildSteps();
+  }
 
   void setNavIndex(int index) => selectedNavIndex.value = index;
 }

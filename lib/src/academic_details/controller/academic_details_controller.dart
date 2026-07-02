@@ -14,6 +14,21 @@ class AcademicDetailsController extends GetxController {
   final isLoading = false.obs;
   final showErrors = false.obs;
 
+  bool isEditMode = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final args = Get.arguments;
+    if (args is Map && args['isEdit'] == true) {
+      isEditMode = true;
+      selectedCountry.value = args['country']?.toString() ?? '';
+      selectedPassoutYear.value = args['passoutYear']?.toString() ?? '';
+      selectedDegree.value = args['degree']?.toString() ?? '';
+      gpaController.text = args['gpa']?.toString() ?? '';
+    }
+  }
+
   void setCountry(String? value) => selectedCountry.value = value ?? '';
   void setPassoutYear(String? value) => selectedPassoutYear.value = value ?? '';
   void setDegree(String? value) => selectedDegree.value = value ?? '';
