@@ -19,39 +19,36 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Obx(() {
-        return SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(controller),
-                Container(
-                  decoration: const BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(28),
-                      topRight: Radius.circular(28),
-                    ),
-                  ),
-                  padding: const EdgeInsets.only(top: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildQuickActions(),
-                      const SizedBox(height: 24),
-                      _buildProfileCard(controller),
-                      const SizedBox(height: 26),
-                      _buildStepsSection(controller, context),
-                      const SizedBox(height: 100),
-                    ],
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
                   ),
                 ),
-              ],
-            ),
+                padding: const EdgeInsets.only(top: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildQuickActions(),
+                    const SizedBox(height: 24),
+                    _buildProfileCard(controller),
+                    const SizedBox(height: 26),
+                    _buildStepsSection(controller, context),
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       }),
-      // bottomNavigationBar: _buildBottomNav(controller),
     );
   }
 
@@ -76,6 +73,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 30),
           Row(
             children: [
               Container(
