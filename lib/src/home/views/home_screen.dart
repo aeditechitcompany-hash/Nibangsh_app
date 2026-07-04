@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../common/models/application_step_model.dart';
 import '../../../common/util/academic_constants.dart';
 import '../../../common/util/app_colors.dart';
@@ -106,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     Obx(
-                      () => Text(
+                          () => Text(
                         '${controller.userName.value} 👋',
                         style: const TextStyle(
                           color: Colors.white,
@@ -192,7 +193,7 @@ class HomeScreen extends StatelessWidget {
                       builder: (context, constraints) {
                         final fillWidth =
                             constraints.maxWidth *
-                            (controller.progressPercent.value / 100);
+                                (controller.progressPercent.value / 100);
                         return Stack(
                           children: [
                             Container(
@@ -298,10 +299,10 @@ class HomeScreen extends StatelessWidget {
                 onTap: targetIndex == null
                     ? null
                     : () {
-                        if (Get.isRegistered<MainNavigationController>()) {
-                          Get.find<MainNavigationController>().setIndex(targetIndex);
-                        }
-                      },
+                  if (Get.isRegistered<MainNavigationController>()) {
+                    Get.find<MainNavigationController>().setIndex(targetIndex);
+                  }
+                },
                 child: Column(
                   children: [
                     Container(
@@ -403,7 +404,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Obx(
-              () => Row(
+                  () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -427,7 +428,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Obx(
-              () => Row(
+                  () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -514,7 +515,7 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Obx(
-            () => Column(
+                () => Column(
               children: controller.steps
                   .map((step) => _stepTile(controller, step, context))
                   .toList(),
@@ -526,10 +527,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _stepTile(
-    HomeController controller,
-    ApplicationStepModel step,
-    BuildContext context,
-  ) {
+      HomeController controller,
+      ApplicationStepModel step,
+      BuildContext context,
+      ) {
     Color color;
     String pillLabel;
     switch (step.status) {
@@ -621,10 +622,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _handleStepTap(
-    HomeController controller,
-    ApplicationStepModel step,
-    BuildContext context,
-  ) {
+      HomeController controller,
+      ApplicationStepModel step,
+      BuildContext context,
+      ) {
     if (step.id == 2) {
       _showLanguageTestSheet(controller, context);
       return;
@@ -633,30 +634,111 @@ class HomeScreen extends StatelessWidget {
     final actionLabel = step.id == 1
         ? 'marksheet / transcript'
         : 'all required documents';
-    showDialog(
+    _showStepUploadOptions(controller, step.id, actionLabel, context);
+  }
+
+  void _showStepUploadOptions(
+      HomeController controller,
+      int stepId,
+      String actionLabel,
+      BuildContext context,
+      ) {
+    showModalBottomSheet(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirm Upload'),
-        content: Text('Mark your $actionLabel as uploaded?'),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryRed,
-              foregroundColor: Colors.white,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      color: AppColors.borderGrey,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Upload $actionLabel',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _stepUploadOptionTile(
+                  icon: Icons.camera_alt_rounded,
+                  label: 'Take a Photo',
+                  onTap: () {
+                    Get.back();
+                    controller.pickStepPhoto(stepId, ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                _stepUploadOptionTile(
+                  icon: Icons.photo_library_rounded,
+                  label: 'Choose from Gallery',
+                  onTap: () {
+                    Get.back();
+                    controller.pickStepPhoto(stepId, ImageSource.gallery);
+                  },
+                ),
+              ],
             ),
-            onPressed: () {
-              Get.back();
-              if (step.id == 1) {
-                controller.markStep1Done();
-              } else {
-                controller.markStep3Done();
-              }
-            },
-            child: const Text('Confirm'),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _stepUploadOptionTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.borderGrey),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.primaryBlue, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -685,7 +767,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 ...AcademicConstants.languageTests.map(
-                  (test) => ListTile(
+                      (test) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(
                       Icons.menu_book_outlined,

@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../common/models/application_step_model.dart';
 
 class HomeController extends GetxController {
   final selectedNavIndex = 0.obs;
+  final ImagePicker _picker = ImagePicker();
 
   // Academic profile
   final country = ''.obs;
@@ -110,6 +113,33 @@ class HomeController extends GetxController {
   void markStep3Done() {
     _step3Done = true;
     _rebuildSteps();
+  }
+
+  // Picks a photo (camera or gallery) as the "upload" for a step, then
+  // marks that step done once a file is chosen.
+  Future<void> pickStepPhoto(int stepId, ImageSource source) async {
+    try {
+      final XFile? picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+        maxWidth: 1600,
+      );
+      if (picked == null) return;
+      if (stepId == 1) {
+        markStep1Done();
+      } else {
+        markStep3Done();
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        source == ImageSource.camera
+            ? 'Could not open camera.'
+            : 'Could not open gallery.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+    }
   }
 
   void setNavIndex(int index) => selectedNavIndex.value = index;

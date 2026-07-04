@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:nibangsh_consultancy/src/academic_details/views/academic_details_screen.dart';
 import 'package:nibangsh_consultancy/src/countries/views/countries_screen.dart';
 import 'package:nibangsh_consultancy/src/docs/views/docs_screen.dart';
-import 'package:nibangsh_consultancy/src/home/views/home_screen.dart';
 import 'common/util/app_colors.dart';
 import 'common/util/app_route.dart';
 import 'src/auth/views/login_screen.dart';
