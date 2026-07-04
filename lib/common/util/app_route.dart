@@ -9,4 +9,7 @@ class AppRoute {
   static const String academicDetails = '/details';
   static const String adminDashboard = '/admin-dashboard';
   static const String studentProfile = '/student-profile';
+  static const String students = '/students';
+  static const String applications = '/applications';
+  static const String settings = '/settings';
 }

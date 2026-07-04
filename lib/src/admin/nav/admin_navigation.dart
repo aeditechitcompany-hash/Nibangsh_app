@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nibangsh_consultancy/src/admin/applications/views/applications_screen.dart';
+import 'package:nibangsh_consultancy/src/admin/settings/views/settings_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/students/views/students_screen.dart';
 import '../../../common/util/app_colors.dart';
 import '../overview/views/overview_screen.dart';
@@ -14,8 +16,8 @@ class AdminNavigation extends StatelessWidget {
     final tabs = const [
       AdminOverviewScreen(),
       StudentsScreen(),
-      AdminOverviewScreen(),
-      AdminOverviewScreen(),
+      ApplicationsScreen(),
+      SettingsScreen(),
     ];
 
     return Scaffold(

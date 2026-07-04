@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../controller/overview_controller.dart';
@@ -44,13 +45,20 @@ class AdminOverviewScreen extends StatelessWidget {
   }
 
   // ── Header ──
-  Widget _buildHeader(AdminOverviewController controller, BuildContext context) {
+  Widget _buildHeader(
+    AdminOverviewController controller,
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.darkBlue, AppColors.darkBlue, AppColors.primaryRed],
+          colors: [
+            AppColors.darkBlue,
+            AppColors.darkBlue,
+            AppColors.primaryRed,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -305,7 +313,8 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           ...controller.destinations.map((dest) {
-            final fraction = dest.studentCount / controller.maxDestinationCount;
+            final flag = AcademicConstants.countryFlags[dest.name] ?? '🌍';
+            final fraction = dest.studentCount / controller.totalStudentsCount;
             return Padding(
               padding: const EdgeInsets.only(bottom: 14),
               child: Row(
@@ -313,7 +322,7 @@ class AdminOverviewScreen extends StatelessWidget {
                   SizedBox(
                     width: 30,
                     child: Text(
-                      dest.code,
+                      flag,
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -379,16 +388,19 @@ class AdminOverviewScreen extends StatelessWidget {
         'title': 'All Students',
         'icon': Icons.groups_outlined,
         'color': const Color(0xFF2563EB),
+        'route': AppRoute.students,
       },
       {
         'title': 'Applications',
         'icon': Icons.assignment_outlined,
         'color': const Color(0xFF9333EA),
+        'route': AppRoute.applications,
       },
       {
         'title': 'Documents',
         'icon': Icons.description_outlined,
         'color': const Color(0xFF16A34A),
+        'route': AppRoute.students,
       },
     ];
 

@@ -41,8 +41,9 @@ class AdminOverviewController extends GetxController {
     DestinationStat(code: 'JP', name: 'Japan', studentCount: 1),
   ];
 
-  int get maxDestinationCount =>
-      destinations.map((d) => d.studentCount).fold(1, (a, b) => a > b ? a : b);
+  int totalStudentsCount = 6;
+  // int get maxDestinationCount =>
+  //     destinations.map((d) => d.studentCount).fold(1, (a, b) => a > b ? a : b);
 
   final recentActivity = const [
     RecentActivity(name: 'Meera Patel', action: 'Visa approved', time: '1h ago', status: ActivityStatus.approved),
