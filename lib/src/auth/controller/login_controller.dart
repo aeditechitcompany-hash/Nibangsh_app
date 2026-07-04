@@ -46,9 +46,12 @@ class LoginController extends GetxController {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
     try {
-      // TODO: Replace with actual API call
       await Future.delayed(const Duration(seconds: 2));
-      Get.offAllNamed(AppRoute.home);
+      // if (AppStorage.isProfileComplete) {
+      //   Get.offAllNamed(AppRoute.home);
+      // } else {
+        Get.offAllNamed(AppRoute.academicDetails);
+      // }
     } catch (e) {
       _showError('Login Failed', e.toString());
     } finally {
