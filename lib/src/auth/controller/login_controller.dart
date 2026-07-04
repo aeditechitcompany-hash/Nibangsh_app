@@ -13,6 +13,9 @@ class LoginController extends GetxController {
   final RxBool isPasswordVisible = false.obs;
   final formKey = GlobalKey<FormState>();
 
+  static const String _adminEmail = 'admin@nibangsh.com';
+  static const String _adminPassword = 'Admin#123';
+
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
@@ -43,8 +46,23 @@ class LoginController extends GetxController {
 
   // Email & password login
   Future<void> login() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
+
+    if (email.toLowerCase() == _adminEmail && password == _adminPassword) {
+      isLoading.value = true;
+      try {
+        await Future.delayed(const Duration(seconds: 2));
+        Get.offAllNamed(AppRoute.adminDashboard);
+      } finally {
+        isLoading.value = false;
+      }
+      return;
+    }
+
     try {
       await Future.delayed(const Duration(seconds: 2));
       // if (AppStorage.isProfileComplete) {

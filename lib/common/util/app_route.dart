@@ -7,4 +7,6 @@ class AppRoute {
   static const String docs = '/docs';
   static const String countries = '/countries';
   static const String academicDetails = '/details';
+  static const String adminDashboard = '/admin-dashboard';
+  static const String studentProfile = '/student-profile';
 }

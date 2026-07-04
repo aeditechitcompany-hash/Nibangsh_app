@@ -44,8 +44,6 @@ class ProfileScreen extends StatelessWidget {
 
   // Header
   Widget _buildHeader(ProfileController controller, BuildContext context) {
-    final darkBlue = Color.lerp(AppColors.primaryBlue, Colors.black, 0.45)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 44),
@@ -297,8 +295,6 @@ class ProfileScreen extends StatelessWidget {
             ),
             onPressed: () {
               Get.back();
-              // No storage to clear yet — once persistence exists, clear
-              // it here before navigating away.
               Get.offAllNamed(AppRoute.login);
             },
             child: const Text('Log Out'),
