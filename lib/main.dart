@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nibangsh_consultancy/src/academic_details/views/academic_details_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/applications/views/applications_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/nav/admin_navigation.dart';
+import 'package:nibangsh_consultancy/src/admin/notifications/views/notifications_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/settings/views/settings_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/student_profile/views/student_profile_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/students/views/students_screen.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: AppRoute.students, page: () => const StudentsScreen()),
         GetPage(name: AppRoute.applications, page: () => const ApplicationsScreen()),
         GetPage(name: AppRoute.settings, page: () => const SettingsScreen()),
+        GetPage(name: AppRoute.notifications, page: () => const NotificationsScreen()),
       ],
     );
   }

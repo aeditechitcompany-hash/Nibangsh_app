@@ -86,16 +86,19 @@ class StudentsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.14),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.notifications_none_rounded,
-                  color: Colors.white,
-                  size: 20,
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoute.notifications),
+                child: Container(
+                  padding: const EdgeInsets.all(9),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.notifications_none_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ],
@@ -137,8 +140,13 @@ class StudentsScreen extends StatelessWidget {
 
     return SizedBox(
       height: 38,
-      child: Obx(
-        () => ListView.separated(
+      child: Obx(() {
+        // Read the observable here, synchronously inside the Obx builder.
+        // itemBuilder below runs lazily during layout, outside Obx's
+        // tracking scope, so reading `.value` there won't register as a
+        // dependency and Obx won't know when to rebuild.
+        final currentStatus = controller.selectedStatus.value;
+        return ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           itemCount: chips.length,
@@ -146,7 +154,7 @@ class StudentsScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final status = chips[index];
             final label = status == null ? 'All' : status.label;
-            final selected = controller.selectedStatus.value == status;
+            final selected = currentStatus == status;
             return GestureDetector(
               onTap: () => controller.setStatusFilter(status),
               child: Container(
@@ -175,8 +183,8 @@ class StudentsScreen extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 

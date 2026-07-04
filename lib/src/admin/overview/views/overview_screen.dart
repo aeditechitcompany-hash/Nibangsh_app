@@ -46,9 +46,9 @@ class AdminOverviewScreen extends StatelessWidget {
 
   // ── Header ──
   Widget _buildHeader(
-    AdminOverviewController controller,
-    BuildContext context,
-  ) {
+      AdminOverviewController controller,
+      BuildContext context,
+      ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
@@ -145,7 +145,7 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Obx(
-            () => Row(
+                () => Row(
               children: [
                 Expanded(
                   child: _topPill(
@@ -465,13 +465,29 @@ class AdminOverviewScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Recent Activity',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Recent Activity',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoute.notifications),
+                child: const Text(
+                  'View All',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           ...controller.recentActivity.map((activity) {

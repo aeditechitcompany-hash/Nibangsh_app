@@ -67,6 +67,24 @@ class StudentRecord {
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
   }
+
+  StudentRecord copyWith({StudentStatus? status}) {
+    return StudentRecord(
+      id: id,
+      name: name,
+      email: email,
+      countryCode: countryCode,
+      countryName: countryName,
+      gpa: gpa,
+      degree: degree,
+      passoutYear: passoutYear,
+      currentStep: currentStep,
+      totalSteps: totalSteps,
+      documentsUploaded: documentsUploaded,
+      documentsTotal: documentsTotal,
+      status: status ?? this.status,
+    );
+  }
 }
 
 class StudentsCatalog {
