@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+
+class CountryInfo {
+  final String code;
+  final String name;
+  final int universityCount;
+  final List<String> topUniversities;
+  final Color accentColor;
+
+  const CountryInfo({
+    required this.code,
+    required this.name,
+    required this.universityCount,
+    required this.topUniversities,
+    required this.accentColor,
+  });
+}
+
+class CountriesCatalog {
+  CountriesCatalog._();
+
+  static const List<CountryInfo> popularDestinations = [
+    CountryInfo(
+      code: 'KR',
+      name: 'South Korea',
+      universityCount: 34,
+      topUniversities: ['SNU', 'KAIST'],
+      accentColor: Color(0xFF2563EB),
+    ),
+    CountryInfo(
+      code: 'GB',
+      name: 'United Kingdom',
+      universityCount: 142,
+      topUniversities: ['Oxford', 'Cambridge'],
+      accentColor: Color(0xFF6B7280),
+    ),
+    CountryInfo(
+      code: 'US',
+      name: 'United States',
+      universityCount: 320,
+      topUniversities: ['MIT', 'Harvard'],
+      accentColor: Color(0xFFDC2626),
+    ),
+    CountryInfo(
+      code: 'AU',
+      name: 'Australia',
+      universityCount: 89,
+      topUniversities: ['ANU', 'Melbourne'],
+      accentColor: Color(0xFF16A34A),
+    ),
+    CountryInfo(
+      code: 'CA',
+      name: 'Canada',
+      universityCount: 96,
+      topUniversities: ['Toronto', 'UBC'],
+      accentColor: Color(0xFFF59E0B),
+    ),
+    CountryInfo(
+      code: 'JP',
+      name: 'Japan',
+      universityCount: 78,
+      topUniversities: ['Todai', 'Osaka'],
+      accentColor: Color(0xFF6B7280),
+    ),
+  ];
+}
