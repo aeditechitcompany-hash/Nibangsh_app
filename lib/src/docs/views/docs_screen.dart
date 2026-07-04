@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../common/models/required_document.dart';
 import '../../../common/util/app_colors.dart';
 import '../controller/docs_controller.dart';
@@ -34,7 +37,7 @@ class DocsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildRequiredDocumentsSection(controller, context),
                 const SizedBox(height: 22),
-                _buildDragAndDropZone(controller),
+                _buildDragAndDropZone(controller, context),
                 const SizedBox(height: 100),
               ],
             ),
@@ -131,7 +134,7 @@ class DocsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(
-        () => Row(
+            () => Row(
           children: [
             Expanded(
               child: _statCard(
@@ -198,9 +201,9 @@ class DocsScreen extends StatelessWidget {
 
   // Uploaded Files
   Widget _buildUploadedFilesSection(
-    DocsController controller,
-    BuildContext context,
-  ) {
+      DocsController controller,
+      BuildContext context,
+      ) {
     return Obx(() {
       final files = controller.uploadedFiles;
       if (files.isEmpty) return const SizedBox.shrink();
@@ -226,10 +229,10 @@ class DocsScreen extends StatelessWidget {
   }
 
   Widget _uploadedFileTile(
-    DocsController controller,
-    RequiredDocument doc,
-    BuildContext context,
-  ) {
+      DocsController controller,
+      RequiredDocument doc,
+      BuildContext context,
+      ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -243,11 +246,19 @@ class DocsScreen extends StatelessWidget {
           Container(
             width: 42,
             height: 42,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: AppColors.primaryBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: doc.filePath != null
+                ? Image.file(
+              File(doc.filePath!),
+              width: 42,
+              height: 42,
+              fit: BoxFit.cover,
+            )
+                : const Icon(
               Icons.description_outlined,
               color: AppColors.primaryBlue,
               size: 20,
@@ -268,7 +279,7 @@ class DocsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 const Text(
-                  'PDF • Verified',
+                  'Photo • Verified',
                   style: TextStyle(fontSize: 11, color: AppColors.textGrey),
                 ),
               ],
@@ -319,9 +330,9 @@ class DocsScreen extends StatelessWidget {
 
   // Required Documents
   Widget _buildRequiredDocumentsSection(
-    DocsController controller,
-    BuildContext context,
-  ) {
+      DocsController controller,
+      BuildContext context,
+      ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -337,7 +348,7 @@ class DocsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Obx(
-            () => Column(
+                () => Column(
               children: controller.documents
                   .map((doc) => _requiredDocTile(controller, doc, context))
                   .toList(),
@@ -349,10 +360,10 @@ class DocsScreen extends StatelessWidget {
   }
 
   Widget _requiredDocTile(
-    DocsController controller,
-    RequiredDocument doc,
-    BuildContext context,
-  ) {
+      DocsController controller,
+      RequiredDocument doc,
+      BuildContext context,
+      ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -416,7 +427,7 @@ class DocsScreen extends StatelessWidget {
           ),
           if (!doc.uploaded)
             ElevatedButton.icon(
-              onPressed: () => _confirmUpload(controller, doc, context),
+              onPressed: () => _showUploadOptions(controller, doc, context),
               icon: const Icon(Icons.upload_rounded, size: 15),
               label: const Text('Upload', style: TextStyle(fontSize: 12)),
               style: ElevatedButton.styleFrom(
@@ -437,40 +448,178 @@ class DocsScreen extends StatelessWidget {
     );
   }
 
-  void _confirmUpload(
-    DocsController controller,
-    RequiredDocument doc,
-    BuildContext context,
-  ) {
-    showDialog(
+  void _showUploadOptions(
+      DocsController controller,
+      RequiredDocument doc,
+      BuildContext context,
+      ) {
+    showModalBottomSheet(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Upload Document'),
-        content: Text('Simulate uploading your ${doc.title.toLowerCase()}?'),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
-              foregroundColor: Colors.white,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      color: AppColors.borderGrey,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Upload ${doc.title}',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _uploadOptionTile(
+                  icon: Icons.camera_alt_rounded,
+                  label: 'Take a Photo',
+                  onTap: () {
+                    Get.back();
+                    controller.pickDocumentPhoto(doc.id, ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                _uploadOptionTile(
+                  icon: Icons.photo_library_rounded,
+                  label: 'Choose from Gallery',
+                  onTap: () {
+                    Get.back();
+                    controller.pickDocumentPhoto(doc.id, ImageSource.gallery);
+                  },
+                ),
+              ],
             ),
-            onPressed: () {
-              Get.back();
-              controller.markUploaded(doc.id);
-            },
-            child: const Text('Upload'),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _uploadOptionTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.borderGrey),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.primaryBlue, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // Drag & drop zone
-  Widget _buildDragAndDropZone(DocsController controller) {
+  Widget _buildDragAndDropZone(DocsController controller, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: DottedBorderBox(onBrowse: controller.browseAndUploadNextPending),
+      child: DottedBorderBox(
+        onBrowse: () => _showBrowseOptions(controller, context),
+      ),
+    );
+  }
+
+  void _showBrowseOptions(DocsController controller, BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      color: AppColors.borderGrey,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const Text(
+                  'Upload a Document',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _uploadOptionTile(
+                  icon: Icons.camera_alt_rounded,
+                  label: 'Take a Photo',
+                  onTap: () {
+                    Get.back();
+                    controller.browseAndUploadNextPending(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                _uploadOptionTile(
+                  icon: Icons.photo_library_rounded,
+                  label: 'Choose from Gallery',
+                  onTap: () {
+                    Get.back();
+                    controller.browseAndUploadNextPending(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -6,6 +6,7 @@ class RequiredDocument {
   final IconData icon;
   final Color accentColor;
   final bool uploaded;
+  final String? filePath;
 
   const RequiredDocument({
     required this.id,
@@ -13,15 +14,17 @@ class RequiredDocument {
     required this.icon,
     required this.accentColor,
     required this.uploaded,
+    this.filePath,
   });
 
-  RequiredDocument copyWith({bool? uploaded}) {
+  RequiredDocument copyWith({bool? uploaded, String? filePath}) {
     return RequiredDocument(
       id: id,
       title: title,
       icon: icon,
       accentColor: accentColor,
       uploaded: uploaded ?? this.uploaded,
+      filePath: filePath ?? this.filePath,
     );
   }
 

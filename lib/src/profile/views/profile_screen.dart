@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../common/util/academic_constants.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -107,7 +108,17 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Obx(
-                        () => Text(
+                            () => controller.profileImage.value != null
+                            ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.file(
+                            controller.profileImage.value!,
+                            width: 78,
+                            height: 78,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                            : Text(
                           controller.initials,
                           style: const TextStyle(
                             color: Colors.white,
@@ -121,15 +132,7 @@ class ProfileScreen extends StatelessWidget {
                       right: -4,
                       bottom: -4,
                       child: GestureDetector(
-                        onTap: () => Get.snackbar(
-                          'Change Photo',
-                          'Photo upload isn\'t wired up yet.',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.primaryBlue,
-                          colorText: Colors.white,
-                          margin: const EdgeInsets.all(16),
-                          borderRadius: 12,
-                        ),
+                        onTap: () => _showPhotoOptions(controller, context),
                         child: Container(
                           padding: const EdgeInsets.all(7),
                           decoration: const BoxDecoration(
@@ -148,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Obx(
-                  () => Text(
+                      () => Text(
                     controller.userName.value,
                     style: const TextStyle(
                       color: Colors.white,
@@ -159,7 +162,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Obx(
-                  () => Text(
+                      () => Text(
                     controller.userEmail.value.isEmpty
                         ? 'No email on file yet'
                         : controller.userEmail.value,
@@ -173,6 +176,107 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPhotoOptions(ProfileController controller, BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      color: AppColors.borderGrey,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const Text(
+                  'Change Profile Photo',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _photoOptionTile(
+                  icon: Icons.camera_alt_rounded,
+                  label: 'Take a Photo',
+                  onTap: () {
+                    Get.back();
+                    controller.pickProfileImage(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                _photoOptionTile(
+                  icon: Icons.photo_library_rounded,
+                  label: 'Choose from Gallery',
+                  onTap: () {
+                    Get.back();
+                    controller.pickProfileImage(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _photoOptionTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.borderGrey),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.primaryBlue, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -238,7 +342,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             Obx(
-              () => Column(
+                  () => Column(
                 children: [
                   _infoRow(
                     'GPA',
@@ -261,7 +365,7 @@ class ProfileScreen extends StatelessWidget {
                     controller.country.value.isEmpty
                         ? '--'
                         : '${AcademicConstants.countryFlags[controller.country.value] ?? ''} ${controller.country.value}'
-                              .trim(),
+                        .trim(),
                     isLast: true,
                   ),
                 ],
@@ -280,8 +384,8 @@ class ProfileScreen extends StatelessWidget {
         border: isLast
             ? null
             : const Border(
-                bottom: BorderSide(color: AppColors.borderGrey, width: 1),
-              ),
+          bottom: BorderSide(color: AppColors.borderGrey, width: 1),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -327,7 +431,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             Obx(
-              () => _linkRow(
+                  () => _linkRow(
                 icon: Icons.notifications_none_rounded,
                 iconColor: AppColors.primaryBlue,
                 label: 'Notifications',
