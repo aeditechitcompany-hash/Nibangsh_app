@@ -293,7 +293,7 @@ class DocsScreen extends StatelessWidget {
               'Preview',
               '${doc.fileName} preview isn\'t wired up yet.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.primaryBlue,
+              backgroundColor: AppColors.primaryRed,
               colorText: Colors.white,
               margin: const EdgeInsets.all(16),
               borderRadius: 12,
