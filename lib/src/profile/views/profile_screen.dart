@@ -357,6 +357,10 @@ class ProfileScreen extends StatelessWidget {
                         : controller.degree.value,
                   ),
                   _infoRow(
+                    'Phone Number',
+                    '+977 9810203040'
+                  ),
+                  _infoRow(
                     'Target Country',
                     controller.country.value.isEmpty
                         ? '--'
@@ -440,7 +444,7 @@ class ProfileScreen extends StatelessWidget {
             _linkRow(
               icon: Icons.chat_bubble_outline_rounded,
               iconColor: AppColors.primaryBlue,
-              label: 'Chat with Counselor',
+              label: 'Message Us',
             ),
             const Divider(height: 1, color: AppColors.borderGrey),
             _linkRow(
