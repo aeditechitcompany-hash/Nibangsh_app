@@ -119,35 +119,38 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.16),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications_none_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 9,
-                      height: 9,
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoute.studentNotifications),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryRed,
+                        color: Colors.white.withOpacity(0.16),
                         shape: BoxShape.circle,
-                        border: Border.all(color: darkBlue, width: 1.5),
+                      ),
+                      child: const Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: 20,
                       ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 9,
+                        height: 9,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryRed,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: darkBlue, width: 1.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

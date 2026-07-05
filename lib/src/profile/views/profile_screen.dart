@@ -357,8 +357,8 @@ class ProfileScreen extends StatelessWidget {
                         : controller.degree.value,
                   ),
                   _infoRow(
-                    'Phone Number',
-                    '+977 9810203040'
+                      'Phone Number',
+                      '+977 9810203040'
                   ),
                   _infoRow(
                     'Target Country',
@@ -438,6 +438,8 @@ class ProfileScreen extends StatelessWidget {
                 trailing: controller.notificationCount.value > 0
                     ? _badge(controller.notificationCount.value)
                     : null,
+                onTap: () => Get.toNamed(AppRoute.studentNotifications),
+                isFirst: true,
               ),
             ),
             const Divider(height: 1, color: AppColors.borderGrey),
@@ -482,22 +484,25 @@ class ProfileScreen extends StatelessWidget {
     required Color iconColor,
     required String label,
     Widget? trailing,
+    VoidCallback? onTap,
+    bool isFirst = false,
     bool isLast = false,
   }) {
     return InkWell(
       borderRadius: BorderRadius.vertical(
-        top: label == 'Notifications' ? const Radius.circular(18) : Radius.zero,
+        top: isFirst ? const Radius.circular(18) : Radius.zero,
         bottom: isLast ? const Radius.circular(18) : Radius.zero,
       ),
-      onTap: () => Get.snackbar(
-        label,
-        '$label isn\'t wired up yet.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.primaryRed,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      ),
+      onTap: onTap ??
+              () => Get.snackbar(
+            label,
+            '$label isn\'t wired up yet.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.primaryRed,
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+            borderRadius: 12,
+          ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
