@@ -11,7 +11,7 @@ class AdminNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(_AdminNavigationController());
+    final controller = Get.put(AdminNavigationController(), permanent: true);
 
     final tabs = const [
       AdminOverviewScreen(),
@@ -34,7 +34,7 @@ class AdminNavigation extends StatelessWidget {
   }
 }
 
-class _AdminNavigationController extends GetxController {
+class AdminNavigationController extends GetxController {
   final currentIndex = 0.obs;
 
   void setIndex(int index) => currentIndex.value = index;

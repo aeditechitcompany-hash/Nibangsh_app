@@ -142,8 +142,14 @@ class StudentsScreen extends StatelessWidget {
 
     return SizedBox(
       height: 38,
-      child: Obx(
-        () => ListView.separated(
+      child: Obx(() {
+        // Read the observable here, synchronously inside the Obx builder.
+        // itemBuilder below runs lazily during layout, outside Obx's
+        // tracking scope, so reading `.value` there won't register as a
+        // dependency and Obx won't know when to rebuild — that mismatch
+        // is exactly what throws "improper use of GetX/Obx".
+        final currentStatus = controller.selectedStatus.value;
+        return ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           itemCount: chips.length,
@@ -151,7 +157,7 @@ class StudentsScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final status = chips[index];
             final label = status == null ? 'All' : status.label;
-            final selected = controller.selectedStatus.value == status;
+            final selected = currentStatus == status;
             return GestureDetector(
               onTap: () => controller.setStatusFilter(status),
               child: Container(
@@ -180,8 +186,8 @@ class StudentsScreen extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 
