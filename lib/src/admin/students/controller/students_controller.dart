@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../model/students_record.dart';
+import '../../model/students_record.dart';
 
 class StudentsController extends GetxController {
   final searchController = TextEditingController();
