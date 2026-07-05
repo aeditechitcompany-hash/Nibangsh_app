@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../const/resources.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../controller/settings_controller.dart';
@@ -126,18 +127,14 @@ class SettingsScreen extends StatelessWidget {
               Container(
                 width: 52,
                 height: 52,
-                alignment: Alignment.center,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.16),
-                  borderRadius: BorderRadius.circular(16),
+                  shape: BoxShape.circle,
                 ),
-                child: const Text(
-                  'AD',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                child: Image.asset(
+                  AppResources.logoPath,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(width: 14),

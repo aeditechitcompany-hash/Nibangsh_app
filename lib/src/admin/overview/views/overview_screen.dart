@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../const/resources.dart';
 import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../controller/overview_controller.dart';
+import '../../nav/admin_navigation.dart';
 
 class AdminOverviewScreen extends StatelessWidget {
   const AdminOverviewScreen({super.key});
@@ -76,18 +78,14 @@ class AdminOverviewScreen extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                alignment: Alignment.center,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.14),
-                  borderRadius: BorderRadius.circular(12),
+                  shape: BoxShape.circle,
                 ),
-                child: const Text(
-                  'AD',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                child: Image.asset(
+                  AppResources.logoPath,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(width: 12),
@@ -388,19 +386,21 @@ class AdminOverviewScreen extends StatelessWidget {
         'title': 'All Students',
         'icon': Icons.groups_outlined,
         'color': const Color(0xFF2563EB),
-        'route': AppRoute.students,
+        'tabIndex': 1,
       },
       {
         'title': 'Applications',
         'icon': Icons.assignment_outlined,
         'color': const Color(0xFF9333EA),
-        'route': AppRoute.applications,
+        'tabIndex': 2,
       },
       {
         'title': 'Documents',
         'icon': Icons.description_outlined,
         'color': const Color(0xFF16A34A),
-        'route': AppRoute.students,
+        // No dedicated admin Documents screen yet — Students is the
+        // closest existing view (shows each student's document progress).
+        'tabIndex': 1,
       },
     ];
 
@@ -410,46 +410,50 @@ class AdminOverviewScreen extends StatelessWidget {
         children: actions.map((action) {
           final color = action['color'] as Color;
           return Expanded(
-            child: Container(
-              margin: EdgeInsets.only(right: action == actions.last ? 0 : 10),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      shape: BoxShape.circle,
+            child: GestureDetector(
+              onTap: () => Get.find<AdminNavigationController>()
+                  .setIndex(action['tabIndex'] as int),
+              child: Container(
+                margin: EdgeInsets.only(right: action == actions.last ? 0 : 10),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
-                    child: Icon(
-                      action['icon'] as IconData,
-                      color: color,
-                      size: 20,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        action['icon'] as IconData,
+                        color: color,
+                        size: 20,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    action['title'] as String,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textDark,
+                    const SizedBox(height: 8),
+                    Text(
+                      action['title'] as String,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
