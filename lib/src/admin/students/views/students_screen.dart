@@ -3,21 +3,21 @@ import 'package:get/get.dart';
 import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
+import '../../model/students_record.dart';
 import '../controller/students_controller.dart';
-import '../model/students_record.dart';
 
 class StudentsScreen extends StatelessWidget {
   const StudentsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(StudentsController(), permanent: true);
+    final controller = Get.put(StudentsController());
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(controller),
+          _buildHeader(controller, context),
           Container(
             decoration: const BoxDecoration(
               color: AppColors.background,
@@ -43,7 +43,7 @@ class StudentsScreen extends StatelessWidget {
   }
 
   // ── Header ──
-  Widget _buildHeader(StudentsController controller) {
+  Widget _buildHeader(StudentsController controller, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
@@ -61,7 +61,7 @@ class StudentsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -87,7 +87,9 @@ class StudentsScreen extends StatelessWidget {
                 ],
               ),
               GestureDetector(
-                onTap: () => Get.toNamed(AppRoute.notifications),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoute.notifications);
+                },
                 child: Container(
                   padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
@@ -140,13 +142,8 @@ class StudentsScreen extends StatelessWidget {
 
     return SizedBox(
       height: 38,
-      child: Obx(() {
-        // Read the observable here, synchronously inside the Obx builder.
-        // itemBuilder below runs lazily during layout, outside Obx's
-        // tracking scope, so reading `.value` there won't register as a
-        // dependency and Obx won't know when to rebuild.
-        final currentStatus = controller.selectedStatus.value;
-        return ListView.separated(
+      child: Obx(
+        () => ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           itemCount: chips.length,
@@ -154,7 +151,7 @@ class StudentsScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final status = chips[index];
             final label = status == null ? 'All' : status.label;
-            final selected = currentStatus == status;
+            final selected = controller.selectedStatus.value == status;
             return GestureDetector(
               onTap: () => controller.setStatusFilter(status),
               child: Container(
@@ -183,8 +180,8 @@ class StudentsScreen extends StatelessWidget {
               ),
             );
           },
-        );
-      }),
+        ),
+      ),
     );
   }
 
@@ -302,8 +299,11 @@ class StudentsScreen extends StatelessWidget {
             runSpacing: 8,
             children: [
               _infoChip('$flag ${student.countryName}'),
+              _infoChip(student.university),
               _infoChip('GPA: ${student.gpa}'),
-              _infoChip('Step ${student.currentStep}/${student.totalSteps}'),
+              _infoChip(
+                'Step ${student.currentStep}/${StudentRecord.totalSteps}',
+              ),
             ],
           ),
           const SizedBox(height: 14),
