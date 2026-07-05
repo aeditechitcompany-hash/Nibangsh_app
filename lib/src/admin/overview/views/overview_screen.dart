@@ -113,7 +113,7 @@ class AdminOverviewScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 6),
                         Icon(
-                          Icons.shield_rounded,
+                          Icons.shield_outlined,
                           color: Color(0xFF60A5FA),
                           size: 16,
                         ),
