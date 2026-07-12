@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../common/models/required_document.dart';
 import '../../../common/util/app_colors.dart';
+import '../../../common/util/app_route.dart';
 import '../controller/docs_controller.dart';
 
 class DocsScreen extends StatelessWidget {
@@ -92,35 +93,38 @@ class DocsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.16),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications_none_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 9,
-                      height: 9,
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoute.studentNotifications),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.16),
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.primaryRed, width: 1.5),
+                      ),
+                      child: const Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: 20,
                       ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 9,
+                        height: 9,
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.primaryRed, width: 1.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

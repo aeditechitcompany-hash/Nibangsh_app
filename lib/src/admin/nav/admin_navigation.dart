@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nibangsh_consultancy/src/admin/applications/views/applications_screen.dart';
+import 'package:nibangsh_consultancy/src/admin/settings/views/settings_screen.dart';
 import 'package:nibangsh_consultancy/src/admin/students/views/students_screen.dart';
 import '../../../common/util/app_colors.dart';
 import '../overview/views/overview_screen.dart';
@@ -9,13 +11,13 @@ class AdminNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(_AdminNavigationController());
+    final controller = Get.put(AdminNavigationController(), permanent: true);
 
     final tabs = const [
       AdminOverviewScreen(),
       StudentsScreen(),
-      AdminOverviewScreen(),
-      AdminOverviewScreen(),
+      ApplicationsScreen(),
+      SettingsScreen(),
     ];
 
     return Scaffold(
@@ -32,7 +34,7 @@ class AdminNavigation extends StatelessWidget {
   }
 }
 
-class _AdminNavigationController extends GetxController {
+class AdminNavigationController extends GetxController {
   final currentIndex = 0.obs;
 
   void setIndex(int index) => currentIndex.value = index;

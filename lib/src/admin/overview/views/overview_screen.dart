@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../const/resources.dart';
+import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../controller/overview_controller.dart';
+import '../../nav/admin_navigation.dart';
 
 class AdminOverviewScreen extends StatelessWidget {
   const AdminOverviewScreen({super.key});
@@ -44,13 +47,20 @@ class AdminOverviewScreen extends StatelessWidget {
   }
 
   // ── Header ──
-  Widget _buildHeader(AdminOverviewController controller, BuildContext context) {
+  Widget _buildHeader(
+      AdminOverviewController controller,
+      BuildContext context,
+      ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.darkBlue, AppColors.darkBlue, AppColors.primaryRed],
+          colors: [
+            AppColors.darkBlue,
+            AppColors.darkBlue,
+            AppColors.primaryRed,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -68,18 +78,14 @@ class AdminOverviewScreen extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                alignment: Alignment.center,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.14),
-                  borderRadius: BorderRadius.circular(12),
+                  shape: BoxShape.circle,
                 ),
-                child: const Text(
-                  'AD',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                child: Image.asset(
+                  AppResources.logoPath,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(width: 12),
@@ -107,7 +113,7 @@ class AdminOverviewScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 6),
                         Icon(
-                          Icons.shield_rounded,
+                          Icons.shield_outlined,
                           color: Color(0xFF60A5FA),
                           size: 16,
                         ),
@@ -137,7 +143,7 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Obx(
-            () => Row(
+                () => Row(
               children: [
                 Expanded(
                   child: _topPill(
@@ -305,7 +311,8 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           ...controller.destinations.map((dest) {
-            final fraction = dest.studentCount / controller.maxDestinationCount;
+            final flag = AcademicConstants.countryFlags[dest.name] ?? '🌍';
+            final fraction = dest.studentCount / controller.totalStudentsCount;
             return Padding(
               padding: const EdgeInsets.only(bottom: 14),
               child: Row(
@@ -313,7 +320,7 @@ class AdminOverviewScreen extends StatelessWidget {
                   SizedBox(
                     width: 30,
                     child: Text(
-                      dest.code,
+                      flag,
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -379,16 +386,21 @@ class AdminOverviewScreen extends StatelessWidget {
         'title': 'All Students',
         'icon': Icons.groups_outlined,
         'color': const Color(0xFF2563EB),
+        'tabIndex': 1,
       },
       {
         'title': 'Applications',
         'icon': Icons.assignment_outlined,
         'color': const Color(0xFF9333EA),
+        'tabIndex': 2,
       },
       {
         'title': 'Documents',
         'icon': Icons.description_outlined,
         'color': const Color(0xFF16A34A),
+        // No dedicated admin Documents screen yet — Students is the
+        // closest existing view (shows each student's document progress).
+        'tabIndex': 1,
       },
     ];
 
@@ -398,46 +410,50 @@ class AdminOverviewScreen extends StatelessWidget {
         children: actions.map((action) {
           final color = action['color'] as Color;
           return Expanded(
-            child: Container(
-              margin: EdgeInsets.only(right: action == actions.last ? 0 : 10),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      shape: BoxShape.circle,
+            child: GestureDetector(
+              onTap: () => Get.find<AdminNavigationController>()
+                  .setIndex(action['tabIndex'] as int),
+              child: Container(
+                margin: EdgeInsets.only(right: action == actions.last ? 0 : 10),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
-                    child: Icon(
-                      action['icon'] as IconData,
-                      color: color,
-                      size: 20,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        action['icon'] as IconData,
+                        color: color,
+                        size: 20,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    action['title'] as String,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textDark,
+                    const SizedBox(height: 8),
+                    Text(
+                      action['title'] as String,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -453,13 +469,29 @@ class AdminOverviewScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Recent Activity',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Recent Activity',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoute.notifications),
+                child: const Text(
+                  'View All',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           ...controller.recentActivity.map((activity) {
