@@ -73,16 +73,20 @@ class LoginController extends GetxController {
       final storedEmail = await StorageService.getUserEmail();
       final storedName = await StorageService.getUserName();
       final isSameAccount =
-          storedEmail != null && storedEmail.toLowerCase() == email.toLowerCase();
-      final resolvedName = (isSameAccount && (storedName?.trim().isNotEmpty ?? false))
+          storedEmail != null &&
+          storedEmail.toLowerCase() == email.toLowerCase();
+      final resolvedName =
+          (isSameAccount && (storedName?.trim().isNotEmpty ?? false))
           ? storedName!.trim()
-          : (email.split('@').first.isEmpty ? 'Student' : email.split('@').first);
+          : (email.split('@').first.isEmpty
+                ? 'Student'
+                : email.split('@').first);
       await StorageService.saveUserInfo(email: email, name: resolvedName);
 
       // if (AppStorage.isProfileComplete) {
       //   Get.offAllNamed(AppRoute.home);
       // } else {
-        Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
+      Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
       // }
     } catch (e) {
       _showError('Login Failed', e.toString());
@@ -135,7 +139,10 @@ class LoginController extends GetxController {
 
   // Email button
   void signInWithEmail() {
-    _showInfo('Email Sign-In', 'Enter your email and password above to sign in.');
+    _showInfo(
+      'Email Sign-In',
+      'Enter your email and password above to sign in.',
+    );
   }
 
   void _showError(String title, String message) {

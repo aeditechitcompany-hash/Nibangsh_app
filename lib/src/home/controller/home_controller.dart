@@ -22,7 +22,6 @@ class HomeController extends GetxController {
   String _step2LanguageTest = '';
   bool _step3Done = false;
 
-
   // TODO: replace with the real logged-in user's name once auth exists.
   final userName = ''.obs;
 
@@ -55,10 +54,14 @@ class HomeController extends GetxController {
   String get initials {
     final name = userName.trim();
     if (name.isEmpty) return '?';
-    final parts = name.split(RegExp(r'[\s._-]+')).where((p) => p.isNotEmpty).toList();
+    final parts = name
+        .split(RegExp(r'[\s._-]+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
   }
 
   @override
@@ -92,7 +95,8 @@ class HomeController extends GetxController {
       1: _step1Done,
       2: _step2LanguageTest.isNotEmpty,
       3: _step3Done,
-      for (final def in ApplicationStepsCatalog.definitions.skip(3)) def['id'] as int: false,
+      for (final def in ApplicationStepsCatalog.definitions.skip(3))
+        def['id'] as int: false,
     };
 
     var activeAssigned = false;
@@ -117,20 +121,24 @@ class HomeController extends GetxController {
         subtitle = '$_step2LanguageTest selected';
       }
 
-      built.add(ApplicationStepModel(
-        id: id,
-        title: def['title'] as String,
-        subtitle: subtitle,
-        icon: def['icon'],
-        owner: def['owner'] as StepOwner,
-        status: status,
-      ));
+      built.add(
+        ApplicationStepModel(
+          id: id,
+          title: def['title'] as String,
+          subtitle: subtitle,
+          icon: def['icon'],
+          owner: def['owner'] as StepOwner,
+          status: status,
+        ),
+      );
     }
 
     steps.assignAll(built);
 
     final doneCount = doneFlags.values.where((v) => v).length;
-    progressPercent.value = ((doneCount / ApplicationStepsCatalog.definitions.length) * 100).round();
+    progressPercent.value =
+        ((doneCount / ApplicationStepsCatalog.definitions.length) * 100)
+            .round();
   }
 
   // ── Step 1: document (marksheet/transcript) upload ──

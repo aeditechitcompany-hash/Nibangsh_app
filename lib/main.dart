@@ -42,21 +42,42 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppRoute.onboarding,
       getPages: [
-        GetPage(name: AppRoute.onboarding, page: () => const OnboardingScreen()),
+        GetPage(
+          name: AppRoute.onboarding,
+          page: () => const OnboardingScreen(),
+        ),
         GetPage(name: AppRoute.login, page: () => const LoginScreen()),
         GetPage(name: AppRoute.signup, page: () => const SignupScreen()),
         GetPage(name: AppRoute.home, page: () => const MainNavigationScreen()),
         GetPage(name: AppRoute.profile, page: () => const ProfileScreen()),
         GetPage(name: AppRoute.docs, page: () => const DocsScreen()),
         GetPage(name: AppRoute.countries, page: () => const CountriesScreen()),
-        GetPage(name: AppRoute.academicDetails, page: () => const AcademicDetailsScreen()),
-        GetPage(name: AppRoute.adminDashboard, page: () => const AdminNavigation()),
-        GetPage(name: AppRoute.studentProfile, page: () => const StudentProfileScreen()),
+        GetPage(
+          name: AppRoute.academicDetails,
+          page: () => const AcademicDetailsScreen(),
+        ),
+        GetPage(
+          name: AppRoute.adminDashboard,
+          page: () => const AdminNavigation(),
+        ),
+        GetPage(
+          name: AppRoute.studentProfile,
+          page: () => const StudentProfileScreen(),
+        ),
         GetPage(name: AppRoute.students, page: () => const StudentsScreen()),
-        GetPage(name: AppRoute.applications, page: () => const ApplicationsScreen()),
+        GetPage(
+          name: AppRoute.applications,
+          page: () => const ApplicationsScreen(),
+        ),
         GetPage(name: AppRoute.settings, page: () => const SettingsScreen()),
-        GetPage(name: AppRoute.notifications, page: () => const NotificationsScreen()),
-        GetPage(name: AppRoute.studentNotifications, page: () => const StudentNotificationsScreen()),
+        GetPage(
+          name: AppRoute.notifications,
+          page: () => const NotificationsScreen(),
+        ),
+        GetPage(
+          name: AppRoute.studentNotifications,
+          page: () => const StudentNotificationsScreen(),
+        ),
       ],
     );
   }

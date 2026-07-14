@@ -51,7 +51,11 @@ class StudentNotificationsScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.darkBlue, AppColors.primaryBlue, AppColors.primaryRed],
+          colors: [
+            AppColors.darkBlue,
+            AppColors.primaryBlue,
+            AppColors.primaryRed,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -96,7 +100,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Obx(
-                          () => Text(
+                      () => Text(
                         '${controller.unreadCount} updates',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.75),
@@ -168,12 +172,18 @@ class StudentNotificationsScreen extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   notification.message,
-                  style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textGrey,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   notification.time,
-                  style: const TextStyle(fontSize: 10.5, color: AppColors.textGrey),
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    color: AppColors.textGrey,
+                  ),
                 ),
               ],
             ),

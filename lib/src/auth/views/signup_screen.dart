@@ -25,7 +25,11 @@ class SignupScreen extends StatelessWidget {
               height: size.height * 0.3,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.darkRed, AppColors.primaryRed, AppColors.primaryBlue],
+                  colors: [
+                    AppColors.darkRed,
+                    AppColors.primaryRed,
+                    AppColors.primaryBlue,
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -75,7 +79,10 @@ class SignupScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Your Gateway to Global Education',
-                    style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
@@ -91,9 +98,11 @@ class SignupScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // ── Personal Info Section ──
-                    _sectionHeader('Personal Information', Icons.person_outline),
+                    _sectionHeader(
+                      'Personal Information',
+                      Icons.person_outline,
+                    ),
                     const SizedBox(height: 12),
 
                     // Full Name
@@ -135,50 +144,57 @@ class SignupScreen extends StatelessWidget {
                     // Password
                     _buildLabel('Password'),
                     const SizedBox(height: 8),
-                    Obx(() => _buildTextField(
-                      ctrl: controller.passwordController,
-                      hint: 'Create a password',
-                      icon: Icons.lock_outline,
-                      obscure: !controller.isPasswordVisible.value,
-                      validator: controller.validatePassword,
-                      suffix: IconButton(
-                        icon: Icon(
-                          controller.isPasswordVisible.value
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                          color: AppColors.textGrey,
-                          size: 20,
+                    Obx(
+                      () => _buildTextField(
+                        ctrl: controller.passwordController,
+                        hint: 'Create a password',
+                        icon: Icons.lock_outline,
+                        obscure: !controller.isPasswordVisible.value,
+                        validator: controller.validatePassword,
+                        suffix: IconButton(
+                          icon: Icon(
+                            controller.isPasswordVisible.value
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: AppColors.textGrey,
+                            size: 20,
+                          ),
+                          onPressed: controller.togglePasswordVisibility,
                         ),
-                        onPressed: controller.togglePasswordVisibility,
                       ),
-                    )),
+                    ),
                     const SizedBox(height: 14),
 
                     // Confirm Password
                     _buildLabel('Confirm Password'),
                     const SizedBox(height: 8),
-                    Obx(() => _buildTextField(
-                      ctrl: controller.confirmPasswordController,
-                      hint: 'Re-enter your password',
-                      icon: Icons.lock_outline,
-                      obscure: !controller.isConfirmPasswordVisible.value,
-                      validator: controller.validateConfirmPassword,
-                      suffix: IconButton(
-                        icon: Icon(
-                          controller.isConfirmPasswordVisible.value
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                          color: AppColors.textGrey,
-                          size: 20,
+                    Obx(
+                      () => _buildTextField(
+                        ctrl: controller.confirmPasswordController,
+                        hint: 'Re-enter your password',
+                        icon: Icons.lock_outline,
+                        obscure: !controller.isConfirmPasswordVisible.value,
+                        validator: controller.validateConfirmPassword,
+                        suffix: IconButton(
+                          icon: Icon(
+                            controller.isConfirmPasswordVisible.value
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: AppColors.textGrey,
+                            size: 20,
+                          ),
+                          onPressed: controller.toggleConfirmPasswordVisibility,
                         ),
-                        onPressed: controller.toggleConfirmPasswordVisibility,
                       ),
-                    )),
+                    ),
 
                     const SizedBox(height: 24),
 
                     // ── Location Section ──
-                    _sectionHeader('Location Details', Icons.location_on_outlined),
+                    _sectionHeader(
+                      'Location Details',
+                      Icons.location_on_outlined,
+                    ),
                     const SizedBox(height: 12),
 
                     // Street Address
@@ -196,72 +212,83 @@ class SignupScreen extends StatelessWidget {
                     // District
                     _buildLabel('District'),
                     const SizedBox(height: 8),
-                    Obx(() => _buildDropdown(
-                      value: controller.selectedDistrict.value.isEmpty
-                          ? null
-                          : controller.selectedDistrict.value,
-                      hint: 'Select your district',
-                      icon: Icons.location_city_outlined,
-                      items: AppConstants.districts,
-                      onChanged: controller.setDistrict,
-                      validator: (_) => controller.selectedDistrict.value.isEmpty
-                          ? 'Please select a district'
-                          : null,
-                    )),
+                    Obx(
+                      () => _buildDropdown(
+                        value: controller.selectedDistrict.value.isEmpty
+                            ? null
+                            : controller.selectedDistrict.value,
+                        hint: 'Select your district',
+                        icon: Icons.location_city_outlined,
+                        items: AppConstants.districts,
+                        onChanged: controller.setDistrict,
+                        validator: (_) =>
+                            controller.selectedDistrict.value.isEmpty
+                            ? 'Please select a district'
+                            : null,
+                      ),
+                    ),
                     const SizedBox(height: 14),
 
                     // Province
                     _buildLabel('Province'),
                     const SizedBox(height: 8),
-                    Obx(() => _buildDropdown(
-                      value: controller.selectedProvince.value.isEmpty
-                          ? null
-                          : controller.selectedProvince.value,
-                      hint: 'Select your province',
-                      icon: Icons.map_outlined,
-                      items: AppConstants.provinces,
-                      onChanged: controller.setProvince,
-                      validator: (_) => controller.selectedProvince.value.isEmpty
-                          ? 'Please select a province'
-                          : null,
-                    )),
+                    Obx(
+                      () => _buildDropdown(
+                        value: controller.selectedProvince.value.isEmpty
+                            ? null
+                            : controller.selectedProvince.value,
+                        hint: 'Select your province',
+                        icon: Icons.map_outlined,
+                        items: AppConstants.provinces,
+                        onChanged: controller.setProvince,
+                        validator: (_) =>
+                            controller.selectedProvince.value.isEmpty
+                            ? 'Please select a province'
+                            : null,
+                      ),
+                    ),
 
                     const SizedBox(height: 32),
 
                     // Sign Up button
-                    Obx(() => SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: controller.isLoading.value ? null : controller.signup,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryRed,
-                          disabledBackgroundColor: AppColors.primaryRed.withOpacity(0.6),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                    Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: controller.isLoading.value
+                              ? null
+                              : controller.signup,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryRed,
+                            disabledBackgroundColor: AppColors.primaryRed
+                                .withOpacity(0.6),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 3,
                           ),
-                          elevation: 3,
-                        ),
-                        child: controller.isLoading.value
-                            ? const SizedBox(
-                          height: 22,
-                          width: 22,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                            : const Text(
-                          'Create Account',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : const Text(
+                                  'Create Account',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
                         ),
                       ),
-                    )),
+                    ),
 
                     const SizedBox(height: 24),
                     // OR divider
@@ -272,7 +299,10 @@ class SignupScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
                             'or continue with',
-                            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                         Expanded(child: Divider(color: Colors.grey.shade300)),
@@ -330,7 +360,10 @@ class SignupScreen extends StatelessWidget {
                       children: [
                         const Text(
                           'Already have an account? ',
-                          style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                          style: TextStyle(
+                            color: AppColors.textGrey,
+                            fontSize: 14,
+                          ),
                         ),
                         GestureDetector(
                           onTap: () => Get.offNamed(AppRoute.login),
@@ -378,9 +411,7 @@ class SignupScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Expanded(
-          child: Container(height: 1, color: AppColors.borderGrey),
-        ),
+        Expanded(child: Container(height: 1, color: AppColors.borderGrey)),
       ],
     );
   }
@@ -418,7 +449,10 @@ class SignupScreen extends StatelessWidget {
         suffixIcon: suffix,
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.borderGrey),
@@ -429,7 +463,10 @@ class SignupScreen extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primaryBlue, width: 1.8),
+          borderSide: const BorderSide(
+            color: AppColors.primaryBlue,
+            width: 1.8,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -470,15 +507,8 @@ class SignupScreen extends StatelessWidget {
 
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(
-          color: AppColors.textGrey,
-          fontSize: 14,
-        ),
-        prefixIcon: Icon(
-          icon,
-          color: AppColors.primaryBlue,
-          size: 20,
-        ),
+        hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
+        prefixIcon: Icon(icon, color: AppColors.primaryBlue, size: 20),
 
         filled: true,
         fillColor: Colors.white,
@@ -490,16 +520,12 @@ class SignupScreen extends StatelessWidget {
 
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.borderGrey,
-          ),
+          borderSide: const BorderSide(color: AppColors.borderGrey),
         ),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.borderGrey,
-          ),
+          borderSide: const BorderSide(color: AppColors.borderGrey),
         ),
 
         focusedBorder: OutlineInputBorder(
@@ -512,9 +538,7 @@ class SignupScreen extends StatelessWidget {
 
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: AppColors.errorColor,
-          ),
+          borderSide: const BorderSide(color: AppColors.errorColor),
         ),
       ),
 

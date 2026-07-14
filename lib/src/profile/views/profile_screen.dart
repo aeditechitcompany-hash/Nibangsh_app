@@ -49,7 +49,11 @@ class ProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 44),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.darkBlue, AppColors.primaryBlue, AppColors.primaryRed],
+          colors: [
+            AppColors.darkBlue,
+            AppColors.primaryBlue,
+            AppColors.primaryRed,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -106,24 +110,24 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Obx(
-                            () => controller.profileImage.value != null
+                        () => controller.profileImage.value != null
                             ? ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.file(
-                            controller.profileImage.value!,
-                            width: 78,
-                            height: 78,
-                            fit: BoxFit.cover,
-                          ),
-                        )
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.file(
+                                  controller.profileImage.value!,
+                                  width: 78,
+                                  height: 78,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
                             : Text(
-                          controller.initials,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                                controller.initials,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                     Positioned(
@@ -149,7 +153,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Obx(
-                      () => Text(
+                  () => Text(
                     controller.userName.value,
                     style: const TextStyle(
                       color: Colors.white,
@@ -160,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Obx(
-                      () => Text(
+                  () => Text(
                     controller.userEmail.value.isEmpty
                         ? 'No email on file yet'
                         : controller.userEmail.value,
@@ -338,7 +342,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             Obx(
-                  () => Column(
+              () => Column(
                 children: [
                   _infoRow(
                     'GPA',
@@ -356,16 +360,13 @@ class ProfileScreen extends StatelessWidget {
                         ? '--'
                         : controller.degree.value,
                   ),
-                  _infoRow(
-                      'Phone Number',
-                      '+977 9810203040'
-                  ),
+                  _infoRow('Phone Number', '+977 9810203040'),
                   _infoRow(
                     'Target Country',
                     controller.country.value.isEmpty
                         ? '--'
                         : '${AcademicConstants.countryFlags[controller.country.value] ?? ''} ${controller.country.value}'
-                        .trim(),
+                              .trim(),
                     isLast: true,
                   ),
                 ],
@@ -384,8 +385,8 @@ class ProfileScreen extends StatelessWidget {
         border: isLast
             ? null
             : const Border(
-          bottom: BorderSide(color: AppColors.borderGrey, width: 1),
-        ),
+                bottom: BorderSide(color: AppColors.borderGrey, width: 1),
+              ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -431,7 +432,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             Obx(
-                  () => _linkRow(
+              () => _linkRow(
                 icon: Icons.notifications_none_rounded,
                 iconColor: AppColors.primaryBlue,
                 label: 'Notifications',
@@ -487,8 +488,9 @@ class ProfileScreen extends StatelessWidget {
         top: isFirst ? const Radius.circular(18) : Radius.zero,
         bottom: isLast ? const Radius.circular(18) : Radius.zero,
       ),
-      onTap: onTap ??
-              () => Get.snackbar(
+      onTap:
+          onTap ??
+          () => Get.snackbar(
             label,
             '$label isn\'t wired up yet.',
             snackPosition: SnackPosition.BOTTOM,

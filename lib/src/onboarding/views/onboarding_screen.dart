@@ -27,7 +27,7 @@ const List<OnboardingData> onboardingPages = [
     title: 'About Us',
     subtitle: 'Trusted Consultancy',
     description:
-    'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
+        'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
     image: AppResources.onboarding1,
     icon: Icons.verified_rounded,
     gradientColors: [Color(0xFFD32F2F), Color(0xFF1452B3), Color(0xFF0D47A1)],
@@ -36,7 +36,7 @@ const List<OnboardingData> onboardingPages = [
     title: 'Explore Countries',
     subtitle: 'Countries',
     description:
-    'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
+        'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
     image: AppResources.onboarding2,
     icon: Icons.public_rounded,
     gradientColors: [Color(0xFF0D47A1), Color(0xFF1565C0), Color(0xFFD32F2F)],
@@ -45,7 +45,7 @@ const List<OnboardingData> onboardingPages = [
     title: 'Join Nibangsh',
     subtitle: 'Join to Nibangsh',
     description:
-    'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
+        'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
     image: AppResources.logoPath,
     icon: Icons.group_rounded,
     gradientColors: [Color(0xFFD32F2F), Color(0xFF1565C0), Color(0xFF0D47A1)],
@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       onboardingPages.length,
-                          (index) => AnimatedContainer(
+                      (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 8,
@@ -257,11 +257,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Image.asset(
                     page.image,
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      page.icon,
-                      color: Colors.white,
-                      size: 76,
-                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(page.icon, color: Colors.white, size: 76),
                   ),
                 ),
               ),
@@ -270,7 +267,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               // Slide number badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),

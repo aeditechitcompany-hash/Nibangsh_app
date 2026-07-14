@@ -62,7 +62,11 @@ class CountriesScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.darkBlue, AppColors.primaryBlue, AppColors.primaryRed],
+          colors: [
+            AppColors.darkBlue,
+            AppColors.primaryBlue,
+            AppColors.primaryRed,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -161,10 +165,7 @@ class CountriesScreen extends StatelessWidget {
         controller: controller.searchController,
         decoration: InputDecoration(
           hintText: 'Search country...',
-          hintStyle: const TextStyle(
-            color: AppColors.textGrey,
-            fontSize: 13.5,
-          ),
+          hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 13.5),
           prefixIcon: const Icon(
             Icons.search,
             color: AppColors.primaryBlue,

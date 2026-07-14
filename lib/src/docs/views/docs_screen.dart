@@ -119,7 +119,10 @@ class DocsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.amber,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.primaryRed, width: 1.5),
+                          border: Border.all(
+                            color: AppColors.primaryRed,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -138,7 +141,7 @@ class DocsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(
-            () => Row(
+        () => Row(
           children: [
             Expanded(
               child: _statCard(
@@ -205,9 +208,9 @@ class DocsScreen extends StatelessWidget {
 
   // Uploaded Files
   Widget _buildUploadedFilesSection(
-      DocsController controller,
-      BuildContext context,
-      ) {
+    DocsController controller,
+    BuildContext context,
+  ) {
     return Obx(() {
       final files = controller.uploadedFiles;
       if (files.isEmpty) return const SizedBox.shrink();
@@ -233,10 +236,10 @@ class DocsScreen extends StatelessWidget {
   }
 
   Widget _uploadedFileTile(
-      DocsController controller,
-      RequiredDocument doc,
-      BuildContext context,
-      ) {
+    DocsController controller,
+    RequiredDocument doc,
+    BuildContext context,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -257,16 +260,16 @@ class DocsScreen extends StatelessWidget {
             ),
             child: doc.filePath != null
                 ? Image.file(
-              File(doc.filePath!),
-              width: 42,
-              height: 42,
-              fit: BoxFit.cover,
-            )
+                    File(doc.filePath!),
+                    width: 42,
+                    height: 42,
+                    fit: BoxFit.cover,
+                  )
                 : const Icon(
-              Icons.description_outlined,
-              color: AppColors.primaryBlue,
-              size: 20,
-            ),
+                    Icons.description_outlined,
+                    color: AppColors.primaryBlue,
+                    size: 20,
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -334,9 +337,9 @@ class DocsScreen extends StatelessWidget {
 
   // Required Documents
   Widget _buildRequiredDocumentsSection(
-      DocsController controller,
-      BuildContext context,
-      ) {
+    DocsController controller,
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -352,7 +355,7 @@ class DocsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Obx(
-                () => Column(
+            () => Column(
               children: controller.documents
                   .map((doc) => _requiredDocTile(controller, doc, context))
                   .toList(),
@@ -364,10 +367,10 @@ class DocsScreen extends StatelessWidget {
   }
 
   Widget _requiredDocTile(
-      DocsController controller,
-      RequiredDocument doc,
-      BuildContext context,
-      ) {
+    DocsController controller,
+    RequiredDocument doc,
+    BuildContext context,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -453,10 +456,10 @@ class DocsScreen extends StatelessWidget {
   }
 
   void _showUploadOptions(
-      DocsController controller,
-      RequiredDocument doc,
-      BuildContext context,
-      ) {
+    DocsController controller,
+    RequiredDocument doc,
+    BuildContext context,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -558,7 +561,10 @@ class DocsScreen extends StatelessWidget {
   }
 
   // Drag & drop zone
-  Widget _buildDragAndDropZone(DocsController controller, BuildContext context) {
+  Widget _buildDragAndDropZone(
+    DocsController controller,
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: DottedBorderBox(
