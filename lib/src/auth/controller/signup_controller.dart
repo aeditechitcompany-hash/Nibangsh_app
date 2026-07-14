@@ -118,17 +118,23 @@ class SignupController extends GetxController {
   Future<void> signup() async {
     if (!formKey.currentState!.validate()) return;
     if (selectedDistrict.value.isEmpty) {
-      Get.snackbar('Error', 'Please select a district',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade700,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Please select a district',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+      );
       return;
     }
     if (selectedProvince.value.isEmpty) {
-      Get.snackbar('Error', 'Please select a province',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade700,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Please select a province',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -210,7 +216,10 @@ class SignupController extends GetxController {
 
   // Email button
   void signInWithEmail() {
-    _showInfo('Email Sign-In', 'Enter your email and password above to sign in.');
+    _showInfo(
+      'Email Sign-In',
+      'Enter your email and password above to sign in.',
+    );
   }
 
   void _showError(String title, String message) {
@@ -236,7 +245,6 @@ class SignupController extends GetxController {
       borderRadius: 12,
     );
   }
-
 
   @override
   void onClose() {

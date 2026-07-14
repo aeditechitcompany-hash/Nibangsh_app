@@ -41,7 +41,8 @@ class AcademicDetailsController extends GetxController {
     if (value == null || value.trim().isEmpty) return 'Please enter your GPA';
     final parsed = double.tryParse(value.trim());
     if (parsed == null) return 'Enter a valid number';
-    if (parsed < 0.0 || parsed > 4.0) return 'GPA should be between 0.0 and 4.0';
+    if (parsed < 0.0 || parsed > 4.0)
+      return 'GPA should be between 0.0 and 4.0';
     return null;
   }
 

@@ -62,7 +62,11 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.darkBlue, AppColors.primaryBlue, AppColors.primaryRed],
+          colors: [
+            AppColors.darkBlue,
+            AppColors.primaryBlue,
+            AppColors.primaryRed,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -107,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     Obx(
-                          () => Text(
+                      () => Text(
                         '${controller.userName} 👋',
                         style: const TextStyle(
                           color: Colors.white,
@@ -196,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                       builder: (context, constraints) {
                         final fillWidth =
                             constraints.maxWidth *
-                                (controller.progressPercent.value / 100);
+                            (controller.progressPercent.value / 100);
                         return Stack(
                           children: [
                             Container(
@@ -302,10 +306,12 @@ class HomeScreen extends StatelessWidget {
                 onTap: targetIndex == null
                     ? null
                     : () {
-                  if (Get.isRegistered<MainNavigationController>()) {
-                    Get.find<MainNavigationController>().setIndex(targetIndex);
-                  }
-                },
+                        if (Get.isRegistered<MainNavigationController>()) {
+                          Get.find<MainNavigationController>().setIndex(
+                            targetIndex,
+                          );
+                        }
+                      },
                 child: Column(
                   children: [
                     Container(
@@ -407,7 +413,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Obx(
-                  () => Row(
+              () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -431,7 +437,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Obx(
-                  () => Row(
+              () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -569,10 +575,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11.5,
-              color: AppColors.textGrey,
-            ),
+            style: const TextStyle(fontSize: 11.5, color: AppColors.textGrey),
           ),
         ],
       ),
@@ -616,10 +619,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _stepTile(
-      HomeController controller,
-      ApplicationStepModel step,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    ApplicationStepModel step,
+    BuildContext context,
+  ) {
     Color color;
     String pillLabel;
     IconData pillIcon;
@@ -728,10 +731,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _handleStepTap(
-      HomeController controller,
-      ApplicationStepModel step,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    ApplicationStepModel step,
+    BuildContext context,
+  ) {
     if (step.id == 2) {
       _showLanguageTestSheet(controller, context);
       return;
@@ -744,11 +747,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _showStepUploadOptions(
-      HomeController controller,
-      int stepId,
-      String actionLabel,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    int stepId,
+    String actionLabel,
+    BuildContext context,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -873,7 +876,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 ...AcademicConstants.languageTests.map(
-                      (test) => ListTile(
+                  (test) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(
                       Icons.menu_book_outlined,
