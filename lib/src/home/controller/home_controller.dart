@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../common/models/application_step_model.dart';
+import '../../../common/services/storage.dart';
 
 class HomeController extends GetxController {
   final selectedNavIndex = 0.obs;
@@ -21,8 +22,22 @@ class HomeController extends GetxController {
   String _step2LanguageTest = '';
   bool _step3Done = false;
 
+
   // TODO: replace with the real logged-in user's name once auth exists.
-  String get userName => nameFromEmail(email.value);
+  final userName = ''.obs;
+
+  // Steps 1-3 belong to the student, steps 4-10 belong to the admin.
+  List<ApplicationStepModel> get userSteps =>
+      steps.where((s) => s.owner == StepOwner.user).toList();
+
+  List<ApplicationStepModel> get adminSteps =>
+      steps.where((s) => s.owner == StepOwner.admin).toList();
+
+  int get userStepsDoneCount =>
+      userSteps.where((s) => s.status == StepStatus.done).length;
+
+  int get adminStepsDoneCount =>
+      adminSteps.where((s) => s.status == StepStatus.done).length;
 
   String get greeting {
     final hour = DateTime.now().hour;
@@ -49,6 +64,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     final args = Get.arguments;
     if (args is Map) {
       email.value = args['email']?.toString() ?? '';
@@ -57,7 +73,18 @@ class HomeController extends GetxController {
       passoutYear.value = args['passoutYear']?.toString() ?? '';
       degree.value = args['degree']?.toString() ?? '';
     }
+
+    userName.value = nameFromEmail(email.value);
+
+    _loadUserName();
     _rebuildSteps();
+  }
+
+  Future<void> _loadUserName() async {
+    final storedName = await StorageService.getUserName();
+    if (storedName != null && storedName.trim().isNotEmpty) {
+      userName.value = storedName.trim();
+    }
   }
 
   void _rebuildSteps() {

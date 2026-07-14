@@ -444,12 +444,6 @@ class ProfileScreen extends StatelessWidget {
             ),
             const Divider(height: 1, color: AppColors.borderGrey),
             _linkRow(
-              icon: Icons.chat_bubble_outline_rounded,
-              iconColor: AppColors.primaryBlue,
-              label: 'Message Us',
-            ),
-            const Divider(height: 1, color: AppColors.borderGrey),
-            _linkRow(
               icon: Icons.help_outline_rounded,
               iconColor: AppColors.primaryBlue,
               label: 'FAQ & Help Center',

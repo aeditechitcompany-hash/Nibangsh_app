@@ -490,42 +490,128 @@ class HomeScreen extends StatelessWidget {
 
   // Application Steps section
   Widget _buildStepsSection(HomeController controller, BuildContext context) {
+    final userSteps = controller.userSteps;
+    final adminSteps = controller.adminSteps;
+    final userDone = controller.userStepsDoneCount;
+    final adminDone = controller.adminStepsDoneCount;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Application Steps',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
+              Expanded(
+                child: _summaryCard(
+                  value: '$userDone/${userSteps.length}',
+                  label: 'Your Tasks Done',
+                  color: const Color(0xFF16A34A),
                 ),
               ),
-              Text(
-                '${controller.steps.where((s) => s.status == StepStatus.done).length}/${controller.steps.length} done',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              const SizedBox(width: 12),
+              Expanded(
+                child: _summaryCard(
+                  value: '$adminDone/${adminSteps.length}',
+                  label: 'Admin Steps Done',
                   color: AppColors.primaryBlue,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          Obx(
-                () => Column(
-              children: controller.steps
-                  .map((step) => _stepTile(controller, step, context))
-                  .toList(),
+          const SizedBox(height: 22),
+          _sectionHeader(
+            icon: Icons.person_outline_rounded,
+            iconColor: const Color(0xFF16A34A),
+            title: 'Your Steps (1–3)',
+            doneLabel: '$userDone/${userSteps.length} done',
+            doneColor: const Color(0xFF16A34A),
+          ),
+          const SizedBox(height: 12),
+          ...userSteps.map((step) => _stepTile(controller, step, context)),
+          const SizedBox(height: 10),
+          _sectionHeader(
+            icon: Icons.shield_outlined,
+            iconColor: AppColors.primaryBlue,
+            title: 'Admin Approval Steps (4–10)',
+            doneLabel: '$adminDone/${adminSteps.length}',
+            doneColor: AppColors.primaryBlue,
+          ),
+          const SizedBox(height: 12),
+          ...adminSteps.map((step) => _stepTile(controller, step, context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryCard({
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.borderGrey),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11.5,
+              color: AppColors.textGrey,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _sectionHeader({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String doneLabel,
+    required Color doneColor,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 18, color: iconColor),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14.5,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          doneLabel,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: doneColor,
+          ),
+        ),
+      ],
     );
   }
 
@@ -536,19 +622,24 @@ class HomeScreen extends StatelessWidget {
       ) {
     Color color;
     String pillLabel;
-    switch (step.status) {
-      case StepStatus.done:
-        color = const Color(0xFF16A34A);
-        pillLabel = 'Done';
-        break;
-      case StepStatus.active:
-        color = AppColors.primaryBlue;
-        pillLabel = 'Active';
-        break;
-      case StepStatus.pending:
-        color = AppColors.textGrey;
-        pillLabel = 'Pending';
-        break;
+    IconData pillIcon;
+
+    if (step.status == StepStatus.done) {
+      color = const Color(0xFF16A34A);
+      pillLabel = 'Done';
+      pillIcon = Icons.check;
+    } else if (step.owner == StepOwner.admin) {
+      color = AppColors.primaryBlue;
+      pillLabel = 'Admin';
+      pillIcon = Icons.schedule_rounded;
+    } else if (step.status == StepStatus.active) {
+      color = AppColors.primaryBlue;
+      pillLabel = 'Active';
+      pillIcon = Icons.arrow_forward_rounded;
+    } else {
+      color = AppColors.textGrey;
+      pillLabel = 'Pending';
+      pillIcon = Icons.hourglass_empty_rounded;
     }
 
     final isTappable =
@@ -571,11 +662,14 @@ class HomeScreen extends StatelessWidget {
             Container(
               width: 44,
               height: 44,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(step.icon, color: color, size: 20),
+              child: step.status == StepStatus.done
+                  ? Icon(Icons.check_rounded, color: color, size: 20)
+                  : Icon(step.icon, color: color, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -583,21 +677,21 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    'Step ${step.id}',
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textGrey,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
                     step.title,
                     style: const TextStyle(
                       fontSize: 13.5,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    step.subtitle,
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      color: AppColors.textGrey,
-                    ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -609,13 +703,22 @@ class HomeScreen extends StatelessWidget {
                 color: color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                pillLabel,
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (step.status == StepStatus.done) ...[
+                    Icon(pillIcon, size: 11, color: color),
+                    const SizedBox(width: 3),
+                  ],
+                  Text(
+                    pillLabel,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
