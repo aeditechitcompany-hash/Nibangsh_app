@@ -8,7 +8,7 @@ class HomeController extends GetxController {
   final selectedNavIndex = 0.obs;
   final ImagePicker _picker = ImagePicker();
 
-  // Academic profile
+  final email = ''.obs;
   final country = ''.obs;
   final gpa = ''.obs;
   final passoutYear = ''.obs;
@@ -22,8 +22,9 @@ class HomeController extends GetxController {
   String _step2LanguageTest = '';
   bool _step3Done = false;
 
-  // Default shown briefly while the saved profile name loads.
-  final userName = 'Student'.obs;
+
+  // TODO: replace with the real logged-in user's name once auth exists.
+  final userName = ''.obs;
 
   // Steps 1-3 belong to the student, steps 4-10 belong to the admin.
   List<ApplicationStepModel> get userSteps =>
@@ -45,9 +46,17 @@ class HomeController extends GetxController {
     return 'Good evening';
   }
 
+  String nameFromEmail(String email, {String fallback = 'Student'}) {
+    if (email.isEmpty || !email.contains('@')) return fallback;
+    final localPart = email.split('@').first;
+    return localPart.isEmpty ? fallback : localPart;
+  }
+
   String get initials {
-    final parts = userName.value.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    final name = userName.trim();
+    if (name.isEmpty) return '?';
+    final parts = name.split(RegExp(r'[\s._-]+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
   }
@@ -55,19 +64,22 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     final args = Get.arguments;
     if (args is Map) {
+      email.value = args['email']?.toString() ?? '';
       country.value = args['country']?.toString() ?? '';
       gpa.value = args['gpa']?.toString() ?? '';
       passoutYear.value = args['passoutYear']?.toString() ?? '';
       degree.value = args['degree']?.toString() ?? '';
     }
+
+    userName.value = nameFromEmail(email.value);
+
     _loadUserName();
     _rebuildSteps();
   }
 
-  // Pulls the name saved at login/signup so the header greets the student
-  // by their real name instead of the "Student" placeholder.
   Future<void> _loadUserName() async {
     final storedName = await StorageService.getUserName();
     if (storedName != null && storedName.trim().isNotEmpty) {

@@ -82,7 +82,7 @@ class LoginController extends GetxController {
       // if (AppStorage.isProfileComplete) {
       //   Get.offAllNamed(AppRoute.home);
       // } else {
-      Get.offAllNamed(AppRoute.academicDetails);
+        Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
       // }
     } catch (e) {
       _showError('Login Failed', e.toString());

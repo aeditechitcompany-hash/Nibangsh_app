@@ -15,17 +15,21 @@ class AcademicDetailsController extends GetxController {
   final showErrors = false.obs;
 
   bool isEditMode = false;
+  String _email = '';
 
   @override
   void onInit() {
     super.onInit();
     final args = Get.arguments;
-    if (args is Map && args['isEdit'] == true) {
-      isEditMode = true;
-      selectedCountry.value = args['country']?.toString() ?? '';
-      selectedPassoutYear.value = args['passoutYear']?.toString() ?? '';
-      selectedDegree.value = args['degree']?.toString() ?? '';
-      gpaController.text = args['gpa']?.toString() ?? '';
+    if (args is Map) {
+      _email = args['email']?.toString() ?? '';
+      if (args['isEdit'] == true) {
+        isEditMode = true;
+        selectedCountry.value = args['country']?.toString() ?? '';
+        selectedPassoutYear.value = args['passoutYear']?.toString() ?? '';
+        selectedDegree.value = args['degree']?.toString() ?? '';
+        gpaController.text = args['gpa']?.toString() ?? '';
+      }
     }
   }
 
@@ -59,6 +63,7 @@ class AcademicDetailsController extends GetxController {
       Get.offAllNamed(
         AppRoute.home,
         arguments: {
+          'email': _email,
           'country': selectedCountry.value,
           'gpa': gpaController.text.trim(),
           'passoutYear': selectedPassoutYear.value,

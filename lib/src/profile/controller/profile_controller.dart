@@ -5,14 +5,11 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileController extends GetxController {
-  // Same 4 fields as HomeController, read from the same in-memory
-  // Get.arguments — no storage, no duplication of state.
   final country = ''.obs;
   final gpa = ''.obs;
   final passoutYear = ''.obs;
   final degree = ''.obs;
 
-  // Profile photo picked via camera or gallery.
   final Rx<File?> profileImage = Rx<File?>(null);
   final ImagePicker _picker = ImagePicker();
 
@@ -38,12 +35,8 @@ class ProfileController extends GetxController {
     }
   }
 
-  // TODO: replace with the real logged-in user's name/email once auth
-  // exists. Nothing in the current flow (login just validates email +
-  // password length) actually carries the user's name/email forward.
   final userName = 'Student'.obs;
   final userEmail = ''.obs;
-
   final notificationCount = 4.obs;
 
   @override
@@ -51,6 +44,9 @@ class ProfileController extends GetxController {
     super.onInit();
     final args = Get.arguments;
     if (args is Map) {
+      final email = args['email']?.toString() ?? '';
+      userEmail.value = email;
+      userName.value = nameFromEmail(email);
       country.value = args['country']?.toString() ?? '';
       gpa.value = args['gpa']?.toString() ?? '';
       passoutYear.value = args['passoutYear']?.toString() ?? '';
@@ -58,9 +54,17 @@ class ProfileController extends GetxController {
     }
   }
 
+  String nameFromEmail(String email, {String fallback = 'Student'}) {
+    if (email.isEmpty || !email.contains('@')) return fallback;
+    final localPart = email.split('@').first;
+    return localPart.isEmpty ? fallback : localPart;
+  }
+
   String get initials {
-    final parts = userName.value.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    final name = userName.value.trim();
+    if (name.isEmpty) return '?';
+    final parts = name.split(RegExp(r'[\s._-]+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
   }
