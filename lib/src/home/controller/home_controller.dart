@@ -7,7 +7,7 @@ class HomeController extends GetxController {
   final selectedNavIndex = 0.obs;
   final ImagePicker _picker = ImagePicker();
 
-  // Academic profile
+  final email = ''.obs;
   final country = ''.obs;
   final gpa = ''.obs;
   final passoutYear = ''.obs;
@@ -22,7 +22,7 @@ class HomeController extends GetxController {
   bool _step3Done = false;
 
   // TODO: replace with the real logged-in user's name once auth exists.
-  final userName = 'Student'.obs;
+  String get userName => nameFromEmail(email.value);
 
   String get greeting {
     final hour = DateTime.now().hour;
@@ -31,9 +31,17 @@ class HomeController extends GetxController {
     return 'Good evening';
   }
 
+  String nameFromEmail(String email, {String fallback = 'Student'}) {
+    if (email.isEmpty || !email.contains('@')) return fallback;
+    final localPart = email.split('@').first;
+    return localPart.isEmpty ? fallback : localPart;
+  }
+
   String get initials {
-    final parts = userName.value.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    final name = userName.trim();
+    if (name.isEmpty) return '?';
+    final parts = name.split(RegExp(r'[\s._-]+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
   }
@@ -43,6 +51,7 @@ class HomeController extends GetxController {
     super.onInit();
     final args = Get.arguments;
     if (args is Map) {
+      email.value = args['email']?.toString() ?? '';
       country.value = args['country']?.toString() ?? '';
       gpa.value = args['gpa']?.toString() ?? '';
       passoutYear.value = args['passoutYear']?.toString() ?? '';

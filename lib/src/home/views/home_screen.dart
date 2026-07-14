@@ -108,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     Obx(
                           () => Text(
-                        '${controller.userName.value} 👋',
+                        '${controller.userName} 👋',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
