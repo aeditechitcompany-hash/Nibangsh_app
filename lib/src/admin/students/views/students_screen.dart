@@ -348,55 +348,25 @@ class StudentsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Divider(height: 1, color: AppColors.borderGrey),
-          Row(
-            children: [
-              Expanded(
-                child: TextButton.icon(
-                  onPressed: () =>
-                      Get.toNamed(AppRoute.studentProfile, arguments: student),
-                  icon: const Icon(
-                    Icons.visibility_outlined,
-                    size: 16,
-                    color: AppColors.primaryBlue,
-                  ),
-                  label: const Text(
-                    'View Profile',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
+          SizedBox(
+            width: double.infinity,
+            child: TextButton.icon(
+              onPressed: () =>
+                  Get.toNamed(AppRoute.studentProfile, arguments: student),
+              icon: const Icon(
+                Icons.visibility_outlined,
+                size: 16,
+                color: AppColors.primaryBlue,
+              ),
+              label: const Text(
+                'View Profile',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryBlue,
                 ),
               ),
-              Container(width: 1, height: 20, color: AppColors.borderGrey),
-              Expanded(
-                child: TextButton.icon(
-                  onPressed: () => Get.snackbar(
-                    'Message',
-                    'Messaging isn\'t wired up yet.',
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: AppColors.primaryRed,
-                    colorText: Colors.white,
-                    margin: const EdgeInsets.all(16),
-                    borderRadius: 12,
-                  ),
-                  icon: const Icon(
-                    Icons.send_outlined,
-                    size: 16,
-                    color: AppColors.textGrey,
-                  ),
-                  label: const Text(
-                    'Message',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textGrey,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
