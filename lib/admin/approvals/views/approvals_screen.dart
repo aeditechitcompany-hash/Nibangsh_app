@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../../model/students_record.dart';
+import '../../steps/views/step4_screen.dart';
 import '../controller/approvals_controller.dart';
 
 class ApprovalsScreen extends StatelessWidget {
@@ -218,8 +219,7 @@ class ApprovalsScreen extends StatelessWidget {
     final done = ApprovalsController.adminStepsDone(student);
     final total = ApprovalsController.adminStepsCount;
     final currentMeta = ApprovalsController.metaFor(student.currentStep);
-    // "In Review" covers active/pending statuses in this admin context;
-    // approved/rejected keep their own label+color.
+
     final isReview = student.status == StudentStatus.active || student.status == StudentStatus.pending;
     final badgeLabel = isReview ? 'In Review' : student.status.label;
     final badgeColor = isReview ? AppColors.primaryBlue : student.status.color;
@@ -336,7 +336,13 @@ class ApprovalsScreen extends StatelessWidget {
                 child: SizedBox(
                   height: 42,
                   child: ElevatedButton.icon(
-                    onPressed: () => _confirmProcessStep(context, student, currentMeta),
+                    onPressed: () {
+                      if (student.currentStep == 4) {
+                        Get.to(() => const Step4Screen(), arguments: student);
+                      } else {
+                        _confirmProcessStep(context, student, currentMeta);
+                      }
+                    },
                     icon: const Icon(Icons.task_alt_rounded, size: 16),
                     label: Text('Process Step ${student.currentStep}', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
@@ -361,12 +367,6 @@ class ApprovalsScreen extends StatelessWidget {
     );
   }
 
-  /// 7 small segments (steps 4-10) — all done segments and the current
-  /// segment share ONE accent color per student: the same color as their
-  /// "Process Step" button (currentMeta.color, based on whichever step
-  /// they're currently on). The current/active segment is just a darker
-  /// shade of that same color, not a different hue. Steps not yet reached
-  /// stay grey.
   Widget _segmentedProgressBar(StudentRecord student) {
     final baseColor = ApprovalsController.metaFor(student.currentStep).color;
     final activeColor = Color.lerp(baseColor, Colors.black, 0.28) ?? baseColor;

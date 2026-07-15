@@ -53,6 +53,11 @@ class StudentRecord {
   final int documentsTotal;
   final StudentStatus status;
 
+  final DateTime? interviewDate;
+  final String? interviewMode;
+  final String? interviewResult;
+  final String? interviewNotes;
+
   const StudentRecord({
     required this.id,
     required this.name,
@@ -74,6 +79,10 @@ class StudentRecord {
     required this.documentsUploaded,
     required this.documentsTotal,
     required this.status,
+    this.interviewDate,
+    this.interviewMode,
+    this.interviewResult,
+    this.interviewNotes,
   });
 
   static int get totalSteps => ApplicationStepsCatalog.definitions.length;
@@ -88,6 +97,42 @@ class StudentRecord {
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+  }
+
+  StudentRecord copyWith({
+    int? currentStep,
+    StudentStatus? status,
+    DateTime? interviewDate,
+    String? interviewMode,
+    String? interviewResult,
+    String? interviewNotes,
+  }) {
+    return StudentRecord(
+      id: id,
+      name: name,
+      email: email,
+      phone: phone,
+      countryCode: countryCode,
+      countryName: countryName,
+      university: university,
+      course: course,
+      gpa: gpa,
+      degree: degree,
+      passoutYear: passoutYear,
+      languageTestName: languageTestName,
+      languageTestScore: languageTestScore,
+      joinedDate: joinedDate,
+      visaStatus: visaStatus,
+      flightStatus: flightStatus,
+      currentStep: currentStep ?? this.currentStep,
+      documentsUploaded: documentsUploaded,
+      documentsTotal: documentsTotal,
+      status: status ?? this.status,
+      interviewDate: interviewDate ?? this.interviewDate,
+      interviewMode: interviewMode ?? this.interviewMode,
+      interviewResult: interviewResult ?? this.interviewResult,
+      interviewNotes: interviewNotes ?? this.interviewNotes,
+    );
   }
 }
 
@@ -156,7 +201,7 @@ class StudentsCatalog {
       joinedDate: 'Feb 20, 2024',
       visaStatus: 'Not Started',
       flightStatus: 'Not booked',
-      currentStep: 1,
+      currentStep: 4,
       documentsUploaded: 2,
       documentsTotal: 6,
       status: StudentStatus.pending,
@@ -200,7 +245,7 @@ class StudentsCatalog {
       joinedDate: 'Jan 28, 2024',
       visaStatus: 'Not Started',
       flightStatus: 'Not booked',
-      currentStep: 2,
+      currentStep: 7,
       documentsUploaded: 3,
       documentsTotal: 6,
       status: StudentStatus.rejected,

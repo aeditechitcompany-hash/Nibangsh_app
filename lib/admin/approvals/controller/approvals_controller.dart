@@ -5,10 +5,6 @@ import '../../model/students_record.dart';
 
 enum ApprovalStatusFilter { pending, completed, all }
 
-/// Icon + accent color per admin step (4-10), used only on this screen.
-/// Titles are pulled from the shared ApplicationStepsCatalog (same 10-step
-/// catalog used everywhere else) so step numbers/names never drift out of
-/// sync — only the visual icon/color here is Approvals-specific.
 class AdminStepMeta {
   final int id;
   final String title;
@@ -70,27 +66,19 @@ class ApprovalsController extends GetxController {
   static AdminStepMeta metaFor(int stepId) =>
       adminSteps.firstWhere((s) => s.id == stepId, orElse: () => adminSteps.first);
 
-  /// null = "All Steps" chip selected
+  // null = "All Steps" chip selected
   final selectedStep = Rxn<int>();
   final selectedStatusFilter = ApprovalStatusFilter.all.obs;
 
-  /// Students who have reached the admin-controlled stage (step >= 4).
-  /// Students still on steps 1-3 (student-driven) haven't reached
-  /// Approvals yet and aren't shown here.
+  // Students who have reached the admin-controlled stage (step >= 4).
   List<StudentRecord> get adminEligibleStudents =>
       StudentsCatalog.seed.where((s) => s.currentStep >= adminStepsStart).toList();
 
-  /// How many of the 7 admin steps (4-10) this student has completed.
   static int adminStepsDone(StudentRecord student) =>
       (student.currentStep - adminStepsStart).clamp(0, adminStepsCount);
 
-  /// True once a student has finished all 7 admin steps. Always false for
-  /// now since StudentRecord.currentStep tops out at 10 (Flight Ticket,
-  /// itself still "awaiting action" until actually completed) — there's
-  /// no explicit "fully done" flag yet. Add one (e.g. a bool on
-  /// StudentRecord) once real completion tracking exists.
   static bool isFullyDone(StudentRecord student) =>
-      adminStepsDone(student) >= adminStepsCount && student.currentStep > StudentRecord.totalSteps;
+  adminStepsDone(student) >= adminStepsCount && student.currentStep > StudentRecord.totalSteps;
 
   int get awaitingCount => adminEligibleStudents.where((s) => !isFullyDone(s)).length;
   int get allDoneCount => adminEligibleStudents.where((s) => isFullyDone(s)).length;
