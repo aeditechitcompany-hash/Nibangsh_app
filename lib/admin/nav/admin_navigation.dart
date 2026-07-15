@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nibangsh_consultancy/admin/applications/views/applications_screen.dart';
+import 'package:nibangsh_consultancy/admin/approvals/views/approvals_screen.dart';
 import 'package:nibangsh_consultancy/admin/books/views/books_screen.dart';
 import 'package:nibangsh_consultancy/admin/settings/views/settings_screen.dart';
 import 'package:nibangsh_consultancy/admin/students/views/students_screen.dart';
@@ -17,7 +17,7 @@ class AdminNavigation extends StatelessWidget {
     final tabs = const [
       AdminOverviewScreen(),
       StudentsScreen(),
-      ApplicationsScreen(),
+      ApprovalsScreen(),
       BooksScreen(),
       SettingsScreen(),
     ];
