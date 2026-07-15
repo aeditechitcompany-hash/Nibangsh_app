@@ -5,6 +5,7 @@ import '../../../common/widgets/app_bottom_nav.dart';
 import '../../countries/views/countries_screen.dart';
 import '../../home/views/home_screen.dart';
 import '../../docs/views/docs_screen.dart';
+import '../../books/views/student_books_screen.dart';
 import '../../profile/views/profile_screen.dart';
 import '../controller/main_navigation_controller.dart';
 
@@ -21,19 +22,22 @@ class MainNavigationScreen extends StatelessWidget {
       HomeScreen(),
       CountriesScreen(),
       DocsScreen(),
+      StudentBooksScreen(),
       ProfileScreen(),
     ];
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Obx(() => IndexedStack(
-        index: controller.currentIndex.value,
-        children: tabs,
-      )),
-      bottomNavigationBar: Obx(() => AppBottomNav(
-        currentIndex: controller.currentIndex.value,
-        onTap: controller.setIndex,
-      )),
+      body: Obx(
+        () =>
+            IndexedStack(index: controller.currentIndex.value, children: tabs),
+      ),
+      bottomNavigationBar: Obx(
+        () => AppBottomNav(
+          currentIndex: controller.currentIndex.value,
+          onTap: controller.setIndex,
+        ),
+      ),
     );
   }
 }
