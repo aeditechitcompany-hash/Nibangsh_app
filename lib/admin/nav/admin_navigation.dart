@@ -53,7 +53,7 @@ class _AdminBottomNav extends StatelessWidget {
   static const _items = [
     {'icon': Icons.bar_chart_rounded, 'label': 'Overview'},
     {'icon': Icons.groups_rounded, 'label': 'Students'},
-    {'icon': Icons.assignment_rounded, 'label': 'Applications'},
+    {'icon': Icons.assignment_rounded, 'label': 'Approvals'},
     {'icon': Icons.menu_book_rounded, 'label': 'Books'},
     {'icon': Icons.settings_rounded, 'label': 'Settings'},
   ];
