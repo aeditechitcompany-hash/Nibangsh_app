@@ -14,4 +14,6 @@ class AppRoute {
   static const String settings = '/settings';
   static const String notifications = '/admin-notifications';
   static const String studentNotifications = '/notifications';
+  static const String adminBooks = '/admin-books';
+  static const String studentBooks = '/books';
 }

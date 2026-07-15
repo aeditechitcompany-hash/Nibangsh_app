@@ -11,6 +11,7 @@ class AppBottomNav extends StatelessWidget {
     {'icon': Icons.home_rounded, 'label': 'Home'},
     {'icon': Icons.public_rounded, 'label': 'Countries'},
     {'icon': Icons.description_rounded, 'label': 'Docs'},
+    {'icon': Icons.menu_book_rounded, 'label': 'Books'},
     {'icon': Icons.person_rounded, 'label': 'Profile'},
   ];
 
