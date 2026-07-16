@@ -54,16 +54,15 @@ class StudentProfileScreen extends StatelessWidget {
 
   // ── Header ──
   Widget _buildHeader(StudentRecord student) {
+    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
+    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.darkBlue,
-            AppColors.darkBlue,
-            AppColors.primaryRed,
-          ],
+          colors: [navyDark, navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
