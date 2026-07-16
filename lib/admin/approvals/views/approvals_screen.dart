@@ -5,6 +5,7 @@ import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../../model/students_record.dart';
 import '../../steps/views/step4_screen.dart';
+import '../../steps/views/step5_screen.dart';
 import '../controller/approvals_controller.dart';
 
 class ApprovalsScreen extends StatelessWidget {
@@ -130,11 +131,7 @@ class ApprovalsScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final isAll = index == 0;
           final step = isAll ? null : ApprovalsController.adminSteps[index - 1];
-          // Obx wraps each chip individually — itemBuilder is called lazily
-          // during layout, not synchronously inside a parent Obx's builder,
-          // so a single Obx around the whole ListView wouldn't actually
-          // track selectedStep.value. Each chip tracking its own reactive
-          // read here is what makes tapping a chip actually update it.
+
           return Obx(() {
             final selected = controller.selectedStep.value == (isAll ? null : step!.id);
             return GestureDetector(
@@ -339,6 +336,8 @@ class ApprovalsScreen extends StatelessWidget {
                     onPressed: () {
                       if (student.currentStep == 4) {
                         Get.to(() => const Step4Screen(), arguments: student);
+                      } else if (student.currentStep == 5) {
+                        Get.to(() => const Step5Screen(), arguments: student);
                       } else {
                         _confirmProcessStep(context, student, currentMeta);
                       }

@@ -53,10 +53,16 @@ class StudentRecord {
   final int documentsTotal;
   final StudentStatus status;
 
+  // Step 4
   final DateTime? interviewDate;
   final String? interviewMode;
   final String? interviewResult;
   final String? interviewNotes;
+
+  // Step 5
+  final String? applicationRefNo;
+  final DateTime? submissionDate;
+  final String? confirmationFileName;
 
   const StudentRecord({
     required this.id,
@@ -83,6 +89,9 @@ class StudentRecord {
     this.interviewMode,
     this.interviewResult,
     this.interviewNotes,
+    this.applicationRefNo,
+    this.submissionDate,
+    this.confirmationFileName,
   });
 
   static int get totalSteps => ApplicationStepsCatalog.definitions.length;
@@ -106,6 +115,9 @@ class StudentRecord {
     String? interviewMode,
     String? interviewResult,
     String? interviewNotes,
+    String? applicationRefNo,
+    DateTime? submissionDate,
+    String? confirmationFileName,
   }) {
     return StudentRecord(
       id: id,
@@ -132,6 +144,9 @@ class StudentRecord {
       interviewMode: interviewMode ?? this.interviewMode,
       interviewResult: interviewResult ?? this.interviewResult,
       interviewNotes: interviewNotes ?? this.interviewNotes,
+      applicationRefNo: applicationRefNo ?? this.applicationRefNo,
+      submissionDate: submissionDate ?? this.submissionDate,
+      confirmationFileName: confirmationFileName ?? this.confirmationFileName,
     );
   }
 }
