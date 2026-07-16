@@ -47,20 +47,16 @@ class AdminOverviewScreen extends StatelessWidget {
   }
 
   // ── Header ──
-  Widget _buildHeader(
-      AdminOverviewController controller,
-      BuildContext context,
-      ) {
+  Widget _buildHeader(AdminOverviewController controller, BuildContext context) {
+    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
+    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.darkBlue,
-            AppColors.darkBlue,
-            AppColors.primaryRed,
-          ],
+          colors: [navyDark, navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

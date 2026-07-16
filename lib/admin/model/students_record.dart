@@ -20,7 +20,7 @@ extension StudentStatusX on StudentStatus {
   Color get color {
     switch (this) {
       case StudentStatus.active:
-        return const Color(0xFF78A0F8);
+        return const Color(0xFF6995F6);
       case StudentStatus.pending:
         return const Color(0xFFF59E0B);
       case StudentStatus.approved:
@@ -64,6 +64,15 @@ class StudentRecord {
   final DateTime? submissionDate;
   final String? confirmationFileName;
 
+  // Step 6
+  final String? offerFileName;
+  final String? offerType;
+  final DateTime? offerExpiryDate;
+
+  // Step 7
+  final String? locFileName;
+  final bool locVerified;
+
   const StudentRecord({
     required this.id,
     required this.name,
@@ -92,6 +101,11 @@ class StudentRecord {
     this.applicationRefNo,
     this.submissionDate,
     this.confirmationFileName,
+    this.offerFileName,
+    this.offerType,
+    this.offerExpiryDate,
+    this.locFileName,
+    this.locVerified = false,
   });
 
   static int get totalSteps => ApplicationStepsCatalog.definitions.length;
@@ -118,6 +132,11 @@ class StudentRecord {
     String? applicationRefNo,
     DateTime? submissionDate,
     String? confirmationFileName,
+    String? offerFileName,
+    String? offerType,
+    DateTime? offerExpiryDate,
+    String? locFileName,
+    bool? locVerified,
   }) {
     return StudentRecord(
       id: id,
@@ -147,6 +166,11 @@ class StudentRecord {
       applicationRefNo: applicationRefNo ?? this.applicationRefNo,
       submissionDate: submissionDate ?? this.submissionDate,
       confirmationFileName: confirmationFileName ?? this.confirmationFileName,
+      offerFileName: offerFileName ?? this.offerFileName,
+      offerType: offerType ?? this.offerType,
+      offerExpiryDate: offerExpiryDate ?? this.offerExpiryDate,
+      locFileName: locFileName ?? this.locFileName,
+      locVerified: locVerified ?? this.locVerified,
     );
   }
 }

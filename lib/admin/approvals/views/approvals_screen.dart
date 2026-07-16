@@ -6,6 +6,8 @@ import '../../../../common/util/app_route.dart';
 import '../../model/students_record.dart';
 import '../../steps/views/step4_screen.dart';
 import '../../steps/views/step5_screen.dart';
+import '../../steps/views/step6_screen.dart';
+import '../../steps/views/step7_screen.dart';
 import '../controller/approvals_controller.dart';
 
 class ApprovalsScreen extends StatelessWidget {
@@ -338,6 +340,10 @@ class ApprovalsScreen extends StatelessWidget {
                         Get.to(() => const Step4Screen(), arguments: student);
                       } else if (student.currentStep == 5) {
                         Get.to(() => const Step5Screen(), arguments: student);
+                      } else if (student.currentStep == 6) {
+                        Get.to(() => const Step6Screen(), arguments: student);
+                      } else if (student.currentStep == 7) {
+                        Get.to(() => const Step7Screen(), arguments: student);
                       } else {
                         _confirmProcessStep(context, student, currentMeta);
                       }
