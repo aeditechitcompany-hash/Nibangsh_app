@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/services/document_picker_service.dart';
 import '../../model/students_record.dart';
 import '../../students/controller/students_controller.dart';
 
@@ -20,10 +21,9 @@ class Step7Controller extends GetxController {
 
   bool get canMarkVerified => locFileName.value != null;
 
-  /// Simulates picking a file. Swap for file_picker / image_picker
-  /// package logic when a real file chooser is wired up.
-  void browseForFile() {
-    locFileName.value = 'loc_document.pdf';
+  Future<void> browseForFile() async {
+    final picked = await DocumentPickerService.pickDocument();
+    if (picked != null) locFileName.value = picked.name;
   }
 
   void markVerified() {
