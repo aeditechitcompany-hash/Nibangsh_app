@@ -53,9 +53,9 @@ class DocsScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.primaryRed],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -117,12 +117,9 @@ class DocsScreen extends StatelessWidget {
                         width: 9,
                         height: 9,
                         decoration: BoxDecoration(
-                          color: Colors.amber,
+                          color: AppColors.primaryRed,
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.primaryRed,
-                            width: 1.5,
-                          ),
+                          border: Border.all(color: AppColors.navyDark, width: 1.5),
                         ),
                       ),
                     ),
@@ -300,7 +297,7 @@ class DocsScreen extends StatelessWidget {
               'Preview',
               '${doc.fileName} preview isn\'t wired up yet.',
               snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.primaryRed,
+              backgroundColor: AppColors.navyLight,
               colorText: Colors.white,
               margin: const EdgeInsets.all(16),
               borderRadius: 12,

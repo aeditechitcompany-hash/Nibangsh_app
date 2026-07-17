@@ -62,7 +62,10 @@ class SettingsScreen extends StatelessWidget {
                     label: 'App Version',
                     trailing: const Text(
                       '1.0.0',
-                      style: TextStyle(fontSize: 12.5, color: AppColors.textGrey),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.textGrey,
+                      ),
                     ),
                     onTap: null,
                   ),
@@ -90,15 +93,12 @@ class SettingsScreen extends StatelessWidget {
 
   // ── Header ──
   Widget _buildHeader(BuildContext context) {
-    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
-    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [navyDark, navyLight],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -122,7 +122,10 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Manage your admin account',
-            style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 12.5),
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.75),
+              fontSize: 12.5,
+            ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -135,10 +138,7 @@ class SettingsScreen extends StatelessWidget {
                   color: Colors.white.withOpacity(0.16),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset(
-                  AppResources.logoPath,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.asset(AppResources.logoPath, fit: BoxFit.cover),
               ),
               const SizedBox(width: 14),
               const Expanded(
@@ -190,7 +190,7 @@ class SettingsScreen extends StatelessWidget {
       child: Column(
         children: [
           Obx(
-                () => _toggleTile(
+            () => _toggleTile(
               icon: Icons.notifications_active_outlined,
               label: 'Push Notifications',
               subtitle: 'Get notified about student activity',
@@ -200,7 +200,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(height: 1, color: AppColors.borderGrey),
           Obx(
-                () => _toggleTile(
+            () => _toggleTile(
               icon: Icons.mail_outline_rounded,
               label: 'Email Alerts',
               subtitle: 'Receive a daily summary by email',
@@ -251,7 +251,10 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 11, color: AppColors.textGrey),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textGrey,
+                  ),
                 ),
               ],
             ),
@@ -356,7 +359,7 @@ class SettingsScreen extends StatelessWidget {
       feature,
       '$feature isn\'t wired up yet.',
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.primaryRed,
+      backgroundColor: AppColors.navyLight,
       colorText: Colors.white,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
@@ -368,13 +371,17 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
         title: const Text('Log Out'),
         content: const Text('Are you sure you want to log out?'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: TextStyle(color: AppColors.navyLight)),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryRed,
+              backgroundColor: AppColors.navyLight,
               foregroundColor: Colors.white,
             ),
             onPressed: () {

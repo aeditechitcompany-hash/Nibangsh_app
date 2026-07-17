@@ -42,6 +42,7 @@ class Step9Screen extends StatelessWidget {
                   _buildUploadBox(controller),
                   const SizedBox(height: 24),
                   _buildSubmitButton(controller),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),

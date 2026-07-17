@@ -24,12 +24,11 @@ class AcademicDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: size.height * 0.26,
                 padding: const EdgeInsets.only(top: 44),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.darkRed,
-                      AppColors.primaryRed,
-                      AppColors.primaryBlue,
+                      AppColors.navyDark,
+                      AppColors.navyLight,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -189,12 +188,12 @@ class AcademicDetailsScreen extends StatelessWidget {
                                   ),
                                   decoration: BoxDecoration(
                                     color: selected
-                                        ? AppColors.primaryRed
+                                        ? AppColors.navyLight
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: selected
-                                          ? AppColors.primaryRed
+                                          ? AppColors.navyLight
                                           : AppColors.borderGrey,
                                       width: 1.4,
                                     ),
@@ -245,8 +244,8 @@ class AcademicDetailsScreen extends StatelessWidget {
                                 ? null
                                 : () => controller.submit(),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryRed,
-                              disabledBackgroundColor: AppColors.primaryRed
+                              backgroundColor: AppColors.navyLight,
+                              disabledBackgroundColor: AppColors.navyLight
                                   .withOpacity(0.6),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(

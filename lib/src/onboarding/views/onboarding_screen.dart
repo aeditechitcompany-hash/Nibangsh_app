@@ -22,7 +22,7 @@ class OnboardingData {
   });
 }
 
-const List<OnboardingData> onboardingPages = [
+final List<OnboardingData> onboardingPages = [
   OnboardingData(
     title: 'About Us',
     subtitle: 'Trusted Consultancy',
@@ -30,7 +30,7 @@ const List<OnboardingData> onboardingPages = [
         'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
     image: AppResources.onboarding1,
     icon: Icons.verified_rounded,
-    gradientColors: [Color(0xFFD32F2F), Color(0xFF1452B3), Color(0xFF0D47A1)],
+    gradientColors: [AppColors.darkBlue, AppColors.navyLight],
   ),
   OnboardingData(
     title: 'Explore Countries',
@@ -39,7 +39,7 @@ const List<OnboardingData> onboardingPages = [
         'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
     image: AppResources.onboarding2,
     icon: Icons.public_rounded,
-    gradientColors: [Color(0xFF0D47A1), Color(0xFF1565C0), Color(0xFFD32F2F)],
+    gradientColors: [AppColors.navyLight, AppColors.darkBlue],
   ),
   OnboardingData(
     title: 'Join Nibangsh',
@@ -48,7 +48,7 @@ const List<OnboardingData> onboardingPages = [
         'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
     image: AppResources.logoPath,
     icon: Icons.group_rounded,
-    gradientColors: [Color(0xFFD32F2F), Color(0xFF1565C0), Color(0xFF0D47A1)],
+    gradientColors: [AppColors.darkBlue, AppColors.navyLight],
   ),
 ];
 
@@ -161,7 +161,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       onPressed: _nextPage,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: AppColors.primaryRed,
+                        foregroundColor: AppColors.navyLight,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -202,7 +202,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            decoration: TextDecoration.underline,
                             decorationColor: Colors.white,
                           ),
                         ),

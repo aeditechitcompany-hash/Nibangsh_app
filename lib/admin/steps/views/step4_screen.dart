@@ -8,7 +8,7 @@ import '../controller/step4_controller.dart';
 class Step4Screen extends StatelessWidget {
   const Step4Screen({super.key});
 
-  static const Color stepColor = Color(0xFFF59E0B); // amber, matches Step 4 meta
+  static const Color stepColor = Color(0xFFF59E0B);
 
   @override
   Widget build(BuildContext context) {
