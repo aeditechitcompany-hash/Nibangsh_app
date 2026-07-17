@@ -49,11 +49,7 @@ class ProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 44),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.darkBlue,
-            AppColors.primaryBlue,
-            AppColors.primaryRed,
-          ],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -288,13 +284,17 @@ class ProfileScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
         title: const Text('Log Out'),
         content: const Text('Are you sure you want to log out?'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: TextStyle(color: AppColors.navyLight)),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryRed,
+              backgroundColor: AppColors.navyLight,
               foregroundColor: Colors.white,
             ),
             onPressed: () {
@@ -412,7 +412,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Notifications / Chat / FAQ links
+  // Notifications / FAQ links
   Widget _buildLinksCard(ProfileController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -494,7 +494,7 @@ class ProfileScreen extends StatelessWidget {
             label,
             '$label isn\'t wired up yet.',
             snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.primaryRed,
+            backgroundColor: AppColors.navyLight,
             colorText: Colors.white,
             margin: const EdgeInsets.all(16),
             borderRadius: 12,

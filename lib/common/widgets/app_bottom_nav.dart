@@ -38,7 +38,7 @@ class AppBottomNav extends StatelessWidget {
                   children: [
                     Icon(
                       _items[index]['icon'] as IconData,
-                      color: selected ? AppColors.primaryRed : AppColors.textGrey,
+                      color: selected ? AppColors.darkBlue : AppColors.textGrey,
                       size: 24,
                     ),
                     const SizedBox(height: 3),
@@ -47,7 +47,7 @@ class AppBottomNav extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10.5,
                         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                        color: selected ? AppColors.primaryRed : AppColors.textGrey,
+                        color: selected ? AppColors.darkBlue : AppColors.textGrey,
                       ),
                     ),
                   ],

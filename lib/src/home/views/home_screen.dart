@@ -55,17 +55,14 @@ class HomeScreen extends StatelessWidget {
 
   // Header
   Widget _buildHeader(HomeController controller) {
-    final darkBlue = Color.lerp(AppColors.primaryBlue, Colors.black, 0.45)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.darkBlue,
-            AppColors.primaryBlue,
-            AppColors.primaryRed,
+            AppColors.navyDark,
+            AppColors.navyLight,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -149,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.primaryRed,
                           shape: BoxShape.circle,
-                          border: Border.all(color: darkBlue, width: 1.5),
+                          border: Border.all(color: AppColors.navyDark, width: 1.5),
                         ),
                       ),
                     ),
@@ -855,6 +852,7 @@ class HomeScreen extends StatelessWidget {
   void _showLanguageTestSheet(HomeController controller, BuildContext context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

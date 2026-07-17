@@ -10,7 +10,7 @@ class Step8Screen extends StatelessWidget {
 
   static const Color stepColor = Color(
     0xFF16A34A,
-  ); // green, matches Step 8 meta
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +46,7 @@ class Step8Screen extends StatelessWidget {
                   _buildNotesField(controller),
                   const SizedBox(height: 24),
                   _buildSubmitButton(controller),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),

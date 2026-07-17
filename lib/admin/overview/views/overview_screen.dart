@@ -48,15 +48,12 @@ class AdminOverviewScreen extends StatelessWidget {
 
   // ── Header ──
   Widget _buildHeader(AdminOverviewController controller, BuildContext context) {
-    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
-    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [navyDark, navyLight],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -571,13 +568,17 @@ class AdminOverviewScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
         title: const Text('Log Out'),
         content: const Text('Are you sure you want to log out?'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: TextStyle(color: AppColors.navyLight)),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryRed,
+              backgroundColor: AppColors.navyLight,
               foregroundColor: Colors.white,
             ),
             onPressed: () {

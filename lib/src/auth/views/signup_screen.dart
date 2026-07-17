@@ -23,12 +23,11 @@ class SignupScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               height: size.height * 0.3,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.darkRed,
-                    AppColors.primaryRed,
-                    AppColors.primaryBlue,
+                    AppColors.navyDark,
+                    AppColors.navyLight,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -260,8 +259,8 @@ class SignupScreen extends StatelessWidget {
                               ? null
                               : controller.signup,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryRed,
-                            disabledBackgroundColor: AppColors.primaryRed
+                            backgroundColor: AppColors.navyLight,
+                            disabledBackgroundColor: AppColors.navyLight
                                 .withOpacity(0.6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
@@ -335,7 +334,7 @@ class SignupScreen extends StatelessWidget {
                             width: 22,
                             height: 22,
                           ),
-                          shadow: const Color(0xFF1877F2).withOpacity(0.2),
+                          shadow: AppColors.darkBlue.withOpacity(0.2),
                         ),
                         const SizedBox(width: 20),
 
@@ -347,7 +346,7 @@ class SignupScreen extends StatelessWidget {
                             width: 22,
                             height: 22,
                           ),
-                          shadow: AppColors.primaryRed.withOpacity(0.2),
+                          shadow: AppColors.primaryBlue.withOpacity(0.2),
                         ),
                       ],
                     ),

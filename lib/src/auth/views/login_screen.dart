@@ -22,12 +22,11 @@ class LoginScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               height: size.height * 0.31,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.darkRed,
-                    AppColors.primaryRed,
-                    AppColors.primaryBlue,
+                    AppColors.navyDark,
+                    AppColors.navyLight,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -41,8 +40,6 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-
-                  // ── Logo Image instead of Icon ──
                   Container(
                     width: 80,
                     height: 80,
@@ -158,7 +155,7 @@ class LoginScreen extends StatelessWidget {
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
-                            color: AppColors.primaryRed,
+                            color: AppColors.darkBlue,
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -177,8 +174,8 @@ class LoginScreen extends StatelessWidget {
                               ? null
                               : controller.login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryRed,
-                            disabledBackgroundColor: AppColors.primaryRed
+                            backgroundColor: AppColors.navyLight,
+                            disabledBackgroundColor: AppColors.darkBlue
                                 .withOpacity(0.6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
@@ -253,7 +250,7 @@ class LoginScreen extends StatelessWidget {
                             width: 22,
                             height: 22,
                           ),
-                          shadow: const Color(0xFF1877F2).withOpacity(0.2),
+                          shadow: AppColors.darkBlue.withOpacity(0.2),
                         ),
                         const SizedBox(width: 20),
 
@@ -265,7 +262,7 @@ class LoginScreen extends StatelessWidget {
                             width: 22,
                             height: 22,
                           ),
-                          shadow: AppColors.primaryRed.withOpacity(0.2),
+                          shadow: AppColors.primaryBlue.withOpacity(0.2),
                         ),
                       ],
                     ),

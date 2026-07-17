@@ -55,17 +55,14 @@ class CountriesScreen extends StatelessWidget {
 
   // Header
   Widget _buildHeader(CountriesController controller) {
-    final darkBlue = Color.lerp(AppColors.primaryBlue, Colors.black, 0.45)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.darkBlue,
-            AppColors.primaryBlue,
-            AppColors.primaryRed,
+            AppColors.navyDark,
+            AppColors.navyLight,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -131,7 +128,7 @@ class CountriesScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.primaryRed,
                           shape: BoxShape.circle,
-                          border: Border.all(color: darkBlue, width: 1.5),
+                          border: Border.all(color: AppColors.navyDark, width: 1.5),
                         ),
                       ),
                     ),

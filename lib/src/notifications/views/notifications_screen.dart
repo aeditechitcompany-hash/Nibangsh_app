@@ -52,9 +52,8 @@ class StudentNotificationsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.darkBlue,
-            AppColors.primaryBlue,
-            AppColors.primaryRed,
+            AppColors.navyDark,
+            AppColors.navyLight,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

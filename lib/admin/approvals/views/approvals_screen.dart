@@ -53,15 +53,12 @@ class ApprovalsScreen extends StatelessWidget {
 
   // ── Header ──
   Widget _buildHeader(ApprovalsController controller) {
-    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
-    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [navyDark, navyLight],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -541,7 +538,7 @@ class ApprovalsScreen extends StatelessWidget {
           SizedBox(width: 10),
           Expanded(
             child: Text(
-              'All 10 Steps Completed 🎉',
+              'All 10 Steps Completed',
               style: TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.bold,

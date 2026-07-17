@@ -48,15 +48,12 @@ class BooksScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(AdminBooksController controller, BuildContext context) {
-    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
-    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [navyDark, navyLight],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

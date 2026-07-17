@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nibangsh_consultancy/const/constants.dart';
 import '../../../../common/models/required_document.dart';
 import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
@@ -54,15 +55,12 @@ class StudentProfileScreen extends StatelessWidget {
 
   // ── Header ──
   Widget _buildHeader(StudentRecord student) {
-    final navyDark = Color.lerp(AppColors.primaryBlue, Colors.black, 0.62)!;
-    final navyLight = Color.lerp(AppColors.primaryBlue, Colors.black, 0.35)!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [navyDark, navyLight],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -372,13 +370,15 @@ class StudentProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Step ${student.currentStep} of $total — ${student.currentStepTitle}',
+            student.currentStep > 10
+                ? 'Step $total of $total — Complete'
+                : 'Step ${student.currentStep} of $total — ${student.currentStepTitle}',
             style: const TextStyle(
               fontSize: 12.5,
               color: AppColors.textGrey,
               fontWeight: FontWeight.w600,
             ),
-          ),
+          )
         ],
       ),
     );
