@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/services/document_picker_service.dart';
 import '../../model/students_record.dart';
 import '../../students/controller/students_controller.dart';
 
@@ -16,8 +17,9 @@ class Step6Controller extends GetxController {
           offerType.value != null &&
           offerExpiryDate.value != null;
 
-  void browseForFile() {
-    offerFileName.value = 'offer_letter.pdf';
+  Future<void> browseForFile() async {
+    final picked = await DocumentPickerService.pickDocument();
+    if (picked != null) offerFileName.value = picked.name;
   }
 
   void setOfferType(String type) => offerType.value = type;

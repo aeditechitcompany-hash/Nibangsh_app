@@ -73,6 +73,25 @@ class StudentRecord {
   final String? locFileName;
   final bool locVerified;
 
+  // Step 8
+  final DateTime? courseCommencementDate;
+  final String? scholarshipStatus;
+  final String? finalSelectionNotes;
+  final bool finalSelectionConfirmed;
+
+  // Step 9
+  final String? visaRefNo;
+  final String? visaStatusUpdate;
+  final String? visaApprovalLetterFileName;
+
+  // Step 10
+  final String? flightNumber;
+  final String? airline;
+  final String? departureAirport;
+  final String? arrivalAirport;
+  final DateTime? departureDateTime;
+  final String? ticketFileName;
+
   const StudentRecord({
     required this.id,
     required this.name,
@@ -106,12 +125,28 @@ class StudentRecord {
     this.offerExpiryDate,
     this.locFileName,
     this.locVerified = false,
+    this.courseCommencementDate,
+    this.scholarshipStatus,
+    this.finalSelectionNotes,
+    this.finalSelectionConfirmed = false,
+    this.visaRefNo,
+    this.visaStatusUpdate,
+    this.visaApprovalLetterFileName,
+    this.flightNumber,
+    this.airline,
+    this.departureAirport,
+    this.arrivalAirport,
+    this.departureDateTime,
+    this.ticketFileName,
   });
 
   static int get totalSteps => ApplicationStepsCatalog.definitions.length;
 
   String get currentStepTitle {
-    final index = (currentStep - 1).clamp(0, ApplicationStepsCatalog.definitions.length - 1);
+    final index = (currentStep - 1).clamp(
+      0,
+      ApplicationStepsCatalog.definitions.length - 1,
+    );
     return ApplicationStepsCatalog.definitions[index]['title'] as String;
   }
 
@@ -119,12 +154,15 @@ class StudentRecord {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
   }
 
   StudentRecord copyWith({
     int? currentStep,
     StudentStatus? status,
+    String? visaStatus,
+    String? flightStatus,
     DateTime? interviewDate,
     String? interviewMode,
     String? interviewResult,
@@ -137,6 +175,19 @@ class StudentRecord {
     DateTime? offerExpiryDate,
     String? locFileName,
     bool? locVerified,
+    DateTime? courseCommencementDate,
+    String? scholarshipStatus,
+    String? finalSelectionNotes,
+    bool? finalSelectionConfirmed,
+    String? visaRefNo,
+    String? visaStatusUpdate,
+    String? visaApprovalLetterFileName,
+    String? flightNumber,
+    String? airline,
+    String? departureAirport,
+    String? arrivalAirport,
+    DateTime? departureDateTime,
+    String? ticketFileName,
   }) {
     return StudentRecord(
       id: id,
@@ -153,8 +204,8 @@ class StudentRecord {
       languageTestName: languageTestName,
       languageTestScore: languageTestScore,
       joinedDate: joinedDate,
-      visaStatus: visaStatus,
-      flightStatus: flightStatus,
+      visaStatus: visaStatus ?? this.visaStatus,
+      flightStatus: flightStatus ?? this.flightStatus,
       currentStep: currentStep ?? this.currentStep,
       documentsUploaded: documentsUploaded,
       documentsTotal: documentsTotal,
@@ -171,6 +222,22 @@ class StudentRecord {
       offerExpiryDate: offerExpiryDate ?? this.offerExpiryDate,
       locFileName: locFileName ?? this.locFileName,
       locVerified: locVerified ?? this.locVerified,
+      courseCommencementDate:
+          courseCommencementDate ?? this.courseCommencementDate,
+      scholarshipStatus: scholarshipStatus ?? this.scholarshipStatus,
+      finalSelectionNotes: finalSelectionNotes ?? this.finalSelectionNotes,
+      finalSelectionConfirmed:
+          finalSelectionConfirmed ?? this.finalSelectionConfirmed,
+      visaRefNo: visaRefNo ?? this.visaRefNo,
+      visaStatusUpdate: visaStatusUpdate ?? this.visaStatusUpdate,
+      visaApprovalLetterFileName:
+          visaApprovalLetterFileName ?? this.visaApprovalLetterFileName,
+      flightNumber: flightNumber ?? this.flightNumber,
+      airline: airline ?? this.airline,
+      departureAirport: departureAirport ?? this.departureAirport,
+      arrivalAirport: arrivalAirport ?? this.arrivalAirport,
+      departureDateTime: departureDateTime ?? this.departureDateTime,
+      ticketFileName: ticketFileName ?? this.ticketFileName,
     );
   }
 }

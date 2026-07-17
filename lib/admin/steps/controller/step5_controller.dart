@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/services/document_picker_service.dart';
 import '../../model/students_record.dart';
 import '../../students/controller/students_controller.dart';
 
@@ -15,8 +16,8 @@ class Step5Controller extends GetxController {
 
   bool get isComplete =>
       refNoController.text.trim().isNotEmpty &&
-          submissionDate.value != null &&
-          confirmationFileName.value != null;
+      submissionDate.value != null &&
+      confirmationFileName.value != null;
 
   final RxBool _formTick = false.obs;
 
@@ -39,8 +40,9 @@ class Step5Controller extends GetxController {
     if (picked != null) submissionDate.value = picked;
   }
 
-  void browseForFile() {
-    confirmationFileName.value = 'confirmation_email.pdf';
+  Future<void> browseForFile() async {
+    final picked = await DocumentPickerService.pickDocument();
+    if (picked != null) confirmationFileName.value = picked.name;
   }
 
   String get formattedDate {
@@ -54,7 +56,7 @@ class Step5Controller extends GetxController {
 
     Get.find<StudentsController>().updateStudent(
       student.id,
-          (current) => current.copyWith(
+      (current) => current.copyWith(
         currentStep: 6,
         applicationRefNo: refNoController.text.trim(),
         submissionDate: submissionDate.value,
