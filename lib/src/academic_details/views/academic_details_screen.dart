@@ -24,9 +24,12 @@ class AcademicDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: size.height * 0.26,
                 padding: const EdgeInsets.only(top: 44),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.darkRed, AppColors.primaryRed, AppColors.primaryBlue],
+                    colors: [
+                      AppColors.navyDark,
+                      AppColors.navyLight,
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -43,14 +46,21 @@ class AcademicDetailsScreen extends StatelessWidget {
                         top: 0,
                         child: IconButton(
                           onPressed: () => Get.back(),
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                              color: Colors.white, size: 20),
+                          icon: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.school_outlined, color: Colors.white, size: 46),
+                        const Icon(
+                          Icons.school_outlined,
+                          color: Colors.white,
+                          size: 46,
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           controller.isEditMode
@@ -72,7 +82,10 @@ class AcademicDetailsScreen extends StatelessWidget {
                                 ? 'Keep your profile accurate and up to date'
                                 : 'A few quick details so we can personalize your journey',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white70, fontSize: 12.5),
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12.5,
+                            ),
                           ),
                         ),
                       ],
@@ -93,19 +106,22 @@ class AcademicDetailsScreen extends StatelessWidget {
                       // Country / Destination
                       _buildLabel('Choose Country / Destination'),
                       const SizedBox(height: 8),
-                      Obx(() => _buildDropdown(
-                        value: controller.selectedCountry.value.isEmpty
-                            ? null
-                            : controller.selectedCountry.value,
-                        hint: 'Select your preferred destination',
-                        icon: Icons.public_outlined,
-                        items: AcademicConstants.countries,
-                        onChanged: controller.setCountry,
-                        errorText: controller.showErrors.value &&
-                            controller.selectedCountry.value.isEmpty
-                            ? 'Please select a destination'
-                            : null,
-                      )),
+                      Obx(
+                        () => _buildDropdown(
+                          value: controller.selectedCountry.value.isEmpty
+                              ? null
+                              : controller.selectedCountry.value,
+                          hint: 'Select your preferred destination',
+                          icon: Icons.public_outlined,
+                          items: AcademicConstants.countries,
+                          onChanged: controller.setCountry,
+                          errorText:
+                              controller.showErrors.value &&
+                                  controller.selectedCountry.value.isEmpty
+                              ? 'Please select a destination'
+                              : null,
+                        ),
+                      ),
                       const SizedBox(height: 18),
 
                       // GPA
@@ -113,9 +129,14 @@ class AcademicDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: controller.gpaController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         validator: controller.validateGpa,
-                        style: const TextStyle(fontSize: 14, color: AppColors.textDark),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textDark,
+                        ),
                         decoration: _fieldDecoration(
                           hint: 'e.g. 3.5 or 4.0',
                           icon: Icons.grade_outlined,
@@ -126,111 +147,134 @@ class AcademicDetailsScreen extends StatelessWidget {
                       // Passout Year
                       _buildLabel('Passout Year'),
                       const SizedBox(height: 8),
-                      Obx(() => _buildDropdown(
-                        value: controller.selectedPassoutYear.value.isEmpty
-                            ? null
-                            : controller.selectedPassoutYear.value,
-                        hint: 'Select your passout year',
-                        icon: Icons.calendar_today_outlined,
-                        items: AcademicConstants.passoutYears,
-                        onChanged: controller.setPassoutYear,
-                        errorText: controller.showErrors.value &&
-                            controller.selectedPassoutYear.value.isEmpty
-                            ? 'Please select a year'
-                            : null,
-                      )),
+                      Obx(
+                        () => _buildDropdown(
+                          value: controller.selectedPassoutYear.value.isEmpty
+                              ? null
+                              : controller.selectedPassoutYear.value,
+                          hint: 'Select your passout year',
+                          icon: Icons.calendar_today_outlined,
+                          items: AcademicConstants.passoutYears,
+                          onChanged: controller.setPassoutYear,
+                          errorText:
+                              controller.showErrors.value &&
+                                  controller.selectedPassoutYear.value.isEmpty
+                              ? 'Please select a year'
+                              : null,
+                        ),
+                      ),
                       const SizedBox(height: 18),
 
                       // Interested Degree
                       _buildLabel('Choose Interested Degree'),
                       const SizedBox(height: 8),
-                      Obx(() => Row(
-                        children: AcademicConstants.degrees.map((degree) {
-                          final selected = controller.selectedDegree.value == degree;
-                          return Expanded(
-                            child: GestureDetector(
-                              onTap: () => controller.setDegree(degree),
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                  right: degree == AcademicConstants.degrees.last ? 0 : 10,
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                decoration: BoxDecoration(
-                                  color: selected
-                                      ? AppColors.primaryRed
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: selected
-                                        ? AppColors.primaryRed
-                                        : AppColors.borderGrey,
-                                    width: 1.4,
+                      Obx(
+                        () => Row(
+                          children: AcademicConstants.degrees.map((degree) {
+                            final selected =
+                                controller.selectedDegree.value == degree;
+                            return Expanded(
+                              child: GestureDetector(
+                                onTap: () => controller.setDegree(degree),
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                    right:
+                                        degree == AcademicConstants.degrees.last
+                                        ? 0
+                                        : 10,
                                   ),
-                                ),
-                                child: Text(
-                                  degree,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w600,
-                                    color: selected ? Colors.white : AppColors.textDark,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: selected
+                                        ? AppColors.navyLight
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: selected
+                                          ? AppColors.navyLight
+                                          : AppColors.borderGrey,
+                                      width: 1.4,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    degree,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: selected
+                                          ? Colors.white
+                                          : AppColors.textDark,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
-                      )),
-                      Obx(() => controller.showErrors.value &&
-                          controller.selectedDegree.value.isEmpty
-                          ? const Padding(
-                        padding: EdgeInsets.only(top: 6, left: 4),
-                        child: Text(
-                          'Please choose a degree',
-                          style: TextStyle(color: AppColors.errorColor, fontSize: 12),
+                            );
+                          }).toList(),
                         ),
-                      )
-                          : const SizedBox.shrink()),
+                      ),
+                      Obx(
+                        () =>
+                            controller.showErrors.value &&
+                                controller.selectedDegree.value.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.only(top: 6, left: 4),
+                                child: Text(
+                                  'Please choose a degree',
+                                  style: TextStyle(
+                                    color: AppColors.errorColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
 
                       const SizedBox(height: 36),
 
                       // Continue button
-                      Obx(() => SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () => controller.submit(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryRed,
-                            disabledBackgroundColor:
-                            AppColors.primaryRed.withOpacity(0.6),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                      Obx(
+                        () => SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () => controller.submit(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.navyLight,
+                              disabledBackgroundColor: AppColors.navyLight
+                                  .withOpacity(0.6),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 3,
                             ),
-                            elevation: 3,
-                          ),
-                          child: controller.isLoading.value
-                              ? const SizedBox(
-                            height: 22,
-                            width: 22,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                              : Text(
-                            controller.isEditMode ? 'Save Changes' : 'Continue',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : Text(
+                                    controller.isEditMode
+                                        ? 'Save Changes'
+                                        : 'Continue',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                           ),
                         ),
-                      )),
+                      ),
 
                       const SizedBox(height: 40),
                     ],
@@ -255,7 +299,10 @@ class AcademicDetailsScreen extends StatelessWidget {
     );
   }
 
-  InputDecoration _fieldDecoration({required String hint, required IconData icon}) {
+  InputDecoration _fieldDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
@@ -303,7 +350,10 @@ class AcademicDetailsScreen extends StatelessWidget {
         color: AppColors.primaryBlue,
         size: 25,
       ),
-      decoration: _fieldDecoration(hint: hint, icon: icon).copyWith(errorText: errorText),
+      decoration: _fieldDecoration(
+        hint: hint,
+        icon: icon,
+      ).copyWith(errorText: errorText),
       items: items.map((item) {
         return DropdownMenuItem(
           value: item,

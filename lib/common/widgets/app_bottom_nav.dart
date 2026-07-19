@@ -11,6 +11,7 @@ class AppBottomNav extends StatelessWidget {
     {'icon': Icons.home_rounded, 'label': 'Home'},
     {'icon': Icons.public_rounded, 'label': 'Countries'},
     {'icon': Icons.description_rounded, 'label': 'Docs'},
+    {'icon': Icons.menu_book_rounded, 'label': 'Books'},
     {'icon': Icons.person_rounded, 'label': 'Profile'},
   ];
 
@@ -37,7 +38,7 @@ class AppBottomNav extends StatelessWidget {
                   children: [
                     Icon(
                       _items[index]['icon'] as IconData,
-                      color: selected ? AppColors.primaryRed : AppColors.textGrey,
+                      color: selected ? AppColors.darkBlue : AppColors.textGrey,
                       size: 24,
                     ),
                     const SizedBox(height: 3),
@@ -46,7 +47,7 @@ class AppBottomNav extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10.5,
                         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                        color: selected ? AppColors.primaryRed : AppColors.textGrey,
+                        color: selected ? AppColors.darkBlue : AppColors.textGrey,
                       ),
                     ),
                   ],

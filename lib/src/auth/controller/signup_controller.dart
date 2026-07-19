@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../../const/constants.dart';
@@ -117,17 +118,23 @@ class SignupController extends GetxController {
   Future<void> signup() async {
     if (!formKey.currentState!.validate()) return;
     if (selectedDistrict.value.isEmpty) {
-      Get.snackbar('Error', 'Please select a district',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade700,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Please select a district',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+      );
       return;
     }
     if (selectedProvince.value.isEmpty) {
-      Get.snackbar('Error', 'Please select a province',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade700,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Please select a province',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -135,6 +142,13 @@ class SignupController extends GetxController {
     try {
       // TODO: Replace with actual API call
       await Future.delayed(const Duration(seconds: 2));
+
+      // Save the name locally so the home screen can greet the user by name
+      // once they log in (replaces the hardcoded "Student" placeholder).
+      await StorageService.saveUserInfo(
+        email: emailController.text.trim(),
+        name: fullNameController.text.trim(),
+      );
 
       Get.snackbar(
         'Success!',
@@ -164,7 +178,15 @@ class SignupController extends GetxController {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account != null) Get.offAllNamed(AppRoute.home);
+      if (account != null) {
+        await StorageService.saveUserInfo(
+          email: account.email,
+          name: account.displayName?.trim().isNotEmpty == true
+              ? account.displayName!.trim()
+              : account.email.split('@').first,
+        );
+        Get.offAllNamed(AppRoute.home);
+      }
     } catch (e) {
       _showError('Google Sign-In Failed', e.toString());
     } finally {
@@ -177,7 +199,14 @@ class SignupController extends GetxController {
     isLoading.value = true;
     try {
       final LoginResult result = await FacebookAuth.instance.login();
-      if (result.status == LoginStatus.success) Get.offAllNamed(AppRoute.home);
+      if (result.status == LoginStatus.success) {
+        final userData = await FacebookAuth.instance.getUserData();
+        await StorageService.saveUserInfo(
+          email: userData['email']?.toString() ?? '',
+          name: userData['name']?.toString() ?? 'Student',
+        );
+        Get.offAllNamed(AppRoute.home);
+      }
     } catch (e) {
       _showError('Facebook Sign-In Failed', e.toString());
     } finally {
@@ -187,7 +216,10 @@ class SignupController extends GetxController {
 
   // Email button
   void signInWithEmail() {
-    _showInfo('Email Sign-In', 'Enter your email and password above to sign in.');
+    _showInfo(
+      'Email Sign-In',
+      'Enter your email and password above to sign in.',
+    );
   }
 
   void _showError(String title, String message) {
@@ -213,7 +245,6 @@ class SignupController extends GetxController {
       borderRadius: 12,
     );
   }
-
 
   @override
   void onClose() {

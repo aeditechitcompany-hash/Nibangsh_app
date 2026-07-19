@@ -11,6 +11,13 @@ class AppColors {
   static const Color lightBlue = Color(0xFF1E88E5);
   static const Color darkBlue = Color(0xFF0D47A1);
 
+  // Navy Shades
+  static final Color navyDark =
+  Color.lerp(primaryBlue, Colors.black, 0.62)!;
+
+  static final Color navyLight =
+  Color.lerp(primaryBlue, Colors.black, 0.35)!;
+
   // Accent
   static const Color accentRed = Color(0xFFFF1744);
   static const Color accentBlue = Color(0xFF2979FF);

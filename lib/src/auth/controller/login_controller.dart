@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 
@@ -65,10 +66,27 @@ class LoginController extends GetxController {
 
     try {
       await Future.delayed(const Duration(seconds: 2));
+
+      // Keep the name saved at signup if this is the same account; otherwise
+      // (e.g. no local signup record yet) fall back to a readable name
+      // derived from the email so the home screen never just says "Student".
+      final storedEmail = await StorageService.getUserEmail();
+      final storedName = await StorageService.getUserName();
+      final isSameAccount =
+          storedEmail != null &&
+          storedEmail.toLowerCase() == email.toLowerCase();
+      final resolvedName =
+          (isSameAccount && (storedName?.trim().isNotEmpty ?? false))
+          ? storedName!.trim()
+          : (email.split('@').first.isEmpty
+                ? 'Student'
+                : email.split('@').first);
+      await StorageService.saveUserInfo(email: email, name: resolvedName);
+
       // if (AppStorage.isProfileComplete) {
       //   Get.offAllNamed(AppRoute.home);
       // } else {
-        Get.offAllNamed(AppRoute.academicDetails);
+      Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
       // }
     } catch (e) {
       _showError('Login Failed', e.toString());
@@ -83,7 +101,15 @@ class LoginController extends GetxController {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account != null) Get.offAllNamed(AppRoute.home);
+      if (account != null) {
+        await StorageService.saveUserInfo(
+          email: account.email,
+          name: account.displayName?.trim().isNotEmpty == true
+              ? account.displayName!.trim()
+              : account.email.split('@').first,
+        );
+        Get.offAllNamed(AppRoute.home);
+      }
     } catch (e) {
       _showError('Google Sign-In Failed', e.toString());
     } finally {
@@ -96,7 +122,14 @@ class LoginController extends GetxController {
     isLoading.value = true;
     try {
       final LoginResult result = await FacebookAuth.instance.login();
-      if (result.status == LoginStatus.success) Get.offAllNamed(AppRoute.home);
+      if (result.status == LoginStatus.success) {
+        final userData = await FacebookAuth.instance.getUserData();
+        await StorageService.saveUserInfo(
+          email: userData['email']?.toString() ?? '',
+          name: userData['name']?.toString() ?? 'Student',
+        );
+        Get.offAllNamed(AppRoute.home);
+      }
     } catch (e) {
       _showError('Facebook Sign-In Failed', e.toString());
     } finally {
@@ -106,7 +139,10 @@ class LoginController extends GetxController {
 
   // Email button
   void signInWithEmail() {
-    _showInfo('Email Sign-In', 'Enter your email and password above to sign in.');
+    _showInfo(
+      'Email Sign-In',
+      'Enter your email and password above to sign in.',
+    );
   }
 
   void _showError(String title, String message) {

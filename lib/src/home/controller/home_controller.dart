@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../common/models/application_step_model.dart';
+import '../../../common/services/storage.dart';
 
 class HomeController extends GetxController {
   final selectedNavIndex = 0.obs;
   final ImagePicker _picker = ImagePicker();
 
-  // Academic profile
+  final email = ''.obs;
   final country = ''.obs;
   final gpa = ''.obs;
   final passoutYear = ''.obs;
@@ -22,7 +23,20 @@ class HomeController extends GetxController {
   bool _step3Done = false;
 
   // TODO: replace with the real logged-in user's name once auth exists.
-  final userName = 'Student'.obs;
+  final userName = ''.obs;
+
+  // Steps 1-3 belong to the student, steps 4-10 belong to the admin.
+  List<ApplicationStepModel> get userSteps =>
+      steps.where((s) => s.owner == StepOwner.user).toList();
+
+  List<ApplicationStepModel> get adminSteps =>
+      steps.where((s) => s.owner == StepOwner.admin).toList();
+
+  int get userStepsDoneCount =>
+      userSteps.where((s) => s.status == StepStatus.done).length;
+
+  int get adminStepsDoneCount =>
+      adminSteps.where((s) => s.status == StepStatus.done).length;
 
   String get greeting {
     final hour = DateTime.now().hour;
@@ -31,24 +45,49 @@ class HomeController extends GetxController {
     return 'Good evening';
   }
 
+  String nameFromEmail(String email, {String fallback = 'Student'}) {
+    if (email.isEmpty || !email.contains('@')) return fallback;
+    final localPart = email.split('@').first;
+    return localPart.isEmpty ? fallback : localPart;
+  }
+
   String get initials {
-    final parts = userName.value.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    final name = userName.trim();
+    if (name.isEmpty) return '?';
+    final parts = name
+        .split(RegExp(r'[\s._-]+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
   }
 
   @override
   void onInit() {
     super.onInit();
+
     final args = Get.arguments;
     if (args is Map) {
+      email.value = args['email']?.toString() ?? '';
       country.value = args['country']?.toString() ?? '';
       gpa.value = args['gpa']?.toString() ?? '';
       passoutYear.value = args['passoutYear']?.toString() ?? '';
       degree.value = args['degree']?.toString() ?? '';
     }
+
+    userName.value = nameFromEmail(email.value);
+
+    _loadUserName();
     _rebuildSteps();
+  }
+
+  Future<void> _loadUserName() async {
+    final storedName = await StorageService.getUserName();
+    if (storedName != null && storedName.trim().isNotEmpty) {
+      userName.value = storedName.trim();
+    }
   }
 
   void _rebuildSteps() {
@@ -56,7 +95,8 @@ class HomeController extends GetxController {
       1: _step1Done,
       2: _step2LanguageTest.isNotEmpty,
       3: _step3Done,
-      for (final def in ApplicationStepsCatalog.definitions.skip(3)) def['id'] as int: false,
+      for (final def in ApplicationStepsCatalog.definitions.skip(3))
+        def['id'] as int: false,
     };
 
     var activeAssigned = false;
@@ -81,20 +121,24 @@ class HomeController extends GetxController {
         subtitle = '$_step2LanguageTest selected';
       }
 
-      built.add(ApplicationStepModel(
-        id: id,
-        title: def['title'] as String,
-        subtitle: subtitle,
-        icon: def['icon'],
-        owner: def['owner'] as StepOwner,
-        status: status,
-      ));
+      built.add(
+        ApplicationStepModel(
+          id: id,
+          title: def['title'] as String,
+          subtitle: subtitle,
+          icon: def['icon'],
+          owner: def['owner'] as StepOwner,
+          status: status,
+        ),
+      );
     }
 
     steps.assignAll(built);
 
     final doneCount = doneFlags.values.where((v) => v).length;
-    progressPercent.value = ((doneCount / ApplicationStepsCatalog.definitions.length) * 100).round();
+    progressPercent.value =
+        ((doneCount / ApplicationStepsCatalog.definitions.length) * 100)
+            .round();
   }
 
   // ── Step 1: document (marksheet/transcript) upload ──
