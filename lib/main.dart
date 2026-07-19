@@ -16,6 +16,7 @@ import 'common/util/app_colors.dart';
 import 'common/util/app_route.dart';
 import 'src/auth/views/login_screen.dart';
 import 'src/auth/views/signup_screen.dart';
+import 'src/auth/views/forgot_password_screen.dart';
 import 'src/main_navigation/views/main_navigation_screen.dart';
 import 'src/onboarding/views/onboarding_screen.dart';
 import 'src/profile/views/profile_screen.dart';
@@ -50,6 +51,10 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(name: AppRoute.login, page: () => const LoginScreen()),
         GetPage(name: AppRoute.signup, page: () => const SignupScreen()),
+        GetPage(
+          name: AppRoute.forgotPassword,
+          page: () => const ForgotPasswordScreen(),
+        ),
         GetPage(name: AppRoute.home, page: () => const MainNavigationScreen()),
         GetPage(name: AppRoute.profile, page: () => const ProfileScreen()),
         GetPage(name: AppRoute.docs, page: () => const DocsScreen()),
@@ -67,10 +72,7 @@ class MyApp extends StatelessWidget {
           page: () => const StudentProfileScreen(),
         ),
         GetPage(name: AppRoute.students, page: () => const StudentsScreen()),
-        GetPage(
-          name: AppRoute.approvals,
-          page: () => const ApprovalsScreen(),
-        ),
+        GetPage(name: AppRoute.approvals, page: () => const ApprovalsScreen()),
         GetPage(name: AppRoute.settings, page: () => const SettingsScreen()),
         GetPage(
           name: AppRoute.notifications,

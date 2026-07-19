@@ -24,10 +24,7 @@ class LoginScreen extends StatelessWidget {
               height: size.height * 0.31,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.navyDark,
-                    AppColors.navyLight,
-                  ],
+                  colors: [AppColors.navyDark, AppColors.navyLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -151,7 +148,7 @@ class LoginScreen extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () => Get.toNamed(AppRoute.forgotPassword),
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
