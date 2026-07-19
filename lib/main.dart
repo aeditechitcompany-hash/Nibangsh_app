@@ -17,6 +17,7 @@ import 'common/util/app_route.dart';
 import 'src/auth/views/login_screen.dart';
 import 'src/auth/views/signup_screen.dart';
 import 'src/auth/views/forgot_password_screen.dart';
+import 'src/auth/views/change_password_screen.dart';
 import 'src/main_navigation/views/main_navigation_screen.dart';
 import 'src/onboarding/views/onboarding_screen.dart';
 import 'src/profile/views/profile_screen.dart';
@@ -54,6 +55,10 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: AppRoute.forgotPassword,
           page: () => const ForgotPasswordScreen(),
+        ),
+        GetPage(
+          name: AppRoute.changePassword,
+          page: () => const ChangePasswordScreen(),
         ),
         GetPage(name: AppRoute.home, page: () => const MainNavigationScreen()),
         GetPage(name: AppRoute.profile, page: () => const ProfileScreen()),

@@ -149,6 +149,7 @@ class SignupController extends GetxController {
         email: emailController.text.trim(),
         name: fullNameController.text.trim(),
       );
+      await StorageService.saveUserPassword(passwordController.text);
 
       Get.snackbar(
         'Success!',
