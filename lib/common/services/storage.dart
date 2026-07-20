@@ -4,6 +4,7 @@ class StorageService {
   static const String _tokenKey = 'auth_token';
   static const String _userEmailKey = 'user_email';
   static const String _userNameKey = 'user_name';
+  static const String _userPasswordKey = 'user_password';
   static const String _isLoggedInKey = 'is_logged_in';
 
   // Save auth token
@@ -39,6 +40,18 @@ class StorageService {
   static Future<String?> getUserName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userNameKey);
+  }
+
+  // Save/update the account password (used for change-password verification)
+  static Future<void> saveUserPassword(String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userPasswordKey, password);
+  }
+
+  // Get the stored account password
+  static Future<String?> getUserPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userPasswordKey);
   }
 
   // Check if logged in

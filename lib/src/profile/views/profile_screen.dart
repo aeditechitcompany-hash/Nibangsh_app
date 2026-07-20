@@ -445,9 +445,17 @@ class ProfileScreen extends StatelessWidget {
             ),
             const Divider(height: 1, color: AppColors.borderGrey),
             _linkRow(
+              icon: Icons.lock_outline_rounded,
+              iconColor: AppColors.primaryBlue,
+              label: 'Change Password',
+              onTap: () => Get.toNamed(AppRoute.changePassword),
+            ),
+            const Divider(height: 1, color: AppColors.borderGrey),
+            _linkRow(
               icon: Icons.help_outline_rounded,
               iconColor: AppColors.primaryBlue,
               label: 'FAQ & Help Center',
+              onTap: () => Get.toNamed(AppRoute.faqHelp),
               isLast: true,
             ),
           ],
