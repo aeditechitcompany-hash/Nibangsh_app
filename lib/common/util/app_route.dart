@@ -3,6 +3,7 @@ class AppRoute {
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
   static const String changePassword = '/change-password';
+  static const String faqHelp = '/faq-help';
   static const String home = '/home';
   static const String onboarding = '/onboarding';
   static const String profile = '/profile';

@@ -455,6 +455,7 @@ class ProfileScreen extends StatelessWidget {
               icon: Icons.help_outline_rounded,
               iconColor: AppColors.primaryBlue,
               label: 'FAQ & Help Center',
+              onTap: () => Get.toNamed(AppRoute.faqHelp),
               isLast: true,
             ),
           ],
