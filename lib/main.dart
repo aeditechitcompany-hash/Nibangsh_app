@@ -18,6 +18,7 @@ import 'src/auth/views/login_screen.dart';
 import 'src/auth/views/signup_screen.dart';
 import 'src/auth/views/forgot_password_screen.dart';
 import 'src/auth/views/change_password_screen.dart';
+import 'src/profile/views/faq_help_screen.dart';
 import 'src/main_navigation/views/main_navigation_screen.dart';
 import 'src/onboarding/views/onboarding_screen.dart';
 import 'src/profile/views/profile_screen.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
           name: AppRoute.changePassword,
           page: () => const ChangePasswordScreen(),
         ),
+        GetPage(name: AppRoute.faqHelp, page: () => const FaqHelpScreen()),
         GetPage(name: AppRoute.home, page: () => const MainNavigationScreen()),
         GetPage(name: AppRoute.profile, page: () => const ProfileScreen()),
         GetPage(name: AppRoute.docs, page: () => const DocsScreen()),
