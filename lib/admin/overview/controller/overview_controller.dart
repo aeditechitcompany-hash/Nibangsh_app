@@ -42,44 +42,27 @@ class AdminOverviewController extends GetxController {
   ];
 
   int totalStudentsCount = 6;
+
   // int get maxDestinationCount =>
   //     destinations.map((d) => d.studentCount).fold(1, (a, b) => a > b ? a : b);
 
   final recentActivity = const [
-    RecentActivity(name: 'Meera Patel', action: 'Visa approved', time: '1h ago', status: ActivityStatus.approved),
-    RecentActivity(name: 'Rahul Gupta', action: 'Uploaded documents', time: '3h ago', status: ActivityStatus.inProgress),
-    RecentActivity(name: 'Anjali Singh', action: 'Visa in progress', time: '5h ago', status: ActivityStatus.inProgress),
-    RecentActivity(name: 'Karan Mehta', action: 'Application rejected', time: '1d ago', status: ActivityStatus.rejected),
+    RecentActivity(name: 'Meera Patel',
+        action: 'Visa approved',
+        time: '1h ago',
+        status: ActivityStatus.approved),
+    RecentActivity(name: 'Rahul Gupta',
+        action: 'Uploaded documents',
+        time: '3h ago',
+        status: ActivityStatus.inProgress),
+    RecentActivity(name: 'Anjali Singh',
+        action: 'Visa in progress',
+        time: '5h ago',
+        status: ActivityStatus.inProgress),
+    RecentActivity(name: 'Karan Mehta',
+        action: 'Application rejected',
+        time: '1d ago',
+        status: ActivityStatus.rejected),
   ];
 
-  List<Map<String, dynamic>> get statCards => [
-    {
-      'icon': Icons.groups_outlined,
-      'iconColor': const Color(0xFF2563EB),
-      'value': '${totalStudents.value}',
-      'label': 'Total Students',
-      'delta': '+3 this week',
-    },
-    {
-      'icon': Icons.assignment_outlined,
-      'iconColor': const Color(0xFF9333EA),
-      'value': '${activeApplications.value}',
-      'label': 'Active Applications',
-      'delta': '+1 today',
-    },
-    {
-      'icon': Icons.person_outline,
-      'iconColor': const Color(0xFF16A34A),
-      'value': '${approved.value}',
-      'label': 'Approved',
-      'delta': 'This month',
-    },
-    {
-      'icon': Icons.shield_outlined,
-      'iconColor': const Color(0xFFF59E0B),
-      'value': '${visaApprovedOutOf.value == 0 ? 0 : approved.value}',
-      'label': 'Visa Approved',
-      'delta': 'Out of ${visaApprovedOutOf.value}',
-    },
-  ];
 }

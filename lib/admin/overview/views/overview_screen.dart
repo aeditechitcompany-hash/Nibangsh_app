@@ -30,7 +30,6 @@ class AdminOverviewScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatGrid(controller),
                 const SizedBox(height: 24),
                 _buildDestinationsSection(controller),
                 const SizedBox(height: 24),
@@ -191,89 +190,6 @@ class AdminOverviewScreen extends StatelessWidget {
     );
   }
 
-  // ── 2x2 stat grid ──
-  Widget _buildStatGrid(AdminOverviewController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.25,
-        children: controller.statCards.map((card) {
-          return Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: (card['iconColor'] as Color).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        card['icon'] as IconData,
-                        color: card['iconColor'] as Color,
-                        size: 18,
-                      ),
-                    ),
-                    const Icon(
-                      Icons.trending_up_rounded,
-                      color: Color(0xFF16A34A),
-                      size: 16,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  card['value'] as String,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  card['label'] as String,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textGrey,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  card['delta'] as String,
-                  style: const TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF16A34A),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
 
   // ── Students by destination ──
   Widget _buildDestinationsSection(AdminOverviewController controller) {
