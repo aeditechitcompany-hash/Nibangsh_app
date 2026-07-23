@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nibangsh_consultancy/src/mcq/views/mcq_screen.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/widgets/app_bottom_nav.dart';
 import '../../countries/views/countries_screen.dart';
@@ -21,7 +22,7 @@ class MainNavigationScreen extends StatelessWidget {
     final tabs = const [
       HomeScreen(),
       CountriesScreen(),
-      DocsScreen(),
+      McqScreen(),
       StudentBooksScreen(),
       ProfileScreen(),
     ];

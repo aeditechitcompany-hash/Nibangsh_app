@@ -38,7 +38,7 @@ class ApplicationStepsCatalog {
   static const List<Map<String, dynamic>> definitions = [
     {
       'id': 1,
-      'title': 'Document Upload',
+      'title': 'Transcript Upload',
       'subtitle': 'Marksheet / Transcript',
       'icon': Icons.upload_file_outlined,
       'owner': StepOwner.user,
