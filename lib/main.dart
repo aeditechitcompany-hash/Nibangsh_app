@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nibangsh_consultancy/admin/approvals/views/approvals_screen.dart';
 import 'package:nibangsh_consultancy/src/academic_details/views/academic_details_screen.dart';
 import 'package:nibangsh_consultancy/admin/books/views/books_screen.dart';
+import 'package:nibangsh_consultancy/admin/mcq/views/mcq_screen.dart';
 import 'package:nibangsh_consultancy/admin/nav/admin_navigation.dart';
 import 'package:nibangsh_consultancy/admin/notifications/views/notifications_screen.dart';
 import 'package:nibangsh_consultancy/admin/settings/views/settings_screen.dart';
@@ -98,6 +99,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(name: AppRoute.mcqQuiz, page: () => const McqQuizScreen()),
         GetPage(name: AppRoute.mcqResult, page: () => const McqResultScreen()),
+        GetPage(name: AppRoute.adminMcq, page: () => const AdminMcqScreen()),
       ],
     );
   }

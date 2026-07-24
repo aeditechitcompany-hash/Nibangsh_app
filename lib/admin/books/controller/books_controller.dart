@@ -17,6 +17,10 @@ class AdminBooksController extends GetxController {
   final pickedFileSize = ''.obs;
   final isPicking = false.obs;
 
+  // Set when editing an existing book instead of adding a new one.
+  final editingBookId = Rxn<String>();
+  bool get isEditing => editingBookId.value != null;
+
   bool get hasPickedFile => pickedFilePath.value.isNotEmpty;
 
   Future<void> pickPdf() async {
@@ -66,9 +70,32 @@ class AdminBooksController extends GetxController {
     return '${(kb / 1024).toStringAsFixed(1)} MB';
   }
 
+  // Opens the sheet in "Add" mode with a blank form.
+  void startAdd() {
+    editingBookId.value = null;
+    titleController.clear();
+    descriptionController.clear();
+    clearPickedFile();
+  }
+
+  // Opens the sheet in "Edit" mode, pre-filled with the existing book.
+  // The PDF file is kept as-is unless the admin picks a new one.
+  void startEdit(BookResource book) {
+    editingBookId.value = book.id;
+    titleController.text = book.title;
+    descriptionController.text = book.description;
+    pickedFileName.value = '';
+    pickedFilePath.value = '';
+    pickedFileSize.value = '';
+  }
+
   void saveBook() {
     final title = titleController.text.trim();
-    if (title.isEmpty || !hasPickedFile) {
+    final editingId = editingBookId.value;
+
+    // A new PDF is required when adding; when editing, the existing PDF
+    // stays unless the admin picks a replacement.
+    if (title.isEmpty || (editingId == null && !hasPickedFile)) {
       Get.snackbar(
         'Missing info',
         'Add a title and choose a PDF first.',
@@ -78,31 +105,54 @@ class AdminBooksController extends GetxController {
       return;
     }
 
-    _repo.addBook(
-      BookResource(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: title,
-        description: descriptionController.text.trim(),
-        fileName: pickedFileName.value,
-        filePath: pickedFilePath.value,
-        fileSizeLabel: pickedFileSize.value,
-        uploadedAt: DateTime.now(),
-      ),
-    );
+    if (editingId != null) {
+      final existing = books.firstWhereOrNull((b) => b.id == editingId);
+      if (existing == null) return;
+      _repo.updateBook(
+        existing.copyWith(
+          title: title,
+          description: descriptionController.text.trim(),
+          fileName: hasPickedFile ? pickedFileName.value : null,
+          filePath: hasPickedFile ? pickedFilePath.value : null,
+          fileSizeLabel: hasPickedFile ? pickedFileSize.value : null,
+        ),
+      );
+      Get.back();
+      Get.snackbar(
+        'Updated',
+        'Changes are now visible to students.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF16A34A),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+    } else {
+      _repo.addBook(
+        BookResource(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: title,
+          description: descriptionController.text.trim(),
+          fileName: pickedFileName.value,
+          filePath: pickedFilePath.value,
+          fileSizeLabel: pickedFileSize.value,
+          uploadedAt: DateTime.now(),
+        ),
+      );
+      Get.back();
+      Get.snackbar(
+        'Uploaded',
+        'Book is now visible to students.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF16A34A),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+    }
 
     titleController.clear();
     descriptionController.clear();
     clearPickedFile();
-
-    Get.back();
-    Get.snackbar(
-      'Uploaded',
-      'Book is now visible to students.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF16A34A),
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(16),
-    );
+    editingBookId.value = null;
   }
 
   void deleteBook(String id) {
