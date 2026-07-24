@@ -31,6 +31,8 @@ class AdminOverviewScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
+                _buildAddMcqCard(),
+                const SizedBox(height: 24),
                 _buildDestinationsSection(controller),
                 const SizedBox(height: 24),
                 _buildQuickActions(),
@@ -46,7 +48,10 @@ class AdminOverviewScreen extends StatelessWidget {
   }
 
   // ── Header ──
-  Widget _buildHeader(AdminOverviewController controller, BuildContext context) {
+  Widget _buildHeader(
+    AdminOverviewController controller,
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
@@ -75,10 +80,7 @@ class AdminOverviewScreen extends StatelessWidget {
                   color: Colors.white.withOpacity(0.14),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset(
-                  AppResources.logoPath,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.asset(AppResources.logoPath, fit: BoxFit.cover),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -135,7 +137,7 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Obx(
-                () => Row(
+            () => Row(
               children: [
                 Expanded(
                   child: _topPill(
@@ -190,6 +192,77 @@ class AdminOverviewScreen extends StatelessWidget {
     );
   }
 
+  // ── Add MCQ shortcut card ──
+  Widget _buildAddMcqCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => Get.toNamed(AppRoute.adminMcq),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.navyDark, AppColors.navyLight],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.quiz_outlined,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Add MCQ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Create questions (with optional audio) for students',
+                      style: TextStyle(color: Colors.white70, fontSize: 11.5),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   // ── Students by destination ──
   Widget _buildDestinationsSection(AdminOverviewController controller) {
@@ -320,8 +393,9 @@ class AdminOverviewScreen extends StatelessWidget {
           final color = action['color'] as Color;
           return Expanded(
             child: GestureDetector(
-              onTap: () => Get.find<AdminNavigationController>()
-                  .setIndex(action['tabIndex'] as int),
+              onTap: () => Get.find<AdminNavigationController>().setIndex(
+                action['tabIndex'] as int,
+              ),
               child: Container(
                 margin: EdgeInsets.only(right: action == actions.last ? 0 : 10),
                 padding: const EdgeInsets.symmetric(vertical: 16),
