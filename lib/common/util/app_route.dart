@@ -19,4 +19,6 @@ class AppRoute {
   static const String studentNotifications = '/notifications';
   static const String adminBooks = '/admin-books';
   static const String studentBooks = '/books';
+  static const String mcqQuiz = '/mcq-quiz';
+  static const String mcqResult = '/mcq-result';
 }
