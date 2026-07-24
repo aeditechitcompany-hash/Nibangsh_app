@@ -18,6 +18,10 @@ class AdminMcqController extends GetxController {
   final pickedAudioPath = ''.obs;
   final isPicking = false.obs;
 
+  // Set when editing an existing question instead of adding a new one.
+  final editingQuestionId = Rxn<String>();
+  bool get isEditing => editingQuestionId.value != null;
+
   bool get hasPickedAudio => pickedAudioPath.value.isNotEmpty;
 
   Future<void> pickAudio() async {
@@ -58,7 +62,9 @@ class AdminMcqController extends GetxController {
     pickedAudioPath.value = '';
   }
 
-  void clearForm() {
+  // Opens the sheet in "Add" mode with a blank form.
+  void startAdd() {
+    editingQuestionId.value = null;
     questionController.clear();
     for (final c in optionControllers) {
       c.clear();
@@ -67,9 +73,23 @@ class AdminMcqController extends GetxController {
     clearPickedAudio();
   }
 
+  // Opens the sheet in "Edit" mode, pre-filled with the existing question.
+  // The audio clip is kept as-is unless the admin picks a replacement.
+  void startEdit(McqQuestion q) {
+    editingQuestionId.value = q.id;
+    questionController.text = q.question;
+    for (var i = 0; i < optionControllers.length; i++) {
+      optionControllers[i].text = i < q.options.length ? q.options[i] : '';
+    }
+    correctOptionIndex.value = q.correctOptionIndex;
+    pickedAudioName.value = '';
+    pickedAudioPath.value = '';
+  }
+
   void saveQuestion() {
     final question = questionController.text.trim();
     final options = optionControllers.map((c) => c.text.trim()).toList();
+    final editingId = editingQuestionId.value;
 
     if (question.isEmpty || options.any((o) => o.isEmpty)) {
       Get.snackbar(
@@ -91,29 +111,57 @@ class AdminMcqController extends GetxController {
       return;
     }
 
-    _repo.addQuestion(
-      McqQuestion(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        question: question,
-        options: options,
-        correctOptionIndex: correctOptionIndex.value!,
-        audioFileName: hasPickedAudio ? pickedAudioName.value : null,
-        audioFilePath: hasPickedAudio ? pickedAudioPath.value : null,
-        createdAt: DateTime.now(),
-      ),
-    );
+    if (editingId != null) {
+      final existing = questions.firstWhereOrNull((q) => q.id == editingId);
+      if (existing == null) return;
+      _repo.updateQuestion(
+        existing.copyWith(
+          question: question,
+          options: options,
+          correctOptionIndex: correctOptionIndex.value!,
+          audioFileName: hasPickedAudio ? pickedAudioName.value : null,
+          audioFilePath: hasPickedAudio ? pickedAudioPath.value : null,
+        ),
+      );
+      Get.back();
+      Get.snackbar(
+        'Updated',
+        'Changes are now visible to students.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF16A34A),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+    } else {
+      _repo.addQuestion(
+        McqQuestion(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          question: question,
+          options: options,
+          correctOptionIndex: correctOptionIndex.value!,
+          audioFileName: hasPickedAudio ? pickedAudioName.value : null,
+          audioFilePath: hasPickedAudio ? pickedAudioPath.value : null,
+          createdAt: DateTime.now(),
+        ),
+      );
+      Get.back();
+      Get.snackbar(
+        'Added',
+        'MCQ is now visible to students.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF16A34A),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+    }
 
-    clearForm();
-
-    Get.back();
-    Get.snackbar(
-      'Added',
-      'MCQ is now visible to students.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF16A34A),
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(16),
-    );
+    questionController.clear();
+    for (final c in optionControllers) {
+      c.clear();
+    }
+    correctOptionIndex.value = null;
+    clearPickedAudio();
+    editingQuestionId.value = null;
   }
 
   void deleteQuestion(String id) {

@@ -11,15 +11,18 @@ import '../models/mcq_model.dart';
 // real backend (e.g. Firebase Firestore) instead, and the audio file itself
 // needs to live somewhere all devices can reach (e.g. Firebase Storage).
 class McqRepository extends GetxService {
-  static McqRepository get to =>
-      Get.isRegistered<McqRepository>()
-          ? Get.find<McqRepository>()
-          : Get.put(McqRepository(), permanent: true);
+  static McqRepository get to => Get.isRegistered<McqRepository>()
+      ? Get.find<McqRepository>()
+      : Get.put(McqRepository(), permanent: true);
 
   final questions = <McqQuestion>[].obs;
 
   void addQuestion(McqQuestion question) => questions.insert(0, question);
 
-  void removeQuestion(String id) =>
-      questions.removeWhere((q) => q.id == id);
+  void updateQuestion(McqQuestion updated) {
+    final index = questions.indexWhere((q) => q.id == updated.id);
+    if (index != -1) questions[index] = updated;
+  }
+
+  void removeQuestion(String id) => questions.removeWhere((q) => q.id == id);
 }

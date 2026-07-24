@@ -38,7 +38,7 @@ class AdminMcqScreen extends StatelessWidget {
                 ),
               ),
               padding: const EdgeInsets.only(top: 20),
-              child: _buildQuestionList(controller),
+              child: _buildQuestionList(controller, context),
             ),
             const SizedBox(height: 100),
           ],
@@ -112,7 +112,7 @@ class AdminMcqScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Obx(
-                () => Text(
+            () => Text(
               '${controller.questions.length} questions shared with students',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.75),
@@ -125,7 +125,10 @@ class AdminMcqScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuestionList(AdminMcqController controller) {
+  Widget _buildQuestionList(
+    AdminMcqController controller,
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
@@ -163,7 +166,7 @@ class AdminMcqScreen extends StatelessWidget {
           children: questions
               .asMap()
               .entries
-              .map((e) => _questionCard(controller, e.key, e.value))
+              .map((e) => _questionCard(controller, e.key, e.value, context))
               .toList(),
         );
       }),
@@ -171,85 +174,90 @@ class AdminMcqScreen extends StatelessWidget {
   }
 
   Widget _questionCard(
-      AdminMcqController controller,
-      int index,
-      McqQuestion q,
-      ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.borderGrey),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  'Q${index + 1}. ${q.question}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () => _confirmDelete(controller, q),
-                icon: const Icon(
-                  Icons.delete_outline_rounded,
-                  color: AppColors.primaryRed,
-                  size: 20,
-                ),
-                tooltip: 'Delete',
-              ),
-            ],
-          ),
-          if (q.hasAudio) ...[
-            const SizedBox(height: 6),
-            AudioPlayButton(filePath: q.audioFilePath!, label: 'Play clip'),
-          ],
-          const SizedBox(height: 10),
-          ...List.generate(q.options.length, (i) {
-            final isCorrect = i == q.correctOptionIndex;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                children: [
-                  Icon(
-                    isCorrect
-                        ? Icons.check_circle_rounded
-                        : Icons.circle_outlined,
-                    size: 16,
-                    color: isCorrect
-                        ? const Color(0xFF16A34A)
-                        : AppColors.textGrey,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      q.options[i],
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: isCorrect
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                        color: isCorrect
-                            ? const Color(0xFF16A34A)
-                            : AppColors.textDark,
-                      ),
+    AdminMcqController controller,
+    int index,
+    McqQuestion q,
+    BuildContext context,
+  ) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => _showAddMcqSheet(context, controller, editQuestion: q),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.borderGrey),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Q${index + 1}. ${q.question}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
                     ),
                   ),
-                ],
-              ),
-            );
-          }),
-        ],
+                ),
+                IconButton(
+                  onPressed: () => _confirmDelete(controller, q),
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: AppColors.primaryRed,
+                    size: 20,
+                  ),
+                  tooltip: 'Delete',
+                ),
+              ],
+            ),
+            if (q.hasAudio) ...[
+              const SizedBox(height: 6),
+              AudioPlayButton(filePath: q.audioFilePath!, label: 'Play clip'),
+            ],
+            const SizedBox(height: 10),
+            ...List.generate(q.options.length, (i) {
+              final isCorrect = i == q.correctOptionIndex;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    Icon(
+                      isCorrect
+                          ? Icons.check_circle_rounded
+                          : Icons.circle_outlined,
+                      size: 16,
+                      color: isCorrect
+                          ? const Color(0xFF16A34A)
+                          : AppColors.textGrey,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        q.options[i],
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: isCorrect
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          color: isCorrect
+                              ? const Color(0xFF16A34A)
+                              : AppColors.textDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -277,8 +285,16 @@ class AdminMcqScreen extends StatelessWidget {
     );
   }
 
-  void _showAddMcqSheet(BuildContext context, AdminMcqController controller) {
-    controller.clearForm();
+  void _showAddMcqSheet(
+    BuildContext context,
+    AdminMcqController controller, {
+    McqQuestion? editQuestion,
+  }) {
+    if (editQuestion != null) {
+      controller.startEdit(editQuestion);
+    } else {
+      controller.startAdd();
+    }
 
     showModalBottomSheet(
       context: context,
@@ -311,12 +327,16 @@ class AdminMcqScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Text(
-                      'Add a Question',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                    Obx(
+                      () => Text(
+                        controller.isEditing
+                            ? 'Edit Question'
+                            : 'Add a Question',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -342,16 +362,17 @@ class AdminMcqScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Obx(
-                          () => Column(
+                      () => Column(
                         children: List.generate(4, (i) {
-                          final selected = controller.correctOptionIndex.value == i;
+                          final selected =
+                              controller.correctOptionIndex.value == i;
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Row(
                               children: [
                                 InkWell(
                                   onTap: () =>
-                                  controller.correctOptionIndex.value = i,
+                                      controller.correctOptionIndex.value = i,
                                   child: Icon(
                                     selected
                                         ? Icons.check_circle_rounded
@@ -391,7 +412,7 @@ class AdminMcqScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Obx(
-                          () => InkWell(
+                      () => InkWell(
                         borderRadius: BorderRadius.circular(14),
                         onTap: controller.isPicking.value
                             ? null
@@ -429,6 +450,8 @@ class AdminMcqScreen extends StatelessWidget {
                                       ? controller.pickedAudioName.value
                                       : controller.isPicking.value
                                       ? 'Opening file picker...'
+                                      : controller.isEditing
+                                      ? 'Keep current clip (tap to replace)'
                                       : 'Choose an MP3 file',
                                   style: const TextStyle(
                                     fontSize: 13,
@@ -466,11 +489,13 @@ class AdminMcqScreen extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          'Save MCQ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        child: Obx(
+                          () => Text(
+                            controller.isEditing ? 'Save Changes' : 'Save MCQ',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

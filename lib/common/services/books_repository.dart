@@ -20,5 +20,10 @@ class BooksRepository extends GetxService {
 
   void addBook(BookResource book) => books.insert(0, book);
 
+  void updateBook(BookResource updated) {
+    final index = books.indexWhere((b) => b.id == updated.id);
+    if (index != -1) books[index] = updated;
+  }
+
   void removeBook(String id) => books.removeWhere((b) => b.id == id);
 }

@@ -38,7 +38,7 @@ class BooksScreen extends StatelessWidget {
                 ),
               ),
               padding: const EdgeInsets.only(top: 20),
-              child: _buildBookList(controller),
+              child: _buildBookList(controller, context),
             ),
             const SizedBox(height: 100),
           ],
@@ -115,7 +115,7 @@ class BooksScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBookList(AdminBooksController controller) {
+  Widget _buildBookList(AdminBooksController controller, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
@@ -150,13 +150,19 @@ class BooksScreen extends StatelessWidget {
           );
         }
         return Column(
-          children: books.map((b) => _bookCard(controller, b)).toList(),
+          children: books
+              .map((b) => _bookCard(controller, b, context))
+              .toList(),
         );
       }),
     );
   }
 
-  Widget _bookCard(AdminBooksController controller, BookResource book) {
+  Widget _bookCard(
+    AdminBooksController controller,
+    BookResource book,
+    BuildContext context,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
@@ -232,6 +238,16 @@ class BooksScreen extends StatelessWidget {
                 tooltip: 'View',
               ),
               IconButton(
+                onPressed: () =>
+                    _showUploadSheet(context, controller, editBook: book),
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  color: Color(0xFFF59E0B),
+                  size: 20,
+                ),
+                tooltip: 'Edit',
+              ),
+              IconButton(
                 onPressed: () => _confirmDelete(controller, book),
                 icon: const Icon(
                   Icons.delete_outline_rounded,
@@ -270,10 +286,16 @@ class BooksScreen extends StatelessWidget {
     );
   }
 
-  void _showUploadSheet(BuildContext context, AdminBooksController controller) {
-    controller.clearPickedFile();
-    controller.titleController.clear();
-    controller.descriptionController.clear();
+  void _showUploadSheet(
+    BuildContext context,
+    AdminBooksController controller, {
+    BookResource? editBook,
+  }) {
+    if (editBook != null) {
+      controller.startEdit(editBook);
+    } else {
+      controller.startAdd();
+    }
 
     showModalBottomSheet(
       context: context,
@@ -305,12 +327,16 @@ class BooksScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Text(
-                    'Upload a Book (PDF)',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                  Obx(
+                    () => Text(
+                      controller.isEditing
+                          ? 'Edit Book'
+                          : 'Upload a Book (PDF)',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -375,6 +401,8 @@ class BooksScreen extends StatelessWidget {
                                     ? '${controller.pickedFileName.value} (${controller.pickedFileSize.value})'
                                     : controller.isPicking.value
                                     ? 'Opening file picker...'
+                                    : controller.isEditing
+                                    ? 'Keep current PDF (tap to replace)'
                                     : 'Choose a PDF file',
                                 style: const TextStyle(
                                   fontSize: 13,
@@ -403,11 +431,15 @@ class BooksScreen extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Upload & Share',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      child: Obx(
+                        () => Text(
+                          controller.isEditing
+                              ? 'Save Changes'
+                              : 'Upload & Share',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
