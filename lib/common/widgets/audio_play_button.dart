@@ -2,12 +2,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../util/app_colors.dart';
 
-/// Small pill button that plays/pauses a local mp3 file.
-/// Used to preview MCQ audio clips on both the admin and student screens.
-///
-/// Requires the `audioplayers` package:
-///   dependencies:
-///     audioplayers: ^6.0.0
 class AudioPlayButton extends StatefulWidget {
   final String filePath;
   final String label;
