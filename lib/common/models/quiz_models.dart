@@ -167,7 +167,8 @@ class QuizCatalog {
           correctIndex: 2,
         ),
         QuizQuestion(
-          question: '가: 승진을 축하합니다 ! 입사하신지 3년도 안됬는데_____ 과장이 되신 거지요?\n나: 네,갑사합니다. 다 여러분들이 도와준 덕분이에요. 오늘은 제가 한턱낼게요.',
+          question:
+              '가: 승진을 축하합니다 ! 입사하신지 3년도 안됬는데_____ 과장이 되신 거지요?\n나: 네,갑사합니다. 다 여러분들이 도와준 덕분이에요. 오늘은 제가 한턱낼게요.',
           options: ['처음', '먼저', '미리', '벌써'],
           correctIndex: 2,
         ),
@@ -177,7 +178,8 @@ class QuizCatalog {
           correctIndex: 2,
         ),
         QuizQuestion(
-          question: '한국은 사 계절이 있습니다. 그 중에서 날씨가 추워서 겨울을 _________ 싫어합니다. 그런데 날씨가 따뜻해서 봄은 좋아해요.',
+          question:
+              '한국은 사 계절이 있습니다. 그 중에서 날씨가 추워서 겨울을 _________ 싫어합니다. 그런데 날씨가 따뜻해서 봄은 좋아해요.',
           options: ['점점', '조금', '거의', '제일'],
           correctIndex: 2,
         ),
@@ -186,7 +188,131 @@ class QuizCatalog {
           options: ['적지를 않아서', '낮지를 않아서', '낫지를 않아서', '맞지를 않아서'],
           correctIndex: 2,
         ),
-        // Yeta bata start 21-40 (and remove this comment)
+
+        // ── 21-40: EPS-TOPIK 듣기 (Listening) section ──
+        // These are audio-based listening questions. No 정답 (answer key) was
+        // visible in the source pages, so correctIndex is a PLACEHOLDER (0)
+        // below — verify against the actual audio/answer key before using
+        // these for real practice.
+        //
+        // Skipped for now (picture-based options not fully visible in the
+        // source images): Q23, Q25-Q29, Q36, Q37. Send clearer images of
+        // those and I'll add them too.
+        QuizQuestion(
+          question: '21. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: ['모래', '부래', '미래', '비례'],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question: '22. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: ['약속', '악수', '익숙', '시속'],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question: '24. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '스마트폰 10,000원',
+            '스마트폰 20,000원',
+            '폴더폰 1,000원',
+            '스마트폰 100,000원',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question:
+              '30. 다음을 듣고 이어지는 말로 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '삼성화재에 가 보세요.',
+            '보험은 4 가지가 있습니다.',
+            '건강보험공단에서 보험을 가입하세요.',
+            '귀국비용보험을 가입하러 신청하세요.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question:
+              '31. 다음을 듣고 이어지는 말로 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '조금만 기다리세요. 바로 계산해 드릴게요.',
+            '교환해 드릴게요. 먼저 영수증 좀 보여 주세요.',
+            '동대문 시장에 가 보세요. 예쁜 신발이 많이 있어요.',
+            '여기 신발하고 거스름돈 받으세요. 다음에 또 오세요.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question:
+              '32. 다음을 듣고 이어지는 말로 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '더 체류하려면 체류기간이 빨리 연장해야 해요.',
+            '체류기간이 지나서 연장하려면 벌금을 내야 해요.',
+            '혹시 체류기간은 대리인이도 연장할 수 있어요.',
+            '오늘은 만료일이라서 연장하러 갈 거예요.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question:
+              '33. 다음을 듣고 이어지는 말로 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '여기가 시험장 이어서 복잡할 것 같아요.',
+            '이번엔 한국어능력 시험을 보러 왔어요.',
+            '한국에서 취업하려면 먼저 시험을 보세요.',
+            '시험장에는 큰 소리로 떠들면 안돼요.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question: '34. 질문을 듣고 이어지는 말을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '어제는 정말 즐거웠어요.',
+            '길이 막혀서 좀 늦었어요.',
+            '갑자기 급한 일이 생겨서요.',
+            '초대해 줘서 정말 고마워요.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question: '35. 질문을 듣고 이어지는 말을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '어쩔 수 없지요.',
+            '필요한 게 없는데요.',
+            '마음만으로도 고맙습니다.',
+            '도움이 필요하시면 연락하세요.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question:
+              '38. 남자에 대한 이야기로 맞지 않는 것을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '배 만드는 일을 하겠습니다.',
+            '공장 기숙사에서 살겠습니다.',
+            '배를 타고 한국에 가겠습니다.',
+            '내년에 한국에 가겠습니다.',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question: '39. 여자는 왜 가계에 전화하려고 합니까?', // TODO: verify correct answer
+          options: [
+            '구입한 카메라가 원하는 것이 이나어서',
+            '새로 구입한 카메라가 성능이 안 좋아서',
+            '상자 안에 사용 설명서가 들어 있지 않아서',
+            '카메라 사용법을 읽었는데로 이해할 수 없어서',
+          ],
+          correctIndex: 0,
+        ),
+        QuizQuestion(
+          question: '40. 무엇에 대해서 이야기하고 있습니까?', // TODO: verify correct answer
+          options: [
+            '계절을 소개하고 있습니다.',
+            '날씨를 아려주고 있습니다.',
+            '주말 여행을 안내하고 있습니다.',
+            '남자는 어떻게 하겠습니까?.',
+          ],
+          correctIndex: 0,
+        ),
       ],
     ),
     QuizSet(
