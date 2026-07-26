@@ -5,11 +5,34 @@ class QuizQuestion {
   final List<String> options;
   final int correctIndex;
 
+  // Optional stimulus image shown above the question (e.g. a picture the
+  // student looks at before answering) — asset path like
+  // 'assets/quiz/set1/q1_glove.png'.
+  final String? imageAsset;
+
+  // Optional per-option image, parallel to [options], for picture-choice
+  // questions (e.g. "which animal did you hear?"). If provided, its length
+  // should match options.length. The text in [options] is still kept as a
+  // fallback label / for accessibility.
+  final List<String>? optionImages;
+
+  // Optional audio clip for listening (듣기) questions — asset path like
+  // 'assets/quiz/set1/q21.mp3'. Requires the `audioplayers` package to
+  // actually play it in the UI.
+  final String? audioAsset;
+
   const QuizQuestion({
     required this.question,
     required this.options,
     required this.correctIndex,
+    this.imageAsset,
+    this.optionImages,
+    this.audioAsset,
   });
+
+  bool get hasImage => imageAsset != null && imageAsset!.trim().isNotEmpty;
+  bool get hasOptionImages => optionImages != null && optionImages!.isNotEmpty;
+  bool get hasAudio => audioAsset != null && audioAsset!.trim().isNotEmpty;
 }
 
 class QuizSet {
@@ -49,6 +72,7 @@ class QuizCatalog {
             '사용하면 안 됩니다.',
           ],
           correctIndex: 0,
+          imageAsset: 'assets/quiz/set1/q1_glove.png',
         ),
         QuizQuestion(
           question: '다음을 읽고 맞지 않는 것을 고르십시오.',
@@ -59,6 +83,7 @@ class QuizCatalog {
             '어린이는 어른보다 싸게 입장할 수 있습니다.',
           ],
           correctIndex: 1,
+          imageAsset: 'assets/quiz/set1/q2_poster.png',
         ),
         QuizQuestion(
           question: '다음을 읽고 맞는 것을 고르십시오.',
@@ -69,6 +94,7 @@ class QuizCatalog {
             '이 대회는 전국 대회이다.',
           ],
           correctIndex: 1,
+          imageAsset: 'assets/quiz/set1/q3_poster.png',
         ),
         QuizQuestion(
           question: '다음은 한류 열풍과 수출에 대한 그래프 입니다 .잘 읽고 맞지 않은 것을 고르십시오.',
@@ -79,6 +105,7 @@ class QuizCatalog {
             '2007 년에 미국으로 수출한 화장품의 수는 2004년보다 적다.',
           ],
           correctIndex: 2,
+          imageAsset: 'assets/quiz/set1/q4_graph.png',
         ),
         QuizQuestion(
           question: '우리 공장에서는 3 번 이상 무단결근을 하면 월급이_________ .',
@@ -142,7 +169,7 @@ class QuizCatalog {
           correctIndex: 3,
         ),
         QuizQuestion(
-          question: 'Pencil image',
+          question: '다음 그림을 보고 맞는 단어나 문장을 고르십시오.',
           options: [
             '연필이 한 개 있습니다.',
             '연필이 한 개 자루 있습니다.',
@@ -150,11 +177,13 @@ class QuizCatalog {
             '연필이 한 개 장 있습니다.',
           ],
           correctIndex: 2,
+          imageAsset: 'assets/quiz/set1/q13_pencil.png',
         ),
         QuizQuestion(
-          question: 'Door image',
+          question: '다음 그림을 보고 맞는 단어나 문장을 고르십시오.',
           options: ['옷장입니다', '서랍입니다.', '냉장고입니다.', '문짝입니다.'],
           correctIndex: 2,
+          imageAsset: 'assets/quiz/set1/q14_door.png',
         ),
         QuizQuestion(
           question: '다음 단어와 과계 있은 것은 무엇입니까? \n 인사, 조각, 피, 문단, 정',
@@ -195,18 +224,37 @@ class QuizCatalog {
         // below — verify against the actual audio/answer key before using
         // these for real practice.
         //
-        // Skipped for now (picture-based options not fully visible in the
-        // source images): Q23, Q25-Q29, Q36, Q37. Send clearer images of
-        // those and I'll add them too.
+        // audioAsset is left null — drop an mp3 into assets/quiz/set1/ (e.g.
+        // 'q21.mp3') and set audioAsset: 'assets/quiz/set1/q21.mp3' once you
+        // have the actual listening clips.
+        //
+        // Still skipped (no visible answer-choice content in the source
+        // images even in the clearer scan): Q25, Q26, Q27, Q28, Q29. I did
+        // crop their stimulus images (book/box-scene/cement/bankbook/map)
+        // in case you can supply the missing answer options later.
         QuizQuestion(
           question: '21. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
           options: ['모래', '부래', '미래', '비례'],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q21.mp3
         ),
         QuizQuestion(
           question: '22. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
           options: ['약속', '악수', '익숙', '시속'],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q22.mp3
+        ),
+        QuizQuestion(
+          question: '23. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
+          options: ['코끼리', '원숭이', '메뚜기', '호랑이'],
+          optionImages: [
+            'assets/quiz/set1/q23_elephant.png',
+            'assets/quiz/set1/q23_monkey.png',
+            'assets/quiz/set1/q23_grasshopper.png',
+            'assets/quiz/set1/q23_tiger.png',
+          ],
+          correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q23.mp3
         ),
         QuizQuestion(
           question: '24. 잘 듣고 알맞은 것을 고르십시오.', // TODO: verify correct answer
@@ -216,8 +264,84 @@ class QuizCatalog {
             '폴더폰 1,000원',
             '스마트폰 100,000원',
           ],
+          optionImages: [
+            'assets/quiz/set1/q24_phone1.png',
+            'assets/quiz/set1/q24_phone2.png',
+            'assets/quiz/set1/q24_phone3.png',
+            'assets/quiz/set1/q24_phone4.png',
+          ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q24.mp3
         ),
+
+        // Q25-29: the source worksheet never shows the 4 answer choices for
+        // these — every scan you've sent has real question text/pictures
+        // but the ①②③④ slots are blank. Rather than invent Korean text and
+        // pass it off as a real EPS-TOPIK answer choice, the options below
+        // are intentionally obvious placeholders. Replace `options` (and
+        // `optionImages` if the real choices are pictures) with the actual
+        // content once you have it, then fix `correctIndex`.
+        QuizQuestion(
+          question: '25. 이것은 무엇입니까?', // TODO: real options needed
+          options: [
+            '[보기 정보 없음 - ①]',
+            '[보기 정보 없음 - ②]',
+            '[보기 정보 없음 - ③]',
+            '[보기 정보 없음 - ④]',
+          ],
+          correctIndex: 0,
+          imageAsset: 'assets/quiz/set1/q25_book.png',
+          audioAsset: null, // TODO: add assets/quiz/set1/q25.mp3
+        ),
+        QuizQuestion(
+          question: '26. 이 사람은 무엇을 하고 있습니까?', // TODO: real options needed
+          options: [
+            '[보기 정보 없음 - ①]',
+            '[보기 정보 없음 - ②]',
+            '[보기 정보 없음 - ③]',
+            '[보기 정보 없음 - ④]',
+          ],
+          correctIndex: 0,
+          imageAsset: 'assets/quiz/set1/q26_scene.png',
+          audioAsset: null, // TODO: add assets/quiz/set1/q26.mp3
+        ),
+        QuizQuestion(
+          question: '27. 얼마나 있습니까?', // TODO: real options needed
+          options: [
+            '[보기 정보 없음 - ①]',
+            '[보기 정보 없음 - ②]',
+            '[보기 정보 없음 - ③]',
+            '[보기 정보 없음 - ④]',
+          ],
+          correctIndex: 0,
+          imageAsset: 'assets/quiz/set1/q27_cement.png',
+          audioAsset: null, // TODO: add assets/quiz/set1/q27.mp3
+        ),
+        QuizQuestion(
+          question: '28. 통장에 잔액은 얼마입니까?', // TODO: real options needed
+          options: [
+            '[보기 정보 없음 - ①]',
+            '[보기 정보 없음 - ②]',
+            '[보기 정보 없음 - ③]',
+            '[보기 정보 없음 - ④]',
+          ],
+          correctIndex: 0,
+          imageAsset: 'assets/quiz/set1/q28_bankbook.png',
+          audioAsset: null, // TODO: add assets/quiz/set1/q28.mp3
+        ),
+        QuizQuestion(
+          question: '29. 호텔은 어디에 있습니까?', // TODO: real options needed
+          options: [
+            '[보기 정보 없음 - ①]',
+            '[보기 정보 없음 - ②]',
+            '[보기 정보 없음 - ③]',
+            '[보기 정보 없음 - ④]',
+          ],
+          correctIndex: 0,
+          imageAsset: 'assets/quiz/set1/q29_map.png',
+          audioAsset: null, // TODO: add assets/quiz/set1/q29.mp3
+        ),
+
         QuizQuestion(
           question:
               '30. 다음을 듣고 이어지는 말로 알맞은 것을 고르십시오.', // TODO: verify correct answer
@@ -228,6 +352,7 @@ class QuizCatalog {
             '귀국비용보험을 가입하러 신청하세요.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q30.mp3
         ),
         QuizQuestion(
           question:
@@ -239,6 +364,7 @@ class QuizCatalog {
             '여기 신발하고 거스름돈 받으세요. 다음에 또 오세요.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q31.mp3
         ),
         QuizQuestion(
           question:
@@ -250,6 +376,7 @@ class QuizCatalog {
             '오늘은 만료일이라서 연장하러 갈 거예요.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q32.mp3
         ),
         QuizQuestion(
           question:
@@ -261,6 +388,7 @@ class QuizCatalog {
             '시험장에는 큰 소리로 떠들면 안돼요.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q33.mp3
         ),
         QuizQuestion(
           question: '34. 질문을 듣고 이어지는 말을 고르십시오.', // TODO: verify correct answer
@@ -271,6 +399,7 @@ class QuizCatalog {
             '초대해 줘서 정말 고마워요.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q34.mp3
         ),
         QuizQuestion(
           question: '35. 질문을 듣고 이어지는 말을 고르십시오.', // TODO: verify correct answer
@@ -281,6 +410,43 @@ class QuizCatalog {
             '도움이 필요하시면 연락하세요.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q35.mp3
+        ),
+        QuizQuestion(
+          question:
+              '36. 잘 듣고 들은 내용과 관계있는 그림을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '차 앞에서 사람들이 이야기하는 장면',
+            '가족이 차 안에 함께 있는 장면',
+            '사람들이 둘러앉아 이야기하는 장면',
+            '버스 정류장에 사람들이 서 있는 장면',
+          ],
+          optionImages: [
+            'assets/quiz/set1/q36_scene1.png',
+            'assets/quiz/set1/q36_scene2.png',
+            'assets/quiz/set1/q36_scene3.png',
+            'assets/quiz/set1/q36_scene4.png',
+          ],
+          correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q36.mp3
+        ),
+        QuizQuestion(
+          question:
+              '37. 잘 듣고 들은 내용과 관계있는 그림을 고르십시오.', // TODO: verify correct answer
+          options: [
+            '식당에서 세 사람이 이야기하는 장면',
+            '가게에서 두 사람이 이야기하는 장면',
+            '가족이 바닥 식탁에서 식사하는 장면',
+            '집 안에서 두 사람이 함께 있는 장면',
+          ],
+          optionImages: [
+            'assets/quiz/set1/q37_scene1.png',
+            'assets/quiz/set1/q37_scene2.png',
+            'assets/quiz/set1/q37_scene3.png',
+            'assets/quiz/set1/q37_scene4.png',
+          ],
+          correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q37.mp3
         ),
         QuizQuestion(
           question:
@@ -292,6 +458,7 @@ class QuizCatalog {
             '내년에 한국에 가겠습니다.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q38.mp3
         ),
         QuizQuestion(
           question: '39. 여자는 왜 가계에 전화하려고 합니까?', // TODO: verify correct answer
@@ -302,6 +469,7 @@ class QuizCatalog {
             '카메라 사용법을 읽었는데로 이해할 수 없어서',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q39.mp3
         ),
         QuizQuestion(
           question: '40. 무엇에 대해서 이야기하고 있습니까?', // TODO: verify correct answer
@@ -312,6 +480,7 @@ class QuizCatalog {
             '남자는 어떻게 하겠습니까?.',
           ],
           correctIndex: 0,
+          audioAsset: null, // TODO: add assets/quiz/set1/q40.mp3
         ),
       ],
     ),

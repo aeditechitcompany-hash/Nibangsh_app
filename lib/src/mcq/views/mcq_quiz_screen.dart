@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
+import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_quiz_controller.dart';
 
 class McqQuizScreen extends StatelessWidget {
@@ -127,8 +128,9 @@ class McqQuizScreen extends StatelessWidget {
             ),
           ],
         ),
-        child: Obx(
-          () => Column(
+        child: Obx(() {
+          final question = controller.currentQuestion;
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -157,7 +159,7 @@ class McqQuizScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                controller.currentQuestion.question,
+                question.question,
                 style: const TextStyle(
                   fontSize: 15.5,
                   fontWeight: FontWeight.bold,
@@ -165,11 +167,54 @@ class McqQuizScreen extends StatelessWidget {
                   height: 1.4,
                 ),
               ),
+
+              // Stimulus image (e.g. a picture/poster/graph the student
+              // looks at before answering).
+              if (question.hasImage) ...[
+                const SizedBox(height: 14),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    width: double.infinity,
+                    color: AppColors.background,
+                    padding: const EdgeInsets.all(10),
+                    child: Image.asset(
+                      question.imageAsset!,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Image not found: ${question.imageAsset}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.errorColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+
+              // Listening clip, if this question has one.
+              if (question.hasAudio) ...[
+                const SizedBox(height: 12),
+                AudioPlayButton(
+                  filePath: question.audioAsset!,
+                  isAsset: true,
+                  label: 'Listen',
+                ),
+              ],
+
               const SizedBox(height: 18),
-              ...List.generate(controller.currentQuestion.options.length, (
-                index,
-              ) {
+              ...List.generate(question.options.length, (index) {
                 final selected = controller.selectedForCurrent == index;
+                final optionImage =
+                    question.hasOptionImages &&
+                        index < question.optionImages!.length
+                    ? question.optionImages![index]
+                    : null;
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GestureDetector(
@@ -189,14 +234,55 @@ class McqQuizScreen extends StatelessWidget {
                               : AppColors.borderGrey,
                         ),
                       ),
-                      child: Text(
-                        controller.currentQuestion.options[index],
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                          color: selected ? Colors.white : AppColors.textDark,
-                        ),
-                      ),
+                      child: optionImage == null
+                          ? Text(
+                              question.options[index],
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w600,
+                                color: selected
+                                    ? Colors.white
+                                    : AppColors.textDark,
+                              ),
+                            )
+                          : Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Container(
+                                    width: 48,
+                                    height: 48,
+                                    color: selected
+                                        ? Colors.white.withOpacity(0.15)
+                                        : AppColors.background,
+                                    child: Image.asset(
+                                      optionImage,
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(
+                                                Icons.broken_image_outlined,
+                                                size: 20,
+                                                color: AppColors.textGrey,
+                                              ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    question.options[index],
+                                    style: TextStyle(
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: selected
+                                          ? Colors.white
+                                          : AppColors.textDark,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                   ),
                 );
@@ -255,8 +341,8 @@ class McqQuizScreen extends StatelessWidget {
                 ],
               ),
             ],
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
