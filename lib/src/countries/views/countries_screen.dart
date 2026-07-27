@@ -205,7 +205,12 @@ class CountriesScreen extends StatelessWidget {
     return Obx(() {
       final selected = controller.selectedCountryName.value == country.name;
       return GestureDetector(
-        onTap: () => controller.selectCountry(country.name),
+        onTap: () {
+          controller.selectCountry(country.name);
+          if (country.name == 'South Korea') {
+            Get.toNamed(AppRoute.universities, arguments: {'country': country.name});
+          }
+        },
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(14),

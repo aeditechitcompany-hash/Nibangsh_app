@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../common/models/application_step_model.dart';
+import '../../../common/models/required_document.dart';
 
 enum StudentStatus { active, pending, approved, rejected }
 
@@ -49,9 +50,15 @@ class StudentRecord {
   final String visaStatus;
   final String flightStatus;
   final int currentStep;
-  final int documentsUploaded;
-  final int documentsTotal;
   final StudentStatus status;
+
+  // Real per-document upload state (admin can attach/replace a file for
+  // each required document). documentsUploaded/documentsTotal below are
+  // derived from this so every screen that shows a count stays in sync.
+  final List<RequiredDocument> documents;
+
+  int get documentsUploaded => documents.where((d) => d.uploaded).length;
+  int get documentsTotal => documents.length;
 
   // Step 4
   final DateTime? interviewDate;
@@ -110,9 +117,8 @@ class StudentRecord {
     required this.visaStatus,
     required this.flightStatus,
     required this.currentStep,
-    required this.documentsUploaded,
-    required this.documentsTotal,
     required this.status,
+    this.documents = RequiredDocumentsCatalog.seed,
     this.interviewDate,
     this.interviewMode,
     this.interviewResult,
@@ -159,8 +165,21 @@ class StudentRecord {
   }
 
   StudentRecord copyWith({
+    String? name,
+    String? email,
+    String? phone,
+    String? countryCode,
+    String? countryName,
+    String? university,
+    String? course,
+    String? gpa,
+    String? degree,
+    String? passoutYear,
+    String? languageTestName,
+    String? languageTestScore,
     int? currentStep,
     StudentStatus? status,
+    List<RequiredDocument>? documents,
     String? visaStatus,
     String? flightStatus,
     DateTime? interviewDate,
@@ -191,25 +210,24 @@ class StudentRecord {
   }) {
     return StudentRecord(
       id: id,
-      name: name,
-      email: email,
-      phone: phone,
-      countryCode: countryCode,
-      countryName: countryName,
-      university: university,
-      course: course,
-      gpa: gpa,
-      degree: degree,
-      passoutYear: passoutYear,
-      languageTestName: languageTestName,
-      languageTestScore: languageTestScore,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      countryCode: countryCode ?? this.countryCode,
+      countryName: countryName ?? this.countryName,
+      university: university ?? this.university,
+      course: course ?? this.course,
+      gpa: gpa ?? this.gpa,
+      degree: degree ?? this.degree,
+      passoutYear: passoutYear ?? this.passoutYear,
+      languageTestName: languageTestName ?? this.languageTestName,
+      languageTestScore: languageTestScore ?? this.languageTestScore,
       joinedDate: joinedDate,
       visaStatus: visaStatus ?? this.visaStatus,
       flightStatus: flightStatus ?? this.flightStatus,
       currentStep: currentStep ?? this.currentStep,
-      documentsUploaded: documentsUploaded,
-      documentsTotal: documentsTotal,
       status: status ?? this.status,
+      documents: documents ?? this.documents,
       interviewDate: interviewDate ?? this.interviewDate,
       interviewMode: interviewMode ?? this.interviewMode,
       interviewResult: interviewResult ?? this.interviewResult,
@@ -223,15 +241,15 @@ class StudentRecord {
       locFileName: locFileName ?? this.locFileName,
       locVerified: locVerified ?? this.locVerified,
       courseCommencementDate:
-          courseCommencementDate ?? this.courseCommencementDate,
+      courseCommencementDate ?? this.courseCommencementDate,
       scholarshipStatus: scholarshipStatus ?? this.scholarshipStatus,
       finalSelectionNotes: finalSelectionNotes ?? this.finalSelectionNotes,
       finalSelectionConfirmed:
-          finalSelectionConfirmed ?? this.finalSelectionConfirmed,
+      finalSelectionConfirmed ?? this.finalSelectionConfirmed,
       visaRefNo: visaRefNo ?? this.visaRefNo,
       visaStatusUpdate: visaStatusUpdate ?? this.visaStatusUpdate,
       visaApprovalLetterFileName:
-          visaApprovalLetterFileName ?? this.visaApprovalLetterFileName,
+      visaApprovalLetterFileName ?? this.visaApprovalLetterFileName,
       flightNumber: flightNumber ?? this.flightNumber,
       airline: airline ?? this.airline,
       departureAirport: departureAirport ?? this.departureAirport,
@@ -242,10 +260,22 @@ class StudentRecord {
   }
 }
 
+// Builds a per-student copy of the required-documents catalog, marking the
+// first [uploadedCount] of them as already uploaded (just for seed/demo
+// data). Admin can then upload/replace any of these from the student
+// profile screen, which is real per-document state from here on.
+List<RequiredDocument> _seedDocs(int uploadedCount) {
+  return RequiredDocumentsCatalog.seed
+      .asMap()
+      .entries
+      .map((e) => e.value.copyWith(uploaded: e.key < uploadedCount))
+      .toList();
+}
+
 class StudentsCatalog {
   StudentsCatalog._();
 
-  static const List<StudentRecord> seed = [
+  static final List<StudentRecord> seed = [
     StudentRecord(
       id: 's1',
       name: 'Arjun Sharma',
@@ -264,8 +294,7 @@ class StudentsCatalog {
       visaStatus: 'Not Started',
       flightStatus: 'Not booked',
       currentStep: 5,
-      documentsUploaded: 4,
-      documentsTotal: 6,
+      documents: _seedDocs(4),
       status: StudentStatus.active,
     ),
     StudentRecord(
@@ -286,8 +315,7 @@ class StudentsCatalog {
       visaStatus: 'Approved',
       flightStatus: 'Booked',
       currentStep: 9,
-      documentsUploaded: 6,
-      documentsTotal: 6,
+      documents: _seedDocs(6),
       status: StudentStatus.approved,
     ),
     StudentRecord(
@@ -308,8 +336,7 @@ class StudentsCatalog {
       visaStatus: 'Not Started',
       flightStatus: 'Not booked',
       currentStep: 4,
-      documentsUploaded: 2,
-      documentsTotal: 6,
+      documents: _seedDocs(2),
       status: StudentStatus.pending,
     ),
     StudentRecord(
@@ -330,8 +357,7 @@ class StudentsCatalog {
       visaStatus: 'Processing',
       flightStatus: 'Not booked',
       currentStep: 6,
-      documentsUploaded: 5,
-      documentsTotal: 6,
+      documents: _seedDocs(5),
       status: StudentStatus.active,
     ),
     StudentRecord(
@@ -352,8 +378,7 @@ class StudentsCatalog {
       visaStatus: 'Not Started',
       flightStatus: 'Not booked',
       currentStep: 7,
-      documentsUploaded: 3,
-      documentsTotal: 6,
+      documents: _seedDocs(3),
       status: StudentStatus.rejected,
     ),
     StudentRecord(
@@ -374,8 +399,7 @@ class StudentsCatalog {
       visaStatus: 'Approved',
       flightStatus: 'Booked',
       currentStep: 8,
-      documentsUploaded: 6,
-      documentsTotal: 6,
+      documents: _seedDocs(6),
       status: StudentStatus.active,
     ),
   ];

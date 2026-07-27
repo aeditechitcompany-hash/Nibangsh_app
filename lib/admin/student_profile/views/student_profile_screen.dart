@@ -1,55 +1,67 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nibangsh_consultancy/const/constants.dart';
+import 'package:open_file/open_file.dart';
 import '../../../../common/models/required_document.dart';
 import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
+import '../../students/controller/students_controller.dart';
+import 'edit_student_sheet.dart';
 
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final student = Get.arguments as StudentRecord;
+    final initial = Get.arguments as StudentRecord;
+    final StudentsController controller = Get.isRegistered<StudentsController>()
+        ? Get.find<StudentsController>()
+        : Get.put(StudentsController());
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(student),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+      body: Obx(() {
+        // Always read the live copy so edits made here (or elsewhere)
+        // show up immediately.
+        final student = controller.byId(initial.id) ?? initial;
+
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(student),
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
+                ),
+                padding: const EdgeInsets.only(top: 22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStatsRow(student),
+                    const SizedBox(height: 20),
+                    _buildStudentInfoCard(context, controller, student),
+                    const SizedBox(height: 20),
+                    _buildProgressCard(student),
+                    const SizedBox(height: 20),
+                    _buildDocumentsCard(context, controller, student),
+                    const SizedBox(height: 20),
+                    _buildVisaFlightRow(student),
+                    const SizedBox(height: 20),
+                    _buildAdminActionsCard(context, controller, student),
+                    const SizedBox(height: 60),
+                  ],
                 ),
               ),
-              padding: const EdgeInsets.only(top: 22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStatsRow(student),
-                  const SizedBox(height: 20),
-                  _buildStudentInfoCard(student),
-                  const SizedBox(height: 20),
-                  _buildProgressCard(student),
-                  const SizedBox(height: 20),
-                  _buildDocumentsCard(student, context),
-                  const SizedBox(height: 20),
-                  _buildVisaFlightRow(student),
-                  const SizedBox(height: 20),
-                  _buildAdminActionsCard(context, student),
-                  const SizedBox(height: 60),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -243,7 +255,11 @@ class StudentProfileScreen extends StatelessWidget {
   }
 
   // ── Student Information card ──
-  Widget _buildStudentInfoCard(StudentRecord student) {
+  Widget _buildStudentInfoCard(
+    BuildContext context,
+    StudentsController controller,
+    StudentRecord student,
+  ) {
     final flag = AcademicConstants.countryFlags[student.countryName] ?? '🌍';
 
     final rows = [
@@ -277,6 +293,21 @@ class StudentProfileScreen extends StatelessWidget {
 
     return _sectionCard(
       title: 'Student Information',
+      trailing: GestureDetector(
+        onTap: () => showEditStudentSheet(context, controller, student),
+        child: Container(
+          padding: const EdgeInsets.all(7),
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlue.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.edit_outlined,
+            size: 16,
+            color: AppColors.primaryBlue,
+          ),
+        ),
+      ),
       child: Column(
         children: List.generate(rows.length, (index) {
           final row = rows[index];
@@ -351,7 +382,7 @@ class StudentProfileScreen extends StatelessWidget {
               Color color;
               if (stepNumber <= student.currentStep) {
                 color = AppColors.primaryBlue;
-              } else if (stepNumber == student.currentStep+1) {
+              } else if (stepNumber == student.currentStep + 1) {
                 color = Colors.amber.shade600;
               } else {
                 color = AppColors.borderGrey;
@@ -378,16 +409,22 @@ class StudentProfileScreen extends StatelessWidget {
               color: AppColors.textGrey,
               fontWeight: FontWeight.w600,
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
   // ── Documents card ──
-  Widget _buildDocumentsCard(StudentRecord student, BuildContext context) {
-    final docs = RequiredDocumentsCatalog.seed;
-    final fraction = student.documentsUploaded / student.documentsTotal;
+  Widget _buildDocumentsCard(
+    BuildContext context,
+    StudentsController controller,
+    StudentRecord student,
+  ) {
+    final docs = student.documents;
+    final fraction = student.documentsTotal == 0
+        ? 0.0
+        : student.documentsUploaded / student.documentsTotal;
 
     return _sectionCard(
       title: 'Documents',
@@ -418,9 +455,7 @@ class StudentProfileScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          ...List.generate(docs.length, (index) {
-            final doc = docs[index];
-            final uploaded = index < student.documentsUploaded;
+          ...docs.map((doc) {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 7),
               child: Row(
@@ -428,7 +463,7 @@ class StudentProfileScreen extends StatelessWidget {
                   Icon(
                     doc.icon,
                     size: 16,
-                    color: uploaded
+                    color: doc.uploaded
                         ? const Color(0xFF16A34A)
                         : AppColors.textGrey,
                   ),
@@ -443,26 +478,9 @@ class StudentProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (uploaded) ...[
-                    const Text(
-                      'Uploaded',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF16A34A),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
+                  if (doc.uploaded) ...[
                     GestureDetector(
-                      onTap: () => Get.snackbar(
-                        'Preview',
-                        '${doc.title} preview isn\'t wired up yet.',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: AppColors.primaryRed,
-                        colorText: Colors.white,
-                        margin: const EdgeInsets.all(16),
-                        borderRadius: 12,
-                      ),
+                      onTap: () => _viewDocument(doc),
                       child: const Row(
                         children: [
                           Icon(
@@ -482,13 +500,50 @@ class StudentProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () =>
+                          _pickDocumentFile(context, controller, student, doc),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.upload_outlined,
+                            size: 13,
+                            color: AppColors.primaryBlue,
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            'Replace',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: AppColors.primaryBlue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ] else
-                    const Text(
-                      'Missing',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFF59E0B),
+                    GestureDetector(
+                      onTap: () =>
+                          _pickDocumentFile(context, controller, student, doc),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.upload_outlined,
+                            size: 13,
+                            color: Color(0xFFF59E0B),
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            'Upload',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: Color(0xFFF59E0B),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                 ],
@@ -498,6 +553,76 @@ class StudentProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _viewDocument(RequiredDocument doc) {
+    if (doc.filePath == null || doc.filePath!.isEmpty) {
+      Get.snackbar(
+        'No file attached',
+        'This was marked uploaded in seed data — upload a real file to view it.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.primaryRed,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+      return;
+    }
+    OpenFile.open(doc.filePath!);
+  }
+
+  Future<void> _pickDocumentFile(
+    BuildContext context,
+    StudentsController controller,
+    StudentRecord student,
+    RequiredDocument doc,
+  ) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+      );
+      if (result == null || result.files.isEmpty) return;
+      final path = result.files.single.path;
+      if (path == null) {
+        Get.snackbar(
+          'Error',
+          'Could not access that file on this device.',
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(16),
+        );
+        return;
+      }
+
+      final updatedDocs = student.documents
+          .map(
+            (d) =>
+                d.id == doc.id ? d.copyWith(uploaded: true, filePath: path) : d,
+          )
+          .toList();
+
+      controller.updateStudent(
+        student.id,
+        (current) => current.copyWith(documents: updatedDocs),
+      );
+
+      Get.snackbar(
+        'Uploaded',
+        '${doc.title} saved for ${student.name}.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF16A34A),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+    } catch (e) {
+      debugPrint('Document picker failed: $e');
+      Get.snackbar(
+        'Error',
+        'Could not open the file picker.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+    }
   }
 
   // ── Visa Status + Flight mini cards ──
@@ -580,7 +705,11 @@ class StudentProfileScreen extends StatelessWidget {
   }
 
   // ── Admin actions ──
-  Widget _buildAdminActionsCard(BuildContext context, StudentRecord student) {
+  Widget _buildAdminActionsCard(
+    BuildContext context,
+    StudentsController controller,
+    StudentRecord student,
+  ) {
     return _sectionCard(
       title: 'Admin Actions',
       child: Column(
@@ -595,15 +724,21 @@ class StudentProfileScreen extends StatelessWidget {
               message: 'Approve ${student.name}\'s application?',
               confirmLabel: 'Approve',
               confirmColor: const Color(0xFF16A34A),
-              onConfirm: () => Get.snackbar(
-                'Approved',
-                '${student.name} marked as approved (not persisted yet).',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: const Color(0xFF16A34A),
-                colorText: Colors.white,
-                margin: const EdgeInsets.all(16),
-                borderRadius: 12,
-              ),
+              onConfirm: () {
+                controller.updateStudent(
+                  student.id,
+                  (s) => s.copyWith(status: StudentStatus.approved),
+                );
+                Get.snackbar(
+                  'Approved',
+                  '${student.name} marked as approved.',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: const Color(0xFF16A34A),
+                  colorText: Colors.white,
+                  margin: const EdgeInsets.all(16),
+                  borderRadius: 12,
+                );
+              },
             ),
           ),
           const SizedBox(height: 10),
@@ -617,15 +752,21 @@ class StudentProfileScreen extends StatelessWidget {
               message: 'Reject ${student.name}\'s application?',
               confirmLabel: 'Reject',
               confirmColor: AppColors.errorColor,
-              onConfirm: () => Get.snackbar(
-                'Rejected',
-                '${student.name}\'s application marked as rejected (not persisted yet).',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: AppColors.errorColor,
-                colorText: Colors.white,
-                margin: const EdgeInsets.all(16),
-                borderRadius: 12,
-              ),
+              onConfirm: () {
+                controller.updateStudent(
+                  student.id,
+                  (s) => s.copyWith(status: StudentStatus.rejected),
+                );
+                Get.snackbar(
+                  'Rejected',
+                  '${student.name}\'s application marked as rejected.',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: AppColors.errorColor,
+                  colorText: Colors.white,
+                  margin: const EdgeInsets.all(16),
+                  borderRadius: 12,
+                );
+              },
             ),
           ),
           const SizedBox(height: 10),
@@ -693,9 +834,7 @@ class StudentProfileScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.white,
                 foregroundColor: AppColors.white,
-                side: BorderSide(
-                  color: AppColors.textGrey.withOpacity(0.3),
-                ),
+                side: BorderSide(color: AppColors.textGrey.withOpacity(0.3)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

@@ -30,7 +30,8 @@ class AdminOverviewScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatGrid(controller),
+                const SizedBox(height: 24),
+                _buildAddMcqCard(),
                 const SizedBox(height: 24),
                 _buildDestinationsSection(controller),
                 const SizedBox(height: 24),
@@ -47,7 +48,10 @@ class AdminOverviewScreen extends StatelessWidget {
   }
 
   // ── Header ──
-  Widget _buildHeader(AdminOverviewController controller, BuildContext context) {
+  Widget _buildHeader(
+    AdminOverviewController controller,
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
@@ -76,10 +80,7 @@ class AdminOverviewScreen extends StatelessWidget {
                   color: Colors.white.withOpacity(0.14),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset(
-                  AppResources.logoPath,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.asset(AppResources.logoPath, fit: BoxFit.cover),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -136,7 +137,7 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Obx(
-                () => Row(
+            () => Row(
               children: [
                 Expanded(
                   child: _topPill(
@@ -191,86 +192,74 @@ class AdminOverviewScreen extends StatelessWidget {
     );
   }
 
-  // ── 2x2 stat grid ──
-  Widget _buildStatGrid(AdminOverviewController controller) {
+  // ── Add MCQ shortcut card ──
+  Widget _buildAddMcqCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.25,
-        children: controller.statCards.map((card) {
-          return Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+      child: GestureDetector(
+        onTap: () => Get.toNamed(AppRoute.adminMcq),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.navyDark, AppColors.navyLight],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.quiz_outlined,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: (card['iconColor'] as Color).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        card['icon'] as IconData,
-                        color: card['iconColor'] as Color,
-                        size: 18,
+                    Text(
+                      'Add MCQ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(
-                      Icons.trending_up_rounded,
-                      color: Color(0xFF16A34A),
-                      size: 16,
+                    SizedBox(height: 2),
+                    Text(
+                      'Create questions (with optional audio) for students',
+                      style: TextStyle(color: Colors.white70, fontSize: 11.5),
                     ),
                   ],
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  card['value'] as String,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  card['label'] as String,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textGrey,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  card['delta'] as String,
-                  style: const TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF16A34A),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -404,8 +393,9 @@ class AdminOverviewScreen extends StatelessWidget {
           final color = action['color'] as Color;
           return Expanded(
             child: GestureDetector(
-              onTap: () => Get.find<AdminNavigationController>()
-                  .setIndex(action['tabIndex'] as int),
+              onTap: () => Get.find<AdminNavigationController>().setIndex(
+                action['tabIndex'] as int,
+              ),
               child: Container(
                 margin: EdgeInsets.only(right: action == actions.last ? 0 : 10),
                 padding: const EdgeInsets.symmetric(vertical: 16),

@@ -728,19 +728,26 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _handleStepTap(
-    HomeController controller,
-    ApplicationStepModel step,
-    BuildContext context,
-  ) {
+      HomeController controller,
+      ApplicationStepModel step,
+      BuildContext context,
+      ) {
     if (step.id == 2) {
       _showLanguageTestSheet(controller, context);
       return;
     }
 
-    final actionLabel = step.id == 1
-        ? 'marksheet / transcript'
-        : 'all required documents';
-    _showStepUploadOptions(controller, step.id, actionLabel, context);
+    if (step.id == 3) {
+      Get.toNamed(AppRoute.docs);
+      return;
+    }
+
+    _showStepUploadOptions(
+      controller,
+      step.id,
+      'marksheet / transcript',
+      context,
+    );
   }
 
   void _showStepUploadOptions(
