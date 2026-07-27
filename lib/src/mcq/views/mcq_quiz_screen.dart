@@ -158,18 +158,18 @@ class McqQuizScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                question.question,
-                style: const TextStyle(
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                  height: 1.4,
+              if (question.hasQuestionText)
+                Text(
+                  question.question!,
+                  style: const TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                    height: 1.4,
+                  ),
                 ),
-              ),
 
-              // Stimulus image (e.g. a picture/poster/graph the student
-              // looks at before answering).
+              // Stimulus image (e.g. a picture/poster/graph the student looks at before answering).
               if (question.hasImage) ...[
                 const SizedBox(height: 14),
                 ClipRRect(
