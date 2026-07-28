@@ -13,6 +13,7 @@ class McqResultScreen extends StatelessWidget {
     final args = Get.arguments as Map;
     final QuizSet quizSet = args['quizSet'] as QuizSet;
     final int score = args['score'] as int;
+    final bool timeUp = args['timeUp'] == true;
     final total = quizSet.totalQuestions;
     final passed = total == 0 ? false : score / total >= 0.6;
 
@@ -24,7 +25,29 @@ class McqResultScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: Column(
               children: [
-                const SizedBox(height: 60),
+                SizedBox(height: timeUp ? 24 : 60),
+                if (timeUp) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.errorColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.errorColor.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.timer_off_outlined, color: AppColors.errorColor, size: 16),
+                        SizedBox(width: 6),
+                        Text(
+                          'Time\'s up!',
+                          style: TextStyle(color: AppColors.errorColor, fontSize: 12.5, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 Container(
                   width: 220,
                   height: 220,
@@ -62,7 +85,9 @@ class McqResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  passed ? 'Great job! You did it.' : 'Review the topic and try this set again.',
+                  timeUp
+                      ? 'Your time ran out before you finished — here\'s how you did on the questions you answered.'
+                      : (passed ? 'Great job! You did it.' : 'Review the topic and try this set again.'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: AppColors.textGrey, fontSize: 13.5),
                 ),

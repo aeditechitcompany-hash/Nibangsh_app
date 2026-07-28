@@ -21,6 +21,7 @@ class AppRoute {
   static const String studentBooks = '/books';
   static const String mcqQuiz = '/mcq-quiz';
   static const String mcqResult = '/mcq-result';
+  static const String mcqInstructions = '/mcq-instructions';
   static const String adminMcq = '/admin-mcq';
   static const String universities = '/universities';
   static const String courses = '/courses';

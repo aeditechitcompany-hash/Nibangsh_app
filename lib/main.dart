@@ -13,6 +13,7 @@ import 'package:nibangsh_consultancy/src/countries/views/countries_screen.dart';
 import 'package:nibangsh_consultancy/src/courses/views/courses_screen.dart';
 import 'package:nibangsh_consultancy/src/docs/views/docs_screen.dart';
 import 'package:nibangsh_consultancy/src/books/views/student_books_screen.dart';
+import 'package:nibangsh_consultancy/src/mcq/views/mcq_instructions_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_quiz_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
 import 'package:nibangsh_consultancy/src/notifications/views/notifications_screen.dart';
@@ -100,6 +101,7 @@ class MyApp extends StatelessWidget {
           page: () => const StudentBooksScreen(),
         ),
         GetPage(name: AppRoute.mcqQuiz, page: () => const McqQuizScreen()),
+        GetPage(name: AppRoute.mcqInstructions, page: () => const McqInstructionsScreen()),
         GetPage(name: AppRoute.mcqResult, page: () => const McqResultScreen()),
         GetPage(name: AppRoute.adminMcq, page: () => const AdminMcqScreen()),
         GetPage(
