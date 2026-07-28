@@ -12,6 +12,7 @@ import '../../steps/views/step8_screen.dart';
 import '../../steps/views/step9_screen.dart';
 import '../../steps/views/step10_screen.dart';
 import '../controller/approvals_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class ApprovalsScreen extends StatelessWidget {
   const ApprovalsScreen({super.key});
@@ -20,33 +21,35 @@ class ApprovalsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(ApprovalsController());
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(controller),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+    return ResponsiveDashboardWrapper(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(controller),
+            Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
+              ),
+              padding: const EdgeInsets.only(top: 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildStepFilterChips(controller),
+                  const SizedBox(height: 10),
+                  _buildStatusFilterTabs(controller),
+                  const SizedBox(height: 16),
+                  _buildApprovalList(controller, context),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
-            padding: const EdgeInsets.only(top: 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildStepFilterChips(controller),
-                const SizedBox(height: 10),
-                _buildStatusFilterTabs(controller),
-                const SizedBox(height: 16),
-                _buildApprovalList(controller, context),
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -211,7 +214,7 @@ class ApprovalsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(
-        () => Row(
+            () => Row(
           children: tabs.map((tab) {
             final selected = controller.selectedStatusFilter.value == tab.$1;
             return Padding(
@@ -236,9 +239,9 @@ class ApprovalsScreen extends StatelessWidget {
 
   // ── Approval cards list ──
   Widget _buildApprovalList(
-    ApprovalsController controller,
-    BuildContext context,
-  ) {
+      ApprovalsController controller,
+      BuildContext context,
+      ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
@@ -264,10 +267,10 @@ class ApprovalsScreen extends StatelessWidget {
   }
 
   Widget _approvalCard(
-    ApprovalsController controller,
-    StudentRecord student,
-    BuildContext context,
-  ) {
+      ApprovalsController controller,
+      StudentRecord student,
+      BuildContext context,
+      ) {
     final flag = AcademicConstants.countryFlags[student.countryName] ?? '🌍';
     final done = ApprovalsController.adminStepsDone(student);
     final total = ApprovalsController.adminStepsCount;
@@ -278,7 +281,7 @@ class ApprovalsScreen extends StatelessWidget {
 
     final isReview =
         student.status == StudentStatus.active ||
-        student.status == StudentStatus.pending;
+            student.status == StudentStatus.pending;
     final badgeLabel = isReview ? 'In Review' : student.status.label;
     final badgeColor = isReview ? AppColors.primaryBlue : student.status.color;
 
@@ -412,7 +415,7 @@ class ApprovalsScreen extends StatelessWidget {
                           Get.to(() => const Step9Screen(), arguments: student);
                         } else if (student.currentStep == 10) {
                           Get.to(
-                            () => const Step10Screen(),
+                                () => const Step10Screen(),
                             arguments: student,
                           );
                         } else {
@@ -466,9 +469,9 @@ class ApprovalsScreen extends StatelessWidget {
 
   // ── Info banner for a student still awaiting admin action ──
   Widget _buildActiveStepBanner(
-    StudentRecord student,
-    AdminStepMeta currentMeta,
-  ) {
+      StudentRecord student,
+      AdminStepMeta currentMeta,
+      ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -586,10 +589,10 @@ class ApprovalsScreen extends StatelessWidget {
   }
 
   void _confirmProcessStep(
-    BuildContext context,
-    StudentRecord student,
-    AdminStepMeta meta,
-  ) {
+      BuildContext context,
+      StudentRecord student,
+      AdminStepMeta meta,
+      ) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(

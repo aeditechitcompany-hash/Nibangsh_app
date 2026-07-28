@@ -4,6 +4,7 @@ import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class McqScreen extends StatelessWidget {
   const McqScreen({super.key});
@@ -17,24 +18,26 @@ class McqScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(context),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+          ResponsiveWrapper(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
               ),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+              child: Obx(() {
+                if (controller.questions.isEmpty) {
+                  return _emptyState();
+                }
+                if (controller.submitted.value) {
+                  return _resultCard(controller);
+                }
+                return _quizCard(controller);
+              }),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-            child: Obx(() {
-              if (controller.questions.isEmpty) {
-                return _emptyState();
-              }
-              if (controller.submitted.value) {
-                return _resultCard(controller);
-              }
-              return _quizCard(controller);
-            }),
           ),
         ],
       ),

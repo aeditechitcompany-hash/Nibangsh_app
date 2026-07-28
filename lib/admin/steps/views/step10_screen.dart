@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step10_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step10Screen extends StatelessWidget {
   const Step10Screen({super.key});
@@ -19,64 +20,66 @@ class Step10Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildFinalStepBanner(student),
-                  const SizedBox(height: 20),
-                  _sectionLabel('FLIGHT NUMBER'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.flightNumberController,
-                    Icons.confirmation_number_outlined,
-                    'e.g. QF 025',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('AIRLINE'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.airlineController,
-                    Icons.airlines_outlined,
-                    'e.g. Qantas Airways',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('DEPARTURE AIRPORT'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.departureAirportController,
-                    Icons.flight_takeoff,
-                    'e.g. DEL — Indira Gandhi',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('ARRIVAL AIRPORT'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.arrivalAirportController,
-                    Icons.flight_land,
-                    'e.g. MEL — Melbourne',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('DEPARTURE DATE & TIME'),
-                  const SizedBox(height: 8),
-                  _buildDateTimeField(context, controller),
-                  const SizedBox(height: 20),
-                  _buildUploadBox(controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                  const SizedBox(height: 40),
-                ],
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildFinalStepBanner(student),
+                    const SizedBox(height: 20),
+                    _sectionLabel('FLIGHT NUMBER'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.flightNumberController,
+                      Icons.confirmation_number_outlined,
+                      'e.g. QF 025',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('AIRLINE'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.airlineController,
+                      Icons.airlines_outlined,
+                      'e.g. Qantas Airways',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('DEPARTURE AIRPORT'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.departureAirportController,
+                      Icons.flight_takeoff,
+                      'e.g. DEL — Indira Gandhi',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('ARRIVAL AIRPORT'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.arrivalAirportController,
+                      Icons.flight_land,
+                      'e.g. MEL — Melbourne',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('DEPARTURE DATE & TIME'),
+                    const SizedBox(height: 8),
+                    _buildDateTimeField(context, controller),
+                    const SizedBox(height: 20),
+                    _buildUploadBox(controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -314,10 +317,10 @@ class Step10Screen extends StatelessWidget {
 
   // ── Generic text field ──
   Widget _buildTextField(
-    TextEditingController textController,
-    IconData icon,
-    String hint,
-  ) {
+      TextEditingController textController,
+      IconData icon,
+      String hint,
+      ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -348,9 +351,9 @@ class Step10Screen extends StatelessWidget {
 
   // ── Departure date & time field ──
   Widget _buildDateTimeField(
-    BuildContext context,
-    Step10Controller controller,
-  ) {
+      BuildContext context,
+      Step10Controller controller,
+      ) {
     return Obx(() {
       final hasDateTime = controller.departureDateTime.value != null;
       return GestureDetector(

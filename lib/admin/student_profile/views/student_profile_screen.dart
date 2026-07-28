@@ -8,6 +8,7 @@ import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../../students/controller/students_controller.dart';
 import 'edit_student_sheet.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({super.key});
@@ -21,47 +22,49 @@ class StudentProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Obx(() {
-        // Always read the live copy so edits made here (or elsewhere)
-        // show up immediately.
-        final student = controller.byId(initial.id) ?? initial;
+      body: ResponsiveDashboardWrapper(
+        child: Obx(() {
+          // Always read the live copy so edits made here (or elsewhere)
+          // show up immediately.
+          final student = controller.byId(initial.id) ?? initial;
 
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(student),
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(student),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  padding: const EdgeInsets.only(top: 22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildStatsRow(student),
+                      const SizedBox(height: 20),
+                      _buildStudentInfoCard(context, controller, student),
+                      const SizedBox(height: 20),
+                      _buildProgressCard(student),
+                      const SizedBox(height: 20),
+                      _buildDocumentsCard(context, controller, student),
+                      const SizedBox(height: 20),
+                      _buildVisaFlightRow(student),
+                      const SizedBox(height: 20),
+                      _buildAdminActionsCard(context, controller, student),
+                      const SizedBox(height: 60),
+                    ],
                   ),
                 ),
-                padding: const EdgeInsets.only(top: 22),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildStatsRow(student),
-                    const SizedBox(height: 20),
-                    _buildStudentInfoCard(context, controller, student),
-                    const SizedBox(height: 20),
-                    _buildProgressCard(student),
-                    const SizedBox(height: 20),
-                    _buildDocumentsCard(context, controller, student),
-                    const SizedBox(height: 20),
-                    _buildVisaFlightRow(student),
-                    const SizedBox(height: 20),
-                    _buildAdminActionsCard(context, controller, student),
-                    const SizedBox(height: 60),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -256,10 +259,10 @@ class StudentProfileScreen extends StatelessWidget {
 
   // ── Student Information card ──
   Widget _buildStudentInfoCard(
-    BuildContext context,
-    StudentsController controller,
-    StudentRecord student,
-  ) {
+      BuildContext context,
+      StudentsController controller,
+      StudentRecord student,
+      ) {
     final flag = AcademicConstants.countryFlags[student.countryName] ?? '🌍';
 
     final rows = [
@@ -318,8 +321,8 @@ class StudentProfileScreen extends StatelessWidget {
               border: isLast
                   ? null
                   : const Border(
-                      bottom: BorderSide(color: AppColors.borderGrey, width: 1),
-                    ),
+                bottom: BorderSide(color: AppColors.borderGrey, width: 1),
+              ),
             ),
             child: Row(
               children: [
@@ -417,10 +420,10 @@ class StudentProfileScreen extends StatelessWidget {
 
   // ── Documents card ──
   Widget _buildDocumentsCard(
-    BuildContext context,
-    StudentsController controller,
-    StudentRecord student,
-  ) {
+      BuildContext context,
+      StudentsController controller,
+      StudentRecord student,
+      ) {
     final docs = student.documents;
     final fraction = student.documentsTotal == 0
         ? 0.0
@@ -572,11 +575,11 @@ class StudentProfileScreen extends StatelessWidget {
   }
 
   Future<void> _pickDocumentFile(
-    BuildContext context,
-    StudentsController controller,
-    StudentRecord student,
-    RequiredDocument doc,
-  ) async {
+      BuildContext context,
+      StudentsController controller,
+      StudentRecord student,
+      RequiredDocument doc,
+      ) async {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -597,13 +600,13 @@ class StudentProfileScreen extends StatelessWidget {
       final updatedDocs = student.documents
           .map(
             (d) =>
-                d.id == doc.id ? d.copyWith(uploaded: true, filePath: path) : d,
-          )
+        d.id == doc.id ? d.copyWith(uploaded: true, filePath: path) : d,
+      )
           .toList();
 
       controller.updateStudent(
         student.id,
-        (current) => current.copyWith(documents: updatedDocs),
+            (current) => current.copyWith(documents: updatedDocs),
       );
 
       Get.snackbar(
@@ -706,10 +709,10 @@ class StudentProfileScreen extends StatelessWidget {
 
   // ── Admin actions ──
   Widget _buildAdminActionsCard(
-    BuildContext context,
-    StudentsController controller,
-    StudentRecord student,
-  ) {
+      BuildContext context,
+      StudentsController controller,
+      StudentRecord student,
+      ) {
     return _sectionCard(
       title: 'Admin Actions',
       child: Column(
@@ -727,7 +730,7 @@ class StudentProfileScreen extends StatelessWidget {
               onConfirm: () {
                 controller.updateStudent(
                   student.id,
-                  (s) => s.copyWith(status: StudentStatus.approved),
+                      (s) => s.copyWith(status: StudentStatus.approved),
                 );
                 Get.snackbar(
                   'Approved',
@@ -755,7 +758,7 @@ class StudentProfileScreen extends StatelessWidget {
               onConfirm: () {
                 controller.updateStudent(
                   student.id,
-                  (s) => s.copyWith(status: StudentStatus.rejected),
+                      (s) => s.copyWith(status: StudentStatus.rejected),
                 );
                 Get.snackbar(
                   'Rejected',
@@ -802,56 +805,56 @@ class StudentProfileScreen extends StatelessWidget {
       height: 50,
       child: filled
           ? ElevatedButton.icon(
-              onPressed: onTap,
-              icon: Icon(icon, size: 18),
-              label: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-            )
+        onPressed: onTap,
+        icon: Icon(icon, size: 18),
+        label: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          elevation: 0,
+        ),
+      )
           : ElevatedButton.icon(
-              onPressed: onTap,
-              icon: Icon(icon, size: 18, color: Colors.black),
-              label: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.white,
-                foregroundColor: AppColors.white,
-                side: BorderSide(color: AppColors.textGrey.withOpacity(0.3)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-            ),
+        onPressed: onTap,
+        icon: Icon(icon, size: 18, color: Colors.black),
+        label: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.white,
+          foregroundColor: AppColors.white,
+          side: BorderSide(color: AppColors.textGrey.withOpacity(0.3)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          elevation: 0,
+        ),
+      ),
     );
   }
 
   void _confirmAction(
-    BuildContext context, {
-    required String title,
-    required String message,
-    required String confirmLabel,
-    required Color confirmColor,
-    required VoidCallback onConfirm,
-  }) {
+      BuildContext context, {
+        required String title,
+        required String message,
+        required String confirmLabel,
+        required Color confirmColor,
+        required VoidCallback onConfirm,
+      }) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(

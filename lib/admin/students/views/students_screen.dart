@@ -5,6 +5,7 @@ import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../../model/students_record.dart';
 import '../controller/students_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class StudentsScreen extends StatelessWidget {
   const StudentsScreen({super.key});
@@ -13,31 +14,33 @@ class StudentsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(StudentsController());
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(controller, context),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+    return ResponsiveDashboardWrapper(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(controller, context),
+            Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
+              ),
+              padding: const EdgeInsets.only(top: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildFilterChips(controller),
+                  const SizedBox(height: 16),
+                  _buildStudentList(controller),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
-            padding: const EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildFilterChips(controller),
-                const SizedBox(height: 16),
-                _buildStudentList(controller),
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -7,6 +7,7 @@ import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../main_navigation/controller/main_navigation_controller.dart';
 import '../controller/home_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,25 +26,27 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(controller),
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
+              ResponsiveWrapper(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
                   ),
-                ),
-                padding: const EdgeInsets.only(top: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildQuickActions(),
-                    const SizedBox(height: 24),
-                    _buildProfileCard(controller),
-                    const SizedBox(height: 26),
-                    _buildStepsSection(controller, context),
-                    const SizedBox(height: 100),
-                  ],
+                  padding: const EdgeInsets.only(top: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildQuickActions(),
+                      const SizedBox(height: 24),
+                      _buildProfileCard(controller),
+                      const SizedBox(height: 26),
+                      _buildStepsSection(controller, context),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -108,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     Obx(
-                      () => Text(
+                          () => Text(
                         '${controller.userName} 👋',
                         style: const TextStyle(
                           color: Colors.white,
@@ -197,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                       builder: (context, constraints) {
                         final fillWidth =
                             constraints.maxWidth *
-                            (controller.progressPercent.value / 100);
+                                (controller.progressPercent.value / 100);
                         return Stack(
                           children: [
                             Container(
@@ -303,12 +306,12 @@ class HomeScreen extends StatelessWidget {
                 onTap: targetIndex == null
                     ? null
                     : () {
-                        if (Get.isRegistered<MainNavigationController>()) {
-                          Get.find<MainNavigationController>().setIndex(
-                            targetIndex,
-                          );
-                        }
-                      },
+                  if (Get.isRegistered<MainNavigationController>()) {
+                    Get.find<MainNavigationController>().setIndex(
+                      targetIndex,
+                    );
+                  }
+                },
                 child: Column(
                   children: [
                     Container(
@@ -410,7 +413,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Obx(
-              () => Row(
+                  () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -434,7 +437,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Obx(
-              () => Row(
+                  () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -616,10 +619,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _stepTile(
-    HomeController controller,
-    ApplicationStepModel step,
-    BuildContext context,
-  ) {
+      HomeController controller,
+      ApplicationStepModel step,
+      BuildContext context,
+      ) {
     Color color;
     String pillLabel;
     IconData pillIcon;
@@ -751,20 +754,24 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _showStepUploadOptions(
-    HomeController controller,
-    int stepId,
-    String actionLabel,
-    BuildContext context,
-  ) {
+      HomeController controller,
+      int stepId,
+      String actionLabel,
+      BuildContext context,
+      ) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -859,13 +866,17 @@ class HomeScreen extends StatelessWidget {
   void _showLanguageTestSheet(HomeController controller, BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (_) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -881,7 +892,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 ...AcademicConstants.languageTests.map(
-                  (test) => ListTile(
+                      (test) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(
                       Icons.menu_book_outlined,

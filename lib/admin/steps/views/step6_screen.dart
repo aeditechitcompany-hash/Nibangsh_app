@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step6_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step6Screen extends StatelessWidget {
   const Step6Screen({super.key});
@@ -17,35 +18,37 @@ class Step6Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildUploadBox(controller, student),
-                  const SizedBox(height: 12),
-                  _buildUploadedChip(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('OFFER TYPE'),
-                  const SizedBox(height: 8),
-                  _buildOfferTypeRow(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('OFFER EXPIRY DATE'),
-                  const SizedBox(height: 8),
-                  _buildDateField(context, controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                ],
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildUploadBox(controller, student),
+                    const SizedBox(height: 12),
+                    _buildUploadedChip(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('OFFER TYPE'),
+                    const SizedBox(height: 8),
+                    _buildOfferTypeRow(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('OFFER EXPIRY DATE'),
+                    const SizedBox(height: 8),
+                    _buildDateField(context, controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

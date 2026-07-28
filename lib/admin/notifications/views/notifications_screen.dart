@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../overview/controller/overview_controller.dart';
 import '../controller/notifications_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -13,33 +14,35 @@ class NotificationsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-              child: Obx(() {
-                if (controller.activities.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 60),
-                    child: Center(
-                      child: Text(
-                        'No recent activity',
-                        style: TextStyle(color: AppColors.textGrey),
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                child: Obx(() {
+                  if (controller.activities.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 60),
+                      child: Center(
+                        child: Text(
+                          'No recent activity',
+                          style: TextStyle(color: AppColors.textGrey),
+                        ),
                       ),
-                    ),
+                    );
+                  }
+                  return Column(
+                    children: controller.activities
+                        .map((activity) => _activityTile(activity))
+                        .toList(),
                   );
-                }
-                return Column(
-                  children: controller.activities
-                      .map((activity) => _activityTile(activity))
-                      .toList(),
-                );
-              }),
-            ),
-          ],
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );

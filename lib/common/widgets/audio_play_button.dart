@@ -49,9 +49,9 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
         setState(() => _isPlaying = false);
       } else {
         final source = widget.isAsset
-            // AssetSource expects the path *without* the leading 'assets/'
-            // segment, since audioplayers looks it up relative to that
-            // folder already (matches how Flutter's rootBundle resolves it).
+        // AssetSource expects the path *without* the leading 'assets/'
+        // segment, since audioplayers looks it up relative to that
+        // folder already (matches how Flutter's rootBundle resolves it).
             ? AssetSource(_stripAssetsPrefix(widget.filePath))
             : DeviceFileSource(widget.filePath);
         await _player.play(source);
