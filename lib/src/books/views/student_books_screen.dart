@@ -5,6 +5,7 @@ import '../../../common/models/book_resource.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/student_books_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class StudentBooksScreen extends StatelessWidget {
   const StudentBooksScreen({super.key});
@@ -18,21 +19,23 @@ class StudentBooksScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(controller, context),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+          ResponsiveWrapper(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
               ),
-            ),
-            padding: const EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBookList(controller),
-                const SizedBox(height: 100),
-              ],
+              padding: const EdgeInsets.only(top: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildBookList(controller),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
           ),
         ],

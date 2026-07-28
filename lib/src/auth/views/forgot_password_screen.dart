@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/util/app_colors.dart';
 import '../controller/forgot_password_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -19,7 +20,6 @@ class ForgotPasswordScreen extends StatelessWidget {
             // Header with gradient
             Container(
               width: double.infinity,
-              height: size.height * 0.28,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.navyDark, AppColors.navyLight],
@@ -33,6 +33,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               child: SafeArea(
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Positioned(
                       left: 4,
@@ -46,49 +47,59 @@ class ForgotPasswordScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 72,
-                            height: 72,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.lock_reset_rounded,
-                              color: AppColors.primaryBlue,
-                              size: 36,
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: context.responsive(
+                            mobile: 36.0,
+                            tablet: 44.0,
+                            laptop: 52.0,
                           ),
-                          const SizedBox(height: 14),
-                          const Text(
-                            'Forgot Password',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 72,
+                              height: 72,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.lock_reset_rounded,
+                                color: AppColors.primaryBlue,
+                                size: 36,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'We\'ll help you reset it',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.85),
-                              fontSize: 13,
+                            const SizedBox(height: 14),
+                            const Text(
+                              'Forgot Password',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'We\'ll help you reset it',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.85),
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -99,12 +110,14 @@ class ForgotPasswordScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Body
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Obx(
-                    () => controller.isEmailSent.value
-                    ? _buildSuccessState(controller)
-                    : _buildFormState(controller),
+            ResponsiveWrapper(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Obx(
+                      () => controller.isEmailSent.value
+                      ? _buildSuccessState(controller)
+                      : _buildFormState(controller),
+                ),
               ),
             ),
           ],

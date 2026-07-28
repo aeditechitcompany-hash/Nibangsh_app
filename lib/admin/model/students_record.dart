@@ -241,15 +241,15 @@ class StudentRecord {
       locFileName: locFileName ?? this.locFileName,
       locVerified: locVerified ?? this.locVerified,
       courseCommencementDate:
-      courseCommencementDate ?? this.courseCommencementDate,
+          courseCommencementDate ?? this.courseCommencementDate,
       scholarshipStatus: scholarshipStatus ?? this.scholarshipStatus,
       finalSelectionNotes: finalSelectionNotes ?? this.finalSelectionNotes,
       finalSelectionConfirmed:
-      finalSelectionConfirmed ?? this.finalSelectionConfirmed,
+          finalSelectionConfirmed ?? this.finalSelectionConfirmed,
       visaRefNo: visaRefNo ?? this.visaRefNo,
       visaStatusUpdate: visaStatusUpdate ?? this.visaStatusUpdate,
       visaApprovalLetterFileName:
-      visaApprovalLetterFileName ?? this.visaApprovalLetterFileName,
+          visaApprovalLetterFileName ?? this.visaApprovalLetterFileName,
       flightNumber: flightNumber ?? this.flightNumber,
       airline: airline ?? this.airline,
       departureAirport: departureAirport ?? this.departureAirport,

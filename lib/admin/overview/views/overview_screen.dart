@@ -6,6 +6,7 @@ import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../controller/overview_controller.dart';
 import '../../nav/admin_navigation.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class AdminOverviewScreen extends StatelessWidget {
   const AdminOverviewScreen({super.key});
@@ -14,44 +15,46 @@ class AdminOverviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(AdminOverviewController());
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(controller, context),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+    return ResponsiveDashboardWrapper(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(controller, context),
+            Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 24),
+                  _buildAddMcqCard(),
+                  const SizedBox(height: 24),
+                  _buildDestinationsSection(controller),
+                  const SizedBox(height: 24),
+                  _buildQuickActions(),
+                  const SizedBox(height: 24),
+                  _buildRecentActivity(controller),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                _buildAddMcqCard(),
-                const SizedBox(height: 24),
-                _buildDestinationsSection(controller),
-                const SizedBox(height: 24),
-                _buildQuickActions(),
-                const SizedBox(height: 24),
-                _buildRecentActivity(controller),
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   // ── Header ──
   Widget _buildHeader(
-    AdminOverviewController controller,
-    BuildContext context,
-  ) {
+      AdminOverviewController controller,
+      BuildContext context,
+      ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
@@ -137,7 +140,7 @@ class AdminOverviewScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Obx(
-            () => Row(
+                () => Row(
               children: [
                 Expanded(
                   child: _topPill(

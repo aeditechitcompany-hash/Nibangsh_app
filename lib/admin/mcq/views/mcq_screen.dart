@@ -5,6 +5,7 @@ import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class AdminMcqScreen extends StatelessWidget {
   const AdminMcqScreen({super.key});
@@ -24,24 +25,26 @@ class AdminMcqScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller, context),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller, context),
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
                 ),
+                padding: const EdgeInsets.only(top: 20),
+                child: _buildQuestionList(controller, context),
               ),
-              padding: const EdgeInsets.only(top: 20),
-              child: _buildQuestionList(controller, context),
-            ),
-            const SizedBox(height: 100),
-          ],
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );
@@ -112,7 +115,7 @@ class AdminMcqScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Obx(
-            () => Text(
+                () => Text(
               '${controller.questions.length} questions shared with students',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.75),
@@ -126,9 +129,9 @@ class AdminMcqScreen extends StatelessWidget {
   }
 
   Widget _buildQuestionList(
-    AdminMcqController controller,
-    BuildContext context,
-  ) {
+      AdminMcqController controller,
+      BuildContext context,
+      ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
@@ -174,11 +177,11 @@ class AdminMcqScreen extends StatelessWidget {
   }
 
   Widget _questionCard(
-    AdminMcqController controller,
-    int index,
-    McqQuestion q,
-    BuildContext context,
-  ) {
+      AdminMcqController controller,
+      int index,
+      McqQuestion q,
+      BuildContext context,
+      ) {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: () => _showAddMcqSheet(context, controller, editQuestion: q),
@@ -286,10 +289,10 @@ class AdminMcqScreen extends StatelessWidget {
   }
 
   void _showAddMcqSheet(
-    BuildContext context,
-    AdminMcqController controller, {
-    McqQuestion? editQuestion,
-  }) {
+      BuildContext context,
+      AdminMcqController controller, {
+        McqQuestion? editQuestion,
+      }) {
     if (editQuestion != null) {
       controller.startEdit(editQuestion);
     } else {
@@ -302,6 +305,9 @@ class AdminMcqScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       builder: (sheetContext) {
         return Padding(
@@ -328,7 +334,7 @@ class AdminMcqScreen extends StatelessWidget {
                       ),
                     ),
                     Obx(
-                      () => Text(
+                          () => Text(
                         controller.isEditing
                             ? 'Edit Question'
                             : 'Add a Question',
@@ -362,7 +368,7 @@ class AdminMcqScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Obx(
-                      () => Column(
+                          () => Column(
                         children: List.generate(4, (i) {
                           final selected =
                               controller.correctOptionIndex.value == i;
@@ -372,7 +378,7 @@ class AdminMcqScreen extends StatelessWidget {
                               children: [
                                 InkWell(
                                   onTap: () =>
-                                      controller.correctOptionIndex.value = i,
+                                  controller.correctOptionIndex.value = i,
                                   child: Icon(
                                     selected
                                         ? Icons.check_circle_rounded
@@ -412,7 +418,7 @@ class AdminMcqScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Obx(
-                      () => InkWell(
+                          () => InkWell(
                         borderRadius: BorderRadius.circular(14),
                         onTap: controller.isPicking.value
                             ? null
@@ -490,7 +496,7 @@ class AdminMcqScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         child: Obx(
-                          () => Text(
+                              () => Text(
                             controller.isEditing ? 'Save Changes' : 'Save MCQ',
                             style: const TextStyle(
                               fontSize: 14,

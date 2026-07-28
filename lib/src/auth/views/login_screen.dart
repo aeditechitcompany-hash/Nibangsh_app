@@ -4,6 +4,7 @@ import 'package:nibangsh_consultancy/const/resources.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/login_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -21,7 +22,6 @@ class LoginScreen extends StatelessWidget {
             // Header with gradient
             Container(
               width: double.infinity,
-              height: size.height * 0.31,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.navyDark, AppColors.navyLight],
@@ -33,266 +33,276 @@ class LoginScreen extends StatelessWidget {
                   bottomRight: Radius.circular(40),
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 40),
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: context.responsive(
+                    mobile: 40.0,
+                    tablet: 48.0,
+                    laptop: 56.0,
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Image.asset(
+                          AppResources.logoPath,
+                          fit: BoxFit.contain,
                         ),
-                      ],
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Image.asset(
-                        AppResources.logoPath,
-                        fit: BoxFit.contain,
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Nibangsh Consultancy',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Nibangsh Consultancy',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Your Gateway to Global Education',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
-                      fontSize: 13,
+                    const SizedBox(height: 4),
+                    Text(
+                      'Your Gateway to Global Education',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 13,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
             const SizedBox(height: 32),
 
             // Form
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Form(
-                key: controller.formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Sign in to your account',
-                      style: TextStyle(fontSize: 14, color: AppColors.textGrey),
-                    ),
-                    const SizedBox(height: 28),
-
-                    // Email
-                    _buildLabel('Email Address'),
-                    const SizedBox(height: 8),
-                    _buildTextField(
-                      controller: controller.emailController,
-                      hintText: 'Enter your email',
-                      prefixIcon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: controller.validateEmail,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Password
-                    _buildLabel('Password'),
-                    const SizedBox(height: 8),
-                    Obx(
-                      () => _buildTextField(
-                        controller: controller.passwordController,
-                        hintText: 'Enter your password',
-                        prefixIcon: Icons.lock_outline,
-                        obscureText: !controller.isPasswordVisible.value,
-                        validator: controller.validatePassword,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            controller.isPasswordVisible.value
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppColors.textGrey,
-                            size: 20,
-                          ),
-                          onPressed: controller.togglePasswordVisibility,
+            ResponsiveWrapper(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Form(
+                  key: controller.formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Welcome Back',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Forgot password
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => Get.toNamed(AppRoute.forgotPassword),
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: AppColors.darkBlue,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Sign in to your account',
+                        style: TextStyle(fontSize: 14, color: AppColors.textGrey),
                       ),
-                    ),
-                    const SizedBox(height: 28),
+                      const SizedBox(height: 28),
 
-                    // Sign In button
-                    Obx(
-                      () => SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : controller.login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.navyLight,
-                            disabledBackgroundColor: AppColors.darkBlue
-                                .withOpacity(0.6),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                      // Email
+                      _buildLabel('Email Address'),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        controller: controller.emailController,
+                        hintText: 'Enter your email',
+                        prefixIcon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: controller.validateEmail,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Password
+                      _buildLabel('Password'),
+                      const SizedBox(height: 8),
+                      Obx(
+                            () => _buildTextField(
+                          controller: controller.passwordController,
+                          hintText: 'Enter your password',
+                          prefixIcon: Icons.lock_outline,
+                          obscureText: !controller.isPasswordVisible.value,
+                          validator: controller.validatePassword,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isPasswordVisible.value
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppColors.textGrey,
+                              size: 20,
                             ),
-                            elevation: 3,
+                            onPressed: controller.togglePasswordVisibility,
                           ),
-                          child: controller.isLoading.value
-                              ? const SizedBox(
-                                  height: 22,
-                                  width: 22,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              : const Text(
-                                  'Sign In',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 12),
 
-                    const SizedBox(height: 24),
-
-                    // OR divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: Colors.grey.shade300)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'or continue with',
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Divider(color: Colors.grey.shade300)),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Circular Social Buttons ──
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Google
-                        _buildSocialCircle(
-                          onTap: controller.signInWithGoogle,
-                          child: Image.asset(
-                            AppResources.googleIcon,
-                            width: 22,
-                            height: 22,
-                          ),
-                          shadow: Colors.grey.withOpacity(0.2),
-                        ),
-                        const SizedBox(width: 20),
-
-                        // Facebook
-                        _buildSocialCircle(
-                          onTap: controller.signInWithFacebook,
-                          child: Image.asset(
-                            AppResources.fbIcon,
-                            width: 22,
-                            height: 22,
-                          ),
-                          shadow: AppColors.darkBlue.withOpacity(0.2),
-                        ),
-                        const SizedBox(width: 20),
-
-                        // Gmail
-                        _buildSocialCircle(
-                          onTap: controller.signInWithEmail,
-                          child: Image.asset(
-                            AppResources.emailIcon,
-                            width: 22,
-                            height: 22,
-                          ),
-                          shadow: AppColors.primaryBlue.withOpacity(0.2),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Sign Up link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don't have an account? ",
-                          style: TextStyle(
-                            color: AppColors.textGrey,
-                            fontSize: 14,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Get.toNamed(AppRoute.signup),
+                      // Forgot password
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () => Get.toNamed(AppRoute.forgotPassword),
                           child: const Text(
-                            'Sign Up',
+                            'Forgot Password?',
                             style: TextStyle(
-                              color: AppColors.primaryBlue,
-                              fontWeight: FontWeight.bold,
+                              color: AppColors.darkBlue,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+
+                      // Sign In button
+                      Obx(
+                            () => SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : controller.login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.navyLight,
+                              disabledBackgroundColor: AppColors.darkBlue
+                                  .withOpacity(0.6),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 3,
+                            ),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                                : const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // OR divider
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: Colors.grey.shade300)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'or continue with',
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey.shade300)),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // ── Circular Social Buttons ──
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Google
+                          _buildSocialCircle(
+                            onTap: controller.signInWithGoogle,
+                            child: Image.asset(
+                              AppResources.googleIcon,
+                              width: 22,
+                              height: 22,
+                            ),
+                            shadow: Colors.grey.withOpacity(0.2),
+                          ),
+                          const SizedBox(width: 20),
+
+                          // Facebook
+                          _buildSocialCircle(
+                            onTap: controller.signInWithFacebook,
+                            child: Image.asset(
+                              AppResources.fbIcon,
+                              width: 22,
+                              height: 22,
+                            ),
+                            shadow: AppColors.darkBlue.withOpacity(0.2),
+                          ),
+                          const SizedBox(width: 20),
+
+                          // Gmail
+                          _buildSocialCircle(
+                            onTap: controller.signInWithEmail,
+                            child: Image.asset(
+                              AppResources.emailIcon,
+                              width: 22,
+                              height: 22,
+                            ),
+                            shadow: AppColors.primaryBlue.withOpacity(0.2),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Sign Up link
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Don't have an account? ",
+                            style: TextStyle(
+                              color: AppColors.textGrey,
                               fontSize: 14,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                          GestureDetector(
+                            onTap: () => Get.toNamed(AppRoute.signup),
+                            child: const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: AppColors.primaryBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
 
-                    const SizedBox(height: 50),
-                  ],
+                      const SizedBox(height: 50),
+                    ],
+                  ),
                 ),
               ),
             ),

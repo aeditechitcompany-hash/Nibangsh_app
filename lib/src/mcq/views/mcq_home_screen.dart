@@ -4,6 +4,7 @@ import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/mcq_home_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class McqHomeScreen extends StatelessWidget {
   const McqHomeScreen({super.key});
@@ -17,37 +18,39 @@ class McqHomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+          ResponsiveWrapper(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
               ),
-            ),
-            padding: const EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBanner(controller),
-                const SizedBox(height: 20),
-                _buildSearchBar(controller),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'List of Sets',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+              padding: const EdgeInsets.only(top: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildBanner(controller),
+                  const SizedBox(height: 20),
+                  _buildSearchBar(controller),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'List of Sets',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                _buildSetList(controller),
-                const SizedBox(height: 100),
-              ],
+                  const SizedBox(height: 14),
+                  _buildSetList(controller),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
           ),
         ],
@@ -334,13 +337,13 @@ class McqHomeScreen extends StatelessWidget {
           ),
           attempted
               ? Text(
-                  '$score/$total',
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                )
+            '$score/$total',
+            style: const TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          )
               : Icon(Icons.play_arrow_rounded, color: color, size: 22),
         ],
       ),

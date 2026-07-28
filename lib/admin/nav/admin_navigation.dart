@@ -5,10 +5,19 @@ import 'package:nibangsh_consultancy/admin/books/views/books_screen.dart';
 import 'package:nibangsh_consultancy/admin/settings/views/settings_screen.dart';
 import 'package:nibangsh_consultancy/admin/students/views/students_screen.dart';
 import '../../../common/util/app_colors.dart';
+import '../../../common/util/responsive.dart';
 import '../overview/views/overview_screen.dart';
 
 class AdminNavigation extends StatelessWidget {
   const AdminNavigation({super.key});
+
+  static const _railItems = [
+    {'icon': Icons.bar_chart_rounded, 'label': 'Overview'},
+    {'icon': Icons.groups_rounded, 'label': 'Students'},
+    {'icon': Icons.assignment_rounded, 'label': 'Approvals'},
+    {'icon': Icons.menu_book_rounded, 'label': 'Books'},
+    {'icon': Icons.settings_rounded, 'label': 'Settings'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +31,41 @@ class AdminNavigation extends StatelessWidget {
       SettingsScreen(),
     ];
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Obx(
-        () =>
-            IndexedStack(index: controller.currentIndex.value, children: tabs),
-      ),
-      bottomNavigationBar: Obx(
-        () => _AdminBottomNav(
+    return Container(
+      color: AppColors.background,
+      child: Obx(
+        () => AdaptiveNavShell(
           currentIndex: controller.currentIndex.value,
           onTap: controller.setIndex,
+          railBackgroundColor: Colors.white,
+          railLeading: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Icon(
+              Icons.admin_panel_settings_rounded,
+              color: AppColors.primaryBlue,
+              size: 28,
+            ),
+          ),
+          railDestinations: _railItems
+              .map(
+                (item) => NavigationRailDestination(
+                  icon: Icon(item['icon'] as IconData),
+                  selectedIcon: Icon(
+                    item['icon'] as IconData,
+                    color: AppColors.primaryBlue,
+                  ),
+                  label: Text(item['label'] as String),
+                ),
+              )
+              .toList(),
+          bottomNavBar: _AdminBottomNav(
+            currentIndex: controller.currentIndex.value,
+            onTap: controller.setIndex,
+          ),
+          body: IndexedStack(
+            index: controller.currentIndex.value,
+            children: tabs,
+          ),
         ),
       ),
     );

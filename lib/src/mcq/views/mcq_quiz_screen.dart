@@ -4,6 +4,7 @@ import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_quiz_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class McqQuizScreen extends StatelessWidget {
   const McqQuizScreen({super.key});
@@ -13,32 +14,34 @@ class McqQuizScreen extends StatelessWidget {
     final controller = Get.put(McqQuizController());
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+        backgroundColor: AppColors.background,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              ResponsiveWrapper(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  padding: const EdgeInsets.only(top: 22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildQuestionCard(controller, context),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
-              padding: const EdgeInsets.only(top: 22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildQuestionCard(controller, context),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -108,9 +111,9 @@ class McqQuizScreen extends StatelessWidget {
 
   // ── Question card ──
   Widget _buildQuestionCard(
-    McqQuizController controller,
-    BuildContext context,
-  ) {
+      McqQuizController controller,
+      BuildContext context,
+      ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -210,8 +213,8 @@ class McqQuizScreen extends StatelessWidget {
               ...List.generate(question.options.length, (index) {
                 final selected = controller.selectedForCurrent == index;
                 final optionImage =
-                    question.hasOptionImages &&
-                        index < question.optionImages!.length
+                question.hasOptionImages &&
+                    index < question.optionImages!.length
                     ? question.optionImages![index]
                     : null;
 
@@ -236,6 +239,41 @@ class McqQuizScreen extends StatelessWidget {
                       ),
                       child: optionImage == null
                           ? Text(
+                        question.options[index],
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                          color: selected
+                              ? Colors.white
+                              : AppColors.textDark,
+                        ),
+                      )
+                          : Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              width: 48,
+                              height: 48,
+                              color: selected
+                                  ? Colors.white.withOpacity(0.15)
+                                  : AppColors.background,
+                              child: Image.asset(
+                                optionImage,
+                                fit: BoxFit.contain,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 20,
+                                  color: AppColors.textGrey,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
                               question.options[index],
                               style: TextStyle(
                                 fontSize: 13.5,
@@ -244,45 +282,10 @@ class McqQuizScreen extends StatelessWidget {
                                     ? Colors.white
                                     : AppColors.textDark,
                               ),
-                            )
-                          : Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Container(
-                                    width: 48,
-                                    height: 48,
-                                    color: selected
-                                        ? Colors.white.withOpacity(0.15)
-                                        : AppColors.background,
-                                    child: Image.asset(
-                                      optionImage,
-                                      fit: BoxFit.contain,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Icon(
-                                                Icons.broken_image_outlined,
-                                                size: 20,
-                                                color: AppColors.textGrey,
-                                              ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    question.options[index],
-                                    style: TextStyle(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: selected
-                                          ? Colors.white
-                                          : AppColors.textDark,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

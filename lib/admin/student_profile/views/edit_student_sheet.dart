@@ -4,6 +4,7 @@ import '../../../common/util/academic_constants.dart';
 import '../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../../students/controller/students_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 // Country name -> code, matching the codes already used across the app
 // (StudentRecord.countryCode, DestinationStat.code, etc).
@@ -17,10 +18,10 @@ const Map<String, String> _countryCodes = {
 };
 
 void showEditStudentSheet(
-  BuildContext context,
-  StudentsController controller,
-  StudentRecord student,
-) {
+    BuildContext context,
+    StudentsController controller,
+    StudentRecord student,
+    ) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -84,7 +85,7 @@ class _EditStudentSheetState extends State<_EditStudentSheet> {
         ? s.passoutYear
         : AcademicConstants.passoutYears.first;
     _languageTestName =
-        AcademicConstants.languageTests.contains(s.languageTestName)
+    AcademicConstants.languageTests.contains(s.languageTestName)
         ? s.languageTestName
         : AcademicConstants.languageTests.first;
   }
@@ -116,7 +117,7 @@ class _EditStudentSheetState extends State<_EditStudentSheet> {
 
     widget.controller.updateStudent(
       widget.student.id,
-      (current) => current.copyWith(
+          (current) => current.copyWith(
         name: _name.text.trim(),
         email: _email.text.trim(),
         phone: _phone.text.trim(),
@@ -170,145 +171,151 @@ class _EditStudentSheetState extends State<_EditStudentSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: SafeArea(
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 18),
-                    decoration: BoxDecoration(
-                      color: AppColors.borderGrey,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-                const Text(
-                  'Edit Student Profile',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _name,
-                  decoration: _decoration('Full Name'),
-                ),
-                const SizedBox(height: 12),
-                TextField(controller: _email, decoration: _decoration('Email')),
-                const SizedBox(height: 12),
-                TextField(controller: _phone, decoration: _decoration('Phone')),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _university,
-                  decoration: _decoration('University'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _course,
-                  decoration: _decoration('Course'),
-                ),
-                const SizedBox(height: 12),
-                _dropdown<String>(
-                  label: 'Destination Country',
-                  value: _countryName,
-                  items: AcademicConstants.countries,
-                  onChanged: (v) => setState(() => _countryName = v!),
-                ),
-                const SizedBox(height: 12),
-                Row(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _gpa,
-                        decoration: _decoration('GPA'),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 18),
+                        decoration: BoxDecoration(
+                          color: AppColors.borderGrey,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _dropdown<String>(
-                        label: 'Degree',
-                        value: _degree,
-                        items: AcademicConstants.degrees,
-                        onChanged: (v) => setState(() => _degree = v!),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _dropdown<String>(
-                  label: 'Passout Year',
-                  value: _passoutYear,
-                  items: AcademicConstants.passoutYears,
-                  onChanged: (v) => setState(() => _passoutYear = v!),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _dropdown<String>(
-                        label: 'Language Test',
-                        value: _languageTestName,
-                        items: AcademicConstants.languageTests,
-                        onChanged: (v) =>
-                            setState(() => _languageTestName = v!),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: _languageScore,
-                        decoration: _decoration('Score'),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _visaStatus,
-                  decoration: _decoration('Visa Status'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _flightStatus,
-                  decoration: _decoration('Flight Status'),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _save,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Save Changes',
+                    const Text(
+                      'Edit Student Profile',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _name,
+                      decoration: _decoration('Full Name'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(controller: _email, decoration: _decoration('Email')),
+                    const SizedBox(height: 12),
+                    TextField(controller: _phone, decoration: _decoration('Phone')),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _university,
+                      decoration: _decoration('University'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _course,
+                      decoration: _decoration('Course'),
+                    ),
+                    const SizedBox(height: 12),
+                    _dropdown<String>(
+                      label: 'Destination Country',
+                      value: _countryName,
+                      items: AcademicConstants.countries,
+                      onChanged: (v) => setState(() => _countryName = v!),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _gpa,
+                            decoration: _decoration('GPA'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _dropdown<String>(
+                            label: 'Degree',
+                            value: _degree,
+                            items: AcademicConstants.degrees,
+                            onChanged: (v) => setState(() => _degree = v!),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _dropdown<String>(
+                      label: 'Passout Year',
+                      value: _passoutYear,
+                      items: AcademicConstants.passoutYears,
+                      onChanged: (v) => setState(() => _passoutYear = v!),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _dropdown<String>(
+                            label: 'Language Test',
+                            value: _languageTestName,
+                            items: AcademicConstants.languageTests,
+                            onChanged: (v) =>
+                                setState(() => _languageTestName = v!),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _languageScore,
+                            decoration: _decoration('Score'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _visaStatus,
+                      decoration: _decoration('Visa Status'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _flightStatus,
+                      decoration: _decoration('Flight Status'),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _save,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Save Changes',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

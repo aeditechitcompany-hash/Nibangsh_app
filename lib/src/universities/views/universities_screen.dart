@@ -5,6 +5,7 @@ import '../../../common/models/course_info.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/universities_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class UniversitiesScreen extends StatelessWidget {
   const UniversitiesScreen({super.key});
@@ -14,45 +15,47 @@ class UniversitiesScreen extends StatelessWidget {
     final controller = Get.put(UniversitiesController());
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+        backgroundColor: AppColors.background,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              ResponsiveWrapper(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Obx(() => Text(
+                          '${controller.filteredUniversities.length} UNIVERSITIES FOUND',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
+                            color: AppColors.textGrey.withOpacity(0.9),
+                          ),
+                        )),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildUniversityList(controller),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               ),
-              padding: const EdgeInsets.only(top: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Obx(() => Text(
-                      '${controller.filteredUniversities.length} UNIVERSITIES FOUND',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
-                        color: AppColors.textGrey.withOpacity(0.9),
-                      ),
-                    )),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildUniversityList(controller),
-                  const SizedBox(height: 100),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 

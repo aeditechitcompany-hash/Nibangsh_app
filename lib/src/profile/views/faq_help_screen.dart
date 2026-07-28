@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../common/util/app_colors.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class _FaqItem {
   final String question;
@@ -100,149 +101,151 @@ class FaqHelpScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-        children: [
-          const Text(
-            'Frequently Asked Questions',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Quick answers to the questions we get asked most.',
-            style: TextStyle(fontSize: 13, color: AppColors.textGrey),
-          ),
-          const SizedBox(height: 16),
-
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.borderGrey),
-            ),
-            child: Theme(
-              data: Theme.of(
-                context,
-              ).copyWith(dividerColor: Colors.transparent),
-              child: Column(
-                children: List.generate(_faqs.length, (index) {
-                  final faq = _faqs[index];
-                  return Column(
-                    children: [
-                      ExpansionTile(
-                        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-                        childrenPadding: const EdgeInsets.fromLTRB(
-                          16,
-                          0,
-                          16,
-                          16,
-                        ),
-                        iconColor: AppColors.primaryBlue,
-                        collapsedIconColor: AppColors.textGrey,
-                        title: Text(
-                          faq.question,
-                          style: const TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textDark,
-                          ),
-                        ),
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              faq.answer,
-                              style: const TextStyle(
-                                fontSize: 13.5,
-                                color: AppColors.textGrey,
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (index != _faqs.length - 1)
-                        const Divider(height: 1, color: AppColors.borderGrey),
-                    ],
-                  );
-                }),
+      body: ResponsiveWrapper(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          children: [
+            const Text(
+              'Frequently Asked Questions',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
               ),
             ),
-          ),
-
-          const SizedBox(height: 28),
-
-          const Text(
-            'Still need help?',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
+            const SizedBox(height: 4),
+            const Text(
+              'Quick answers to the questions we get asked most.',
+              style: TextStyle(fontSize: 13, color: AppColors.textGrey),
             ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Reach out to us directly \u2014 we\'re happy to help.',
-            style: TextStyle(fontSize: 13, color: AppColors.textGrey),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.borderGrey),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.borderGrey),
+              ),
+              child: Theme(
+                data: Theme.of(
+                  context,
+                ).copyWith(dividerColor: Colors.transparent),
+                child: Column(
+                  children: List.generate(_faqs.length, (index) {
+                    final faq = _faqs[index];
+                    return Column(
+                      children: [
+                        ExpansionTile(
+                          tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+                          childrenPadding: const EdgeInsets.fromLTRB(
+                            16,
+                            0,
+                            16,
+                            16,
+                          ),
+                          iconColor: AppColors.primaryBlue,
+                          collapsedIconColor: AppColors.textGrey,
+                          title: Text(
+                            faq.question,
+                            style: const TextStyle(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                faq.answer,
+                                style: const TextStyle(
+                                  fontSize: 13.5,
+                                  color: AppColors.textGrey,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (index != _faqs.length - 1)
+                          const Divider(height: 1, color: AppColors.borderGrey),
+                      ],
+                    );
+                  }),
+                ),
+              ),
             ),
-            child: Column(
-              children: [
-                _contactRow(
-                  icon: Icons.access_time_rounded,
-                  title: 'Office Hours',
-                  subtitle: 'Sun \u2013 Fri, 6:00 AM \u2013 6:00 PM',
-                ),
-                const Divider(height: 24, color: AppColors.borderGrey),
-                _contactRow(
-                  icon: Icons.call_outlined,
-                  title: 'Call Us',
-                  subtitle: '01-5929970 / +977 9851001970',
-                  onTap: () => _launch('tel:+9779851001970'),
-                ),
-                const Divider(height: 24, color: AppColors.borderGrey),
-                _contactRow(
-                  icon: Icons.email_outlined,
-                  title: 'Email Us',
-                  subtitle: 'info@nibangshconsultancy.com',
-                  onTap: () => _launch('mailto:info@nibangshconsultancy.com'),
-                ),
-                const Divider(height: 24, color: AppColors.borderGrey),
-                _contactRow(
-                  icon: Icons.chat_outlined,
-                  title: 'WhatsApp',
-                  subtitle: 'Chat with us instantly',
-                  onTap: () => _launch('https://wa.me/+9779851001970'),
-                ),
-                const Divider(height: 24, color: AppColors.borderGrey),
-                _contactRow(
-                  icon: Icons.location_on_outlined,
-                  title: 'Visit Us',
-                  subtitle:
-                      'Bagbazar, J.F Restaurant Building, Top Floor, '
-                      'Kathmandu, Nepal',
-                  onTap: () => _launch(
-                    'https://maps.app.goo.gl/1HW7DPGntmG7WvLEA?g_st=ac'
-                    '${Uri.encodeComponent('Bagbazar, J.F Restaurant Building, Top Floor, Kathmandu, Nepal')}',
+
+            const SizedBox(height: 28),
+
+            const Text(
+              'Still need help?',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Reach out to us directly \u2014 we\'re happy to help.',
+              style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+            ),
+            const SizedBox(height: 16),
+
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.borderGrey),
+              ),
+              child: Column(
+                children: [
+                  _contactRow(
+                    icon: Icons.access_time_rounded,
+                    title: 'Office Hours',
+                    subtitle: 'Sun \u2013 Fri, 6:00 AM \u2013 6:00 PM',
                   ),
-                ),
-              ],
+                  const Divider(height: 24, color: AppColors.borderGrey),
+                  _contactRow(
+                    icon: Icons.call_outlined,
+                    title: 'Call Us',
+                    subtitle: '01-5929970 / +977 9851001970',
+                    onTap: () => _launch('tel:+9779851001970'),
+                  ),
+                  const Divider(height: 24, color: AppColors.borderGrey),
+                  _contactRow(
+                    icon: Icons.email_outlined,
+                    title: 'Email Us',
+                    subtitle: 'info@nibangshconsultancy.com',
+                    onTap: () => _launch('mailto:info@nibangshconsultancy.com'),
+                  ),
+                  const Divider(height: 24, color: AppColors.borderGrey),
+                  _contactRow(
+                    icon: Icons.chat_outlined,
+                    title: 'WhatsApp',
+                    subtitle: 'Chat with us instantly',
+                    onTap: () => _launch('https://wa.me/+9779851001970'),
+                  ),
+                  const Divider(height: 24, color: AppColors.borderGrey),
+                  _contactRow(
+                    icon: Icons.location_on_outlined,
+                    title: 'Visit Us',
+                    subtitle:
+                    'Bagbazar, J.F Restaurant Building, Top Floor, '
+                        'Kathmandu, Nepal',
+                    onTap: () => _launch(
+                      'https://maps.app.goo.gl/1HW7DPGntmG7WvLEA?g_st=ac'
+                          '${Uri.encodeComponent('Bagbazar, J.F Restaurant Building, Top Floor, Kathmandu, Nepal')}',
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-        ],
+            const SizedBox(height: 12),
+          ],
+        ),
       ),
     );
   }

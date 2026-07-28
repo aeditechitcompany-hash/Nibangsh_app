@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step9_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step9Screen extends StatelessWidget {
   const Step9Screen({super.key});
@@ -17,36 +18,38 @@ class Step9Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildInfoBanner(student),
-                  const SizedBox(height: 20),
-                  _sectionLabel('VISA REFERENCE NUMBER'),
-                  const SizedBox(height: 8),
-                  _buildRefNoField(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('VISA STATUS UPDATE'),
-                  const SizedBox(height: 8),
-                  _buildStatusOptions(controller),
-                  const SizedBox(height: 20),
-                  _buildUploadBox(controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                  const SizedBox(height: 40),
-                ],
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildInfoBanner(student),
+                    const SizedBox(height: 20),
+                    _sectionLabel('VISA REFERENCE NUMBER'),
+                    const SizedBox(height: 8),
+                    _buildRefNoField(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('VISA STATUS UPDATE'),
+                    const SizedBox(height: 8),
+                    _buildStatusOptions(controller),
+                    const SizedBox(height: 20),
+                    _buildUploadBox(controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -306,7 +309,7 @@ class Step9Screen extends StatelessWidget {
     ];
 
     return Obx(
-      () => Column(
+          () => Column(
         children: options.map((opt) {
           final label = opt.$1;
           final color = opt.$2;

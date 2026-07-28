@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/util/app_colors.dart';
 import '../controller/notifications_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class StudentNotificationsScreen extends StatelessWidget {
   const StudentNotificationsScreen({super.key});
@@ -11,36 +12,38 @@ class StudentNotificationsScreen extends StatelessWidget {
     final controller = Get.put(NotificationsController());
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-              child: Obx(() {
-                if (controller.notifications.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 60),
-                    child: Center(
-                      child: Text(
-                        'No notifications yet',
-                        style: TextStyle(color: AppColors.textGrey),
-                      ),
-                    ),
-                  );
-                }
-                return Column(
-                  children: controller.notifications
-                      .map((notification) => _notificationTile(notification))
-                      .toList(),
-                );
-              }),
-            ),
-          ],
+        backgroundColor: AppColors.background,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              ResponsiveWrapper(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                  child: Obx(() {
+                    if (controller.notifications.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 60),
+                        child: Center(
+                          child: Text(
+                            'No notifications yet',
+                            style: TextStyle(color: AppColors.textGrey),
+                          ),
+                        ),
+                      );
+                    }
+                    return Column(
+                      children: controller.notifications
+                          .map((notification) => _notificationTile(notification))
+                          .toList(),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -99,7 +102,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Obx(
-                      () => Text(
+                          () => Text(
                         '${controller.unreadCount} updates',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.75),

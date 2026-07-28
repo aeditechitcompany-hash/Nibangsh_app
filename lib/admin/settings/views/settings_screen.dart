@@ -4,6 +4,7 @@ import '../../../../const/resources.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../../../common/util/app_route.dart';
 import '../controller/settings_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -12,81 +13,83 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(SettingsController(), permanent: true);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+    return ResponsiveDashboardWrapper(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context),
+            Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _sectionTitle('Preferences'),
+                  const SizedBox(height: 12),
+                  _togglesCard(controller),
+                  const SizedBox(height: 24),
+                  _sectionTitle('Account'),
+                  const SizedBox(height: 12),
+                  _menuCard([
+                    _menuTile(
+                      icon: Icons.lock_outline_rounded,
+                      label: 'Change Password',
+                      onTap: () => _notWiredYet(context, 'Change password'),
+                    ),
+                    _menuTile(
+                      icon: Icons.admin_panel_settings_outlined,
+                      label: 'Manage Admins',
+                      onTap: () => _notWiredYet(context, 'Manage admins'),
+                    ),
+                    _menuTile(
+                      icon: Icons.notifications_outlined,
+                      label: 'Notifications',
+                      onTap: () => Get.toNamed(AppRoute.notifications),
+                      showDivider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: 24),
+                  _sectionTitle('About'),
+                  const SizedBox(height: 12),
+                  _menuCard([
+                    _menuTile(
+                      icon: Icons.info_outline_rounded,
+                      label: 'App Version',
+                      trailing: const Text(
+                        '1.0.0',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                      onTap: null,
+                    ),
+                    _menuTile(
+                      icon: Icons.privacy_tip_outlined,
+                      label: 'Privacy Policy',
+                      onTap: () => _notWiredYet(context, 'Privacy policy'),
+                    ),
+                    _menuTile(
+                      icon: Icons.description_outlined,
+                      label: 'Terms of Service',
+                      onTap: () => _notWiredYet(context, 'Terms of service'),
+                      showDivider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: 24),
+                  _logoutButton(context),
+                ],
               ),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _sectionTitle('Preferences'),
-                const SizedBox(height: 12),
-                _togglesCard(controller),
-                const SizedBox(height: 24),
-                _sectionTitle('Account'),
-                const SizedBox(height: 12),
-                _menuCard([
-                  _menuTile(
-                    icon: Icons.lock_outline_rounded,
-                    label: 'Change Password',
-                    onTap: () => _notWiredYet(context, 'Change password'),
-                  ),
-                  _menuTile(
-                    icon: Icons.admin_panel_settings_outlined,
-                    label: 'Manage Admins',
-                    onTap: () => _notWiredYet(context, 'Manage admins'),
-                  ),
-                  _menuTile(
-                    icon: Icons.notifications_outlined,
-                    label: 'Notifications',
-                    onTap: () => Get.toNamed(AppRoute.notifications),
-                    showDivider: false,
-                  ),
-                ]),
-                const SizedBox(height: 24),
-                _sectionTitle('About'),
-                const SizedBox(height: 12),
-                _menuCard([
-                  _menuTile(
-                    icon: Icons.info_outline_rounded,
-                    label: 'App Version',
-                    trailing: const Text(
-                      '1.0.0',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: AppColors.textGrey,
-                      ),
-                    ),
-                    onTap: null,
-                  ),
-                  _menuTile(
-                    icon: Icons.privacy_tip_outlined,
-                    label: 'Privacy Policy',
-                    onTap: () => _notWiredYet(context, 'Privacy policy'),
-                  ),
-                  _menuTile(
-                    icon: Icons.description_outlined,
-                    label: 'Terms of Service',
-                    onTap: () => _notWiredYet(context, 'Terms of service'),
-                    showDivider: false,
-                  ),
-                ]),
-                const SizedBox(height: 24),
-                _logoutButton(context),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -190,7 +193,7 @@ class SettingsScreen extends StatelessWidget {
       child: Column(
         children: [
           Obx(
-            () => _toggleTile(
+                () => _toggleTile(
               icon: Icons.notifications_active_outlined,
               label: 'Push Notifications',
               subtitle: 'Get notified about student activity',
@@ -200,7 +203,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(height: 1, color: AppColors.borderGrey),
           Obx(
-            () => _toggleTile(
+                () => _toggleTile(
               icon: Icons.mail_outline_rounded,
               label: 'Email Alerts',
               subtitle: 'Receive a daily summary by email',

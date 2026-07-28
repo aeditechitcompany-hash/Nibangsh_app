@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step8_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step8Screen extends StatelessWidget {
   const Step8Screen({super.key});
@@ -19,38 +20,40 @@ class Step8Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildSummaryCard(student),
-                  const SizedBox(height: 20),
-                  _sectionLabel('COURSE COMMENCEMENT DATE'),
-                  const SizedBox(height: 8),
-                  _buildDateField(context, controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('SCHOLARSHIP STATUS'),
-                  const SizedBox(height: 8),
-                  _buildScholarshipRow(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('ADMIN NOTES'),
-                  const SizedBox(height: 8),
-                  _buildNotesField(controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                  const SizedBox(height: 40),
-                ],
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildSummaryCard(student),
+                    const SizedBox(height: 20),
+                    _sectionLabel('COURSE COMMENCEMENT DATE'),
+                    const SizedBox(height: 8),
+                    _buildDateField(context, controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('SCHOLARSHIP STATUS'),
+                    const SizedBox(height: 8),
+                    _buildScholarshipRow(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('ADMIN NOTES'),
+                    const SizedBox(height: 8),
+                    _buildNotesField(controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -358,7 +361,7 @@ class Step8Screen extends StatelessWidget {
   // ── Scholarship status toggle ──
   Widget _buildScholarshipRow(Step8Controller controller) {
     return Obx(
-      () => Row(
+          () => Row(
         children: Step8Controller.scholarshipOptions.map((option) {
           final selected = controller.scholarshipStatus.value == option;
           return Expanded(

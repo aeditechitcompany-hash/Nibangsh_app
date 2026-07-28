@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step4_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step4Screen extends StatelessWidget {
   const Step4Screen({super.key});
@@ -17,42 +18,44 @@ class Step4Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildInfoBanner(),
-                  const SizedBox(height: 20),
-                  _sectionLabel('INTERVIEW DATE'),
-                  const SizedBox(height: 8),
-                  _buildDateField(context, controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('INTERVIEW MODE'),
-                  const SizedBox(height: 8),
-                  _buildModeRow(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('INTERVIEW RESULT'),
-                  const SizedBox(height: 8),
-                  _buildResultRow(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('ADMIN NOTES'),
-                  const SizedBox(height: 8),
-                  _buildNotesField(controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                  const SizedBox(height: 35),
-                ],
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildInfoBanner(),
+                    const SizedBox(height: 20),
+                    _sectionLabel('INTERVIEW DATE'),
+                    const SizedBox(height: 8),
+                    _buildDateField(context, controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('INTERVIEW MODE'),
+                    const SizedBox(height: 8),
+                    _buildModeRow(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('INTERVIEW RESULT'),
+                    const SizedBox(height: 8),
+                    _buildResultRow(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('ADMIN NOTES'),
+                    const SizedBox(height: 8),
+                    _buildNotesField(controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                    const SizedBox(height: 35),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -5,6 +5,7 @@ import '../../../common/models/book_resource.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/books_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class BooksScreen extends StatelessWidget {
   const BooksScreen({super.key});
@@ -24,24 +25,26 @@ class BooksScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller, context),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller, context),
+              Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
                 ),
+                padding: const EdgeInsets.only(top: 20),
+                child: _buildBookList(controller, context),
               ),
-              padding: const EdgeInsets.only(top: 20),
-              child: _buildBookList(controller, context),
-            ),
-            const SizedBox(height: 100),
-          ],
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );
@@ -82,7 +85,7 @@ class BooksScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Obx(
-                    () => Text(
+                        () => Text(
                       '${controller.books.length} PDFs shared with students',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.75),
@@ -159,10 +162,10 @@ class BooksScreen extends StatelessWidget {
   }
 
   Widget _bookCard(
-    AdminBooksController controller,
-    BookResource book,
-    BuildContext context,
-  ) {
+      AdminBooksController controller,
+      BookResource book,
+      BuildContext context,
+      ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
@@ -287,10 +290,10 @@ class BooksScreen extends StatelessWidget {
   }
 
   void _showUploadSheet(
-    BuildContext context,
-    AdminBooksController controller, {
-    BookResource? editBook,
-  }) {
+      BuildContext context,
+      AdminBooksController controller, {
+        BookResource? editBook,
+      }) {
     if (editBook != null) {
       controller.startEdit(editBook);
     } else {
@@ -304,13 +307,16 @@ class BooksScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
           child: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -328,7 +334,7 @@ class BooksScreen extends StatelessWidget {
                     ),
                   ),
                   Obx(
-                    () => Text(
+                        () => Text(
                       controller.isEditing
                           ? 'Edit Book'
                           : 'Upload a Book (PDF)',
@@ -363,7 +369,7 @@ class BooksScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Obx(
-                    () => InkWell(
+                        () => InkWell(
                       borderRadius: BorderRadius.circular(14),
                       onTap: controller.isPicking.value
                           ? null
@@ -432,7 +438,7 @@ class BooksScreen extends StatelessWidget {
                         elevation: 0,
                       ),
                       child: Obx(
-                        () => Text(
+                            () => Text(
                           controller.isEditing
                               ? 'Save Changes'
                               : 'Upload & Share',

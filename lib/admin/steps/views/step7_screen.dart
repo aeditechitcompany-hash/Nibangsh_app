@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step7_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step7Screen extends StatelessWidget {
   const Step7Screen({super.key});
@@ -17,31 +18,33 @@ class Step7Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildInfoBanner(controller, student),
-                  _buildChecklist(),
-                  const SizedBox(height: 14),
-                  _buildUploadRow(controller),
-                  const SizedBox(height: 16),
-                  _buildVerifiedBanner(controller),
-                  const SizedBox(height: 8),
-                  _buildActionButton(controller),
-                  const SizedBox(height: 40),
-                ],
+      body: ResponsiveDashboardWrapper(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildInfoBanner(controller, student),
+                    _buildChecklist(),
+                    const SizedBox(height: 14),
+                    _buildUploadRow(controller),
+                    const SizedBox(height: 16),
+                    _buildVerifiedBanner(controller),
+                    const SizedBox(height: 8),
+                    _buildActionButton(controller),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

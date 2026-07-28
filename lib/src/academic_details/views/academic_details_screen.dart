@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../common/util/academic_constants.dart';
 import '../../../common/util/app_colors.dart';
 import '../controller/academic_details_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class AcademicDetailsScreen extends StatelessWidget {
   const AcademicDetailsScreen({super.key});
@@ -22,8 +23,14 @@ class AcademicDetailsScreen extends StatelessWidget {
               // Header
               Container(
                 width: double.infinity,
-                height: size.height * 0.26,
-                padding: const EdgeInsets.only(top: 44),
+                padding: EdgeInsets.only(
+                  top: context.responsive(
+                    mobile: 44.0,
+                    tablet: 52.0,
+                    laptop: 60.0,
+                  ),
+                  bottom: context.responsive(mobile: 28.0, tablet: 36.0),
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -39,6 +46,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     if (controller.isEditMode)
                       Positioned(
@@ -53,42 +61,46 @@ class AcademicDetailsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.school_outlined,
-                          color: Colors.white,
-                          size: 46,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          controller.isEditMode
-                              ? 'Update Your Academic Details'
-                              : 'Tell Us About Yourself',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.school_outlined,
                             color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
+                            size: 46,
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: Text(
+                          const SizedBox(height: 12),
+                          Text(
                             controller.isEditMode
-                                ? 'Keep your profile accurate and up to date'
-                                : 'A few quick details so we can personalize your journey',
+                                ? 'Update Your Academic Details'
+                                : 'Tell Us About Yourself',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12.5,
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3,
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 6),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: Text(
+                              controller.isEditMode
+                                  ? 'Keep your profile accurate and up to date'
+                                  : 'A few quick details so we can personalize your journey',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -96,188 +108,190 @@ class AcademicDetailsScreen extends StatelessWidget {
 
               const SizedBox(height: 28),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Form(
-                  key: controller.formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Country / Destination
-                      _buildLabel('Choose Country / Destination'),
-                      const SizedBox(height: 8),
-                      Obx(
-                        () => _buildDropdown(
-                          value: controller.selectedCountry.value.isEmpty
-                              ? null
-                              : controller.selectedCountry.value,
-                          hint: 'Select your preferred destination',
-                          icon: Icons.public_outlined,
-                          items: AcademicConstants.countries,
-                          onChanged: controller.setCountry,
-                          errorText:
-                              controller.showErrors.value &&
-                                  controller.selectedCountry.value.isEmpty
-                              ? 'Please select a destination'
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      // GPA
-                      _buildLabel('Enter your GPA'),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: controller.gpaController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        validator: controller.validateGpa,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textDark,
-                        ),
-                        decoration: _fieldDecoration(
-                          hint: 'e.g. 3.5 or 4.0',
-                          icon: Icons.grade_outlined,
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      // Passout Year
-                      _buildLabel('Passout Year'),
-                      const SizedBox(height: 8),
-                      Obx(
-                        () => _buildDropdown(
-                          value: controller.selectedPassoutYear.value.isEmpty
-                              ? null
-                              : controller.selectedPassoutYear.value,
-                          hint: 'Select your passout year',
-                          icon: Icons.calendar_today_outlined,
-                          items: AcademicConstants.passoutYears,
-                          onChanged: controller.setPassoutYear,
-                          errorText:
-                              controller.showErrors.value &&
-                                  controller.selectedPassoutYear.value.isEmpty
-                              ? 'Please select a year'
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      // Interested Degree
-                      _buildLabel('Choose Interested Degree'),
-                      const SizedBox(height: 8),
-                      Obx(
-                        () => Row(
-                          children: AcademicConstants.degrees.map((degree) {
-                            final selected =
-                                controller.selectedDegree.value == degree;
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () => controller.setDegree(degree),
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                    right:
-                                        degree == AcademicConstants.degrees.last
-                                        ? 0
-                                        : 10,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: selected
-                                        ? AppColors.navyLight
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: selected
-                                          ? AppColors.navyLight
-                                          : AppColors.borderGrey,
-                                      width: 1.4,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    degree,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: selected
-                                          ? Colors.white
-                                          : AppColors.textDark,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      Obx(
-                        () =>
-                            controller.showErrors.value &&
-                                controller.selectedDegree.value.isEmpty
-                            ? const Padding(
-                                padding: EdgeInsets.only(top: 6, left: 4),
-                                child: Text(
-                                  'Please choose a degree',
-                                  style: TextStyle(
-                                    color: AppColors.errorColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-
-                      const SizedBox(height: 36),
-
-                      // Continue button
-                      Obx(
-                        () => SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: controller.isLoading.value
+              ResponsiveWrapper(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: controller.formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Country / Destination
+                        _buildLabel('Choose Country / Destination'),
+                        const SizedBox(height: 8),
+                        Obx(
+                              () => _buildDropdown(
+                            value: controller.selectedCountry.value.isEmpty
                                 ? null
-                                : () => controller.submit(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.navyLight,
-                              disabledBackgroundColor: AppColors.navyLight
-                                  .withOpacity(0.6),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 3,
-                            ),
-                            child: controller.isLoading.value
-                                ? const SizedBox(
-                                    height: 22,
-                                    width: 22,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2.5,
-                                    ),
-                                  )
-                                : Text(
-                                    controller.isEditMode
-                                        ? 'Save Changes'
-                                        : 'Continue',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
+                                : controller.selectedCountry.value,
+                            hint: 'Select your preferred destination',
+                            icon: Icons.public_outlined,
+                            items: AcademicConstants.countries,
+                            onChanged: controller.setCountry,
+                            errorText:
+                            controller.showErrors.value &&
+                                controller.selectedCountry.value.isEmpty
+                                ? 'Please select a destination'
+                                : null,
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 18),
 
-                      const SizedBox(height: 40),
-                    ],
+                        // GPA
+                        _buildLabel('Enter your GPA'),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: controller.gpaController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          validator: controller.validateGpa,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textDark,
+                          ),
+                          decoration: _fieldDecoration(
+                            hint: 'e.g. 3.5 or 4.0',
+                            icon: Icons.grade_outlined,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+
+                        // Passout Year
+                        _buildLabel('Passout Year'),
+                        const SizedBox(height: 8),
+                        Obx(
+                              () => _buildDropdown(
+                            value: controller.selectedPassoutYear.value.isEmpty
+                                ? null
+                                : controller.selectedPassoutYear.value,
+                            hint: 'Select your passout year',
+                            icon: Icons.calendar_today_outlined,
+                            items: AcademicConstants.passoutYears,
+                            onChanged: controller.setPassoutYear,
+                            errorText:
+                            controller.showErrors.value &&
+                                controller.selectedPassoutYear.value.isEmpty
+                                ? 'Please select a year'
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+
+                        // Interested Degree
+                        _buildLabel('Choose Interested Degree'),
+                        const SizedBox(height: 8),
+                        Obx(
+                              () => Row(
+                            children: AcademicConstants.degrees.map((degree) {
+                              final selected =
+                                  controller.selectedDegree.value == degree;
+                              return Expanded(
+                                child: GestureDetector(
+                                  onTap: () => controller.setDegree(degree),
+                                  child: Container(
+                                    margin: EdgeInsets.only(
+                                      right:
+                                      degree == AcademicConstants.degrees.last
+                                          ? 0
+                                          : 10,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: selected
+                                          ? AppColors.navyLight
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: selected
+                                            ? AppColors.navyLight
+                                            : AppColors.borderGrey,
+                                        width: 1.4,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      degree,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: selected
+                                            ? Colors.white
+                                            : AppColors.textDark,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        Obx(
+                              () =>
+                          controller.showErrors.value &&
+                              controller.selectedDegree.value.isEmpty
+                              ? const Padding(
+                            padding: EdgeInsets.only(top: 6, left: 4),
+                            child: Text(
+                              'Please choose a degree',
+                              style: TextStyle(
+                                color: AppColors.errorColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                          )
+                              : const SizedBox.shrink(),
+                        ),
+
+                        const SizedBox(height: 36),
+
+                        // Continue button
+                        Obx(
+                              () => SizedBox(
+                            width: double.infinity,
+                            height: 52,
+                            child: ElevatedButton(
+                              onPressed: controller.isLoading.value
+                                  ? null
+                                  : () => controller.submit(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.navyLight,
+                                disabledBackgroundColor: AppColors.navyLight
+                                    .withOpacity(0.6),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                elevation: 3,
+                              ),
+                              child: controller.isLoading.value
+                                  ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                                  : Text(
+                                controller.isEditMode
+                                    ? 'Save Changes'
+                                    : 'Continue',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
                 ),
               ),
