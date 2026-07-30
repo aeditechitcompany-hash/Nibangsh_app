@@ -645,8 +645,12 @@ class HomeScreen extends StatelessWidget {
       pillIcon = Icons.hourglass_empty_rounded;
     }
 
-    final isTappable =
-        step.owner == StepOwner.user && step.status == StepStatus.active;
+    // Step 3 (the documents step) stays tappable even after it's marked
+    // done, so the user can reopen the Docs screen at any time. Every
+    // other user step only opens while it's the active one.
+    final isTappable = step.owner == StepOwner.user &&
+        (step.status == StepStatus.active ||
+            (step.id == 3 && step.status == StepStatus.done));
 
     return GestureDetector(
       onTap: isTappable
@@ -885,7 +889,7 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'Select Language Test',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
