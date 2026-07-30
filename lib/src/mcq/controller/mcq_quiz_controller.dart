@@ -5,7 +5,7 @@ import '../../../common/util/app_route.dart';
 import 'mcq_home_controller.dart';
 
 class McqQuizController extends GetxController {
-  static const int quizDurationSeconds = 5 * 60;
+  static const int quizDurationSeconds = 50 * 60;
 
   late final QuizSet quizSet;
 

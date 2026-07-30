@@ -45,7 +45,7 @@ class AppBottomNav extends StatelessWidget {
                     Text(
                       _items[index]['label'] as String,
                       style: TextStyle(
-                        fontSize: 10.5,
+                        fontSize: 12,
                         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                         color: selected ? AppColors.darkBlue : AppColors.textGrey,
                       ),

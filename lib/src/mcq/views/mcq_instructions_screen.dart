@@ -44,7 +44,7 @@ class McqInstructionsScreen extends StatelessWidget {
                       color: AppColors.primaryBlue,
                       title: 'Time Limit',
                       description:
-                      'You will have 5 minutes to complete this set once you tap Continue. The timer keeps running in the background even if you move between questions.',
+                      'You will have 50 minutes to complete this set once you tap Continue. The timer keeps running in the background even if you move between questions.',
                     ),
                     _instructionTile(
                       icon: Icons.flag_outlined,
@@ -58,7 +58,7 @@ class McqInstructionsScreen extends StatelessWidget {
                       color: AppColors.darkBlue,
                       title: 'If Time Runs Out',
                       description:
-                      'If the 5 minutes end before you finish, the quiz will stop automatically and you\'ll be taken straight to your result, based on whatever answers you\'ve selected so far.',
+                      'If the 50 minutes end before you finish, the quiz will stop automatically and you\'ll be taken straight to your result, based on whatever answers you\'ve selected so far.',
                     ),
                     _instructionTile(
                       icon: Icons.touch_app_outlined,

@@ -207,7 +207,7 @@ class McqQuizScreen extends StatelessWidget {
                 Text(
                   question.question!,
                   style: const TextStyle(
-                    fontSize: 15.5,
+                    fontSize: 19.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                     height: 1.4,
@@ -282,7 +282,7 @@ class McqQuizScreen extends StatelessWidget {
                           ? Text(
                         question.options[index],
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: 16.5,
                           fontWeight: FontWeight.w600,
                           color: selected
                               ? Colors.white
@@ -317,7 +317,7 @@ class McqQuizScreen extends StatelessWidget {
                             child: Text(
                               question.options[index],
                               style: TextStyle(
-                                fontSize: 13.5,
+                                fontSize: 16.5,
                                 fontWeight: FontWeight.w600,
                                 color: selected
                                     ? Colors.white

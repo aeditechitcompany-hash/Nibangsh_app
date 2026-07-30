@@ -39,7 +39,12 @@ extension ResponsiveContext on BuildContext {
 
   /// Pick a value depending on the current breakpoint. Falls back to the
   /// closest smaller breakpoint value if a specific one isn't provided.
-  T responsive<T>({required T mobile, T? tablet, T? laptop, T? desktop}) {
+  T responsive<T>({
+    required T mobile,
+    T? tablet,
+    T? laptop,
+    T? desktop,
+  }) {
     switch (deviceType) {
       case DeviceType.mobile:
         return mobile;
@@ -53,8 +58,12 @@ extension ResponsiveContext on BuildContext {
   }
 
   /// Horizontal page padding that grows on larger viewports.
-  double get pagePadding =>
-      responsive(mobile: 20.0, tablet: 40.0, laptop: 64.0, desktop: 96.0);
+  double get pagePadding => responsive(
+    mobile: 20.0,
+    tablet: 40.0,
+    laptop: 64.0,
+    desktop: 96.0,
+  );
 
   /// Max content width so text/forms don't stretch edge-to-edge on
   /// laptop/desktop viewports.
@@ -74,29 +83,14 @@ extension ResponsiveContext on BuildContext {
   );
 
   /// Number of grid columns for card/grid layouts.
-  int gridColumns({
-    int mobile = 1,
-    int tablet = 2,
-    int laptop = 3,
-    int desktop = 4,
-  }) {
-    return responsive(
-      mobile: mobile,
-      tablet: tablet,
-      laptop: laptop,
-      desktop: desktop,
-    );
+  int gridColumns({int mobile = 1, int tablet = 2, int laptop = 3, int desktop = 4}) {
+    return responsive(mobile: mobile, tablet: tablet, laptop: laptop, desktop: desktop);
   }
 
   /// Scales a base font size gently for larger screens. Clamped so text
   /// never becomes uncomfortably large.
   double scaleFont(double base) {
-    final factor = responsive(
-      mobile: 1.0,
-      tablet: 1.05,
-      laptop: 1.1,
-      desktop: 1.12,
-    );
+    final factor = responsive(mobile: 1.0, tablet: 1.05, laptop: 1.1, desktop: 1.12);
     return base * factor;
   }
 }
@@ -127,8 +121,7 @@ class ResponsiveWrapper extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: width),
         child: Padding(
-          padding:
-              padding ??
+          padding: padding ??
               EdgeInsets.symmetric(
                 horizontal: context.isTabletOrLarger ? 24 : 0,
               ),
@@ -211,9 +204,8 @@ class ResponsiveGrid extends StatelessWidget {
   }
 }
 
-/// Adaptive shell: shows a bottom navigation bar on mobile and a side
-/// [NavigationRail] on tablet/laptop/desktop. Pass the same items/state
-/// used to build a bottom nav bar.
+/// Bottom navigation bar is always shown at the bottom of the screen,
+/// on phones and tablets, in both portrait and landscape.
 class AdaptiveNavShell extends StatelessWidget {
   final Widget body;
   final int currentIndex;
@@ -236,29 +228,9 @@ class AdaptiveNavShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isTabletOrLarger) {
-      return Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: currentIndex,
-              onDestinationSelected: onTap,
-              backgroundColor: railBackgroundColor,
-              leading: railLeading,
-              labelType: context.isDesktop
-                  ? NavigationRailLabelType.none
-                  : NavigationRailLabelType.selected,
-              extended: context.isDesktop,
-              minExtendedWidth: 200,
-              destinations: railDestinations,
-            ),
-            const VerticalDivider(width: 1),
-            Expanded(child: body),
-          ],
-        ),
-      );
-    }
-
-    return Scaffold(body: body, bottomNavigationBar: bottomNavBar);
+    return Scaffold(
+      body: body,
+      bottomNavigationBar: bottomNavBar,
+    );
   }
 }
