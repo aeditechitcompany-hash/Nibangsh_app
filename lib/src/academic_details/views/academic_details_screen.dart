@@ -80,7 +80,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.3,
                             ),
@@ -95,7 +95,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 color: Colors.white70,
-                                fontSize: 12.5,
+                                fontSize: 14.5,
                               ),
                             ),
                           ),
@@ -147,7 +147,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                           ),
                           validator: controller.validateGpa,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textDark,
                           ),
                           decoration: _fieldDecoration(
@@ -215,7 +215,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                                       degree,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontSize: 13.5,
+                                        fontSize: 15.5,
                                         fontWeight: FontWeight.w600,
                                         color: selected
                                             ? Colors.white
@@ -238,7 +238,7 @@ class AcademicDetailsScreen extends StatelessWidget {
                               'Please choose a degree',
                               style: TextStyle(
                                 color: AppColors.errorColor,
-                                fontSize: 12,
+                                fontSize: 14,
                               ),
                             ),
                           )
@@ -306,7 +306,7 @@ class AcademicDetailsScreen extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: AppColors.textDark,
       ),
@@ -319,7 +319,7 @@ class AcademicDetailsScreen extends StatelessWidget {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
+      hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 16),
       prefixIcon: Icon(icon, color: AppColors.primaryBlue, size: 20),
       filled: true,
       fillColor: Colors.white,
@@ -375,7 +375,7 @@ class AcademicDetailsScreen extends StatelessWidget {
             item,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
               color: AppColors.textDark,
             ),
