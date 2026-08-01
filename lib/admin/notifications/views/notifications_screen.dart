@@ -14,13 +14,13 @@ class NotificationsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: ResponsiveDashboardWrapper(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(controller),
-              Padding(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(controller),
+            ResponsiveDashboardWrapper(
+              child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
                 child: Obx(() {
                   if (controller.activities.isEmpty) {
@@ -41,8 +41,8 @@ class NotificationsScreen extends StatelessWidget {
                   );
                 }),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -94,7 +94,7 @@ class NotificationsScreen extends StatelessWidget {
                       'Notifications',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 19,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -104,7 +104,7 @@ class NotificationsScreen extends StatelessWidget {
                         '${controller.unreadCount} recent activities',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.75),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -163,7 +163,7 @@ class NotificationsScreen extends StatelessWidget {
                 Text(
                   activity.name,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -171,14 +171,14 @@ class NotificationsScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   activity.action,
-                  style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
                 ),
               ],
             ),
           ),
           Text(
             activity.time,
-            style: const TextStyle(fontSize: 10.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
           ),
         ],
       ),

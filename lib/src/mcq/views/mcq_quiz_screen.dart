@@ -14,34 +14,34 @@ class McqQuizScreen extends StatelessWidget {
     final controller = Get.put(McqQuizController());
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            ResponsiveWrapper(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
+        backgroundColor: AppColors.background,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              ResponsiveWrapper(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  padding: const EdgeInsets.only(top: 22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildQuestionCard(controller, context),
+                      const SizedBox(height: 40),
+                    ],
                   ),
                 ),
-                padding: const EdgeInsets.only(top: 22),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildQuestionCard(controller, context),
-                    const SizedBox(height: 40),
-                  ],
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -63,88 +63,46 @@ class McqQuizScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.14),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            controller.quizSet.title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            '${controller.totalQuestions} Question',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.75),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
                 ),
               ),
-              const SizedBox(width: 8),
-              Obx(() => _timerChip(controller)),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    controller.quizSet.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${controller.totalQuestions} Question',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.75),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _timerChip(McqQuizController controller) {
-    final lowTime = controller.isTimeRunningLow;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: lowTime ? AppColors.errorColor.withOpacity(0.18) : Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.timer_outlined,
-            color: lowTime ? AppColors.errorColor : Colors.white,
-            size: 16,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            controller.formattedTime,
-            style: TextStyle(
-              color: lowTime ? AppColors.errorColor : Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-            ),
           ),
         ],
       ),
@@ -184,7 +142,7 @@ class McqQuizScreen extends StatelessWidget {
                   Text(
                     'Question: ${controller.currentIndex.value + 1}/${controller.totalQuestions}',
                     style: const TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 14.5,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primaryBlue,
                     ),
@@ -194,7 +152,7 @@ class McqQuizScreen extends StatelessWidget {
                     child: const Text(
                       'Quit',
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                         fontWeight: FontWeight.bold,
                         color: AppColors.errorColor,
                       ),
@@ -207,13 +165,14 @@ class McqQuizScreen extends StatelessWidget {
                 Text(
                   question.question!,
                   style: const TextStyle(
-                    fontSize: 19.5,
+                    fontSize: 22.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                     height: 1.4,
                   ),
                 ),
 
+              // Stimulus image (e.g. a picture/poster/graph the student looks at before answering).
               if (question.hasImage) ...[
                 const SizedBox(height: 14),
                 ClipRRect(
@@ -230,7 +189,7 @@ class McqQuizScreen extends StatelessWidget {
                         child: Text(
                           'Image not found: ${question.imageAsset}',
                           style: const TextStyle(
-                            fontSize: 11,
+                            fontSize: 12.5,
                             color: AppColors.errorColor,
                           ),
                         ),
@@ -282,7 +241,7 @@ class McqQuizScreen extends StatelessWidget {
                           ? Text(
                         question.options[index],
                         style: TextStyle(
-                          fontSize: 16.5,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.w600,
                           color: selected
                               ? Colors.white
@@ -317,7 +276,7 @@ class McqQuizScreen extends StatelessWidget {
                             child: Text(
                               question.options[index],
                               style: TextStyle(
-                                fontSize: 16.5,
+                                fontSize: 15.5,
                                 fontWeight: FontWeight.w600,
                                 color: selected
                                     ? Colors.white
@@ -406,7 +365,7 @@ class McqQuizScreen extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
             onPressed: () {
-              Get.back();
+              Get.back(); // close dialog
               Get.until((route) => route.settings.name == AppRoute.home);
             },
             child: const Text('Quit'),

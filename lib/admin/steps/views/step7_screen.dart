@@ -18,13 +18,13 @@ class Step7Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: ResponsiveDashboardWrapper(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              Padding(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            ResponsiveDashboardWrapper(
+              child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,8 +43,8 @@ class Step7Screen extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -93,7 +93,7 @@ class Step7Screen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Step 7 of 10 · Admin Approval',
-                  style: TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -115,9 +115,9 @@ class Step7Screen extends StatelessWidget {
               const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('LOC Verify', style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold)),
+                  Text('LOC Verify', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                   SizedBox(height: 2),
-                  Text('Verify LOC Document', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text('Verify LOC Document', style: TextStyle(color: Colors.white70, fontSize: 14)),
                 ],
               ),
             ],
@@ -149,7 +149,7 @@ class Step7Screen extends StatelessWidget {
             ),
             child: Text(
               student.initials,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
             ),
           ),
           const SizedBox(width: 12),
@@ -157,10 +157,10 @@ class Step7Screen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(student.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                Text(student.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                 const SizedBox(height: 3),
                 Text('$flag ${student.countryName} • ${student.university}',
-                    style: const TextStyle(fontSize: 11, color: AppColors.textGrey)),
+                    style: const TextStyle(fontSize: 12.5, color: AppColors.textGrey)),
               ],
             ),
           ),
@@ -170,7 +170,7 @@ class Step7Screen extends StatelessWidget {
               color: AppColors.primaryBlue.withOpacity(0.12),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text('In Review', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+            child: const Text('In Review', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
           ),
         ],
       ),
@@ -193,11 +193,11 @@ class Step7Screen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('LOC Verification Checklist',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: stepColor)),
+                  style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: stepColor)),
               const SizedBox(height: 4),
               Text(
                 'Verify the Letter of Confirmation from ${student.university}. Ensure all details are correct before approving.',
-                style: TextStyle(fontSize: 12, color: stepColor.withOpacity(0.9), height: 1.4),
+                style: TextStyle(fontSize: 14, color: stepColor.withOpacity(0.9), height: 1.4),
               ),
             ],
           ),
@@ -231,7 +231,7 @@ class Step7Screen extends StatelessWidget {
                 child: const Icon(Icons.check, size: 13, color: Color(0xFF16A34A)),
               ),
               const SizedBox(width: 12),
-              Text(item, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+              Text(item, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark)),
             ],
           ),
         );
@@ -258,7 +258,7 @@ class Step7Screen extends StatelessWidget {
               child: Text(
                 fileName ?? 'Upload LOC Document',
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.w600,
                   color: fileName != null ? AppColors.textDark : stepColor,
                 ),
@@ -275,7 +275,7 @@ class Step7Screen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Browse', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              child: const Text('Browse', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -305,7 +305,7 @@ class Step7Screen extends StatelessWidget {
               SizedBox(width: 8),
               Text(
                 'LOC Verified ✓ — Ready to Approve',
-                style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Color(0xFF16A34A)),
+                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: Color(0xFF16A34A)),
               ),
             ],
           ),
@@ -328,7 +328,7 @@ class Step7Screen extends StatelessWidget {
             label: Text(
               'Mark LOC as Verified',
               style: TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.bold,
                 color: canMark ? AppColors.textDark : AppColors.textGrey,
               ),
@@ -349,7 +349,7 @@ class Step7Screen extends StatelessWidget {
           icon: const Icon(Icons.verified_outlined, color: Colors.white, size: 18),
           label: const Text(
             'Approve LOC — Complete Step 7',
-            style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: stepColor,

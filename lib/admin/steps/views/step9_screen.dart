@@ -18,13 +18,13 @@ class Step9Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: ResponsiveDashboardWrapper(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              Padding(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            ResponsiveDashboardWrapper(
+              child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,8 +48,8 @@ class Step9Screen extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -107,7 +107,7 @@ class Step9Screen extends StatelessWidget {
                   'Step 9 of 10 · Admin Approval',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 11.5,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -139,14 +139,14 @@ class Step9Screen extends StatelessWidget {
                     'Visa Approval',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 19,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 2),
                   Text(
                     'Process Visa Approval',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -180,7 +180,7 @@ class Step9Screen extends StatelessWidget {
             child: Text(
               student.initials,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryBlue,
               ),
@@ -194,7 +194,7 @@ class Step9Screen extends StatelessWidget {
                 Text(
                   student.name,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -203,7 +203,7 @@ class Step9Screen extends StatelessWidget {
                 Text(
                   '$flag ${student.countryName} • ${student.university}',
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -219,7 +219,7 @@ class Step9Screen extends StatelessWidget {
             child: Text(
               student.status.label,
               style: TextStyle(
-                fontSize: 10.5,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: student.status.color,
               ),
@@ -245,7 +245,7 @@ class Step9Screen extends StatelessWidget {
           const Text(
             'Visa Processing',
             style: TextStyle(
-              fontSize: 12.5,
+              fontSize: 14.5,
               fontWeight: FontWeight.bold,
               color: stepColor,
             ),
@@ -254,7 +254,7 @@ class Step9Screen extends StatelessWidget {
           Text(
             'Process the ${student.countryName} student visa. Update the status as it progresses.',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               color: stepColor.withOpacity(0.9),
               height: 1.4,
             ),
@@ -267,7 +267,7 @@ class Step9Screen extends StatelessWidget {
   Widget _sectionLabel(String text) => Text(
     text,
     style: const TextStyle(
-      fontSize: 11.5,
+      fontSize: 13,
       fontWeight: FontWeight.bold,
       color: AppColors.textGrey,
       letterSpacing: 0.4,
@@ -285,13 +285,13 @@ class Step9Screen extends StatelessWidget {
       child: TextField(
         controller: controller.refNoController,
         style: const TextStyle(
-          fontSize: 13.5,
+          fontSize: 15.5,
           fontWeight: FontWeight.w600,
           color: AppColors.textDark,
         ),
         decoration: const InputDecoration(
           hintText: 'e.g. AUS-2024-XXXX',
-          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 13.5),
+          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 15.5),
           prefixIcon: Icon(Icons.tag, size: 18, color: AppColors.textGrey),
           contentPadding: EdgeInsets.symmetric(vertical: 14),
           border: InputBorder.none,
@@ -346,7 +346,7 @@ class Step9Screen extends StatelessWidget {
                     Text(
                       label,
                       style: TextStyle(
-                        fontSize: 13.5,
+                        fontSize: 15.5,
                         fontWeight: FontWeight.bold,
                         color: color,
                       ),
@@ -381,7 +381,7 @@ class Step9Screen extends StatelessWidget {
               child: Text(
                 fileName ?? 'Upload Visa Approval Letter',
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.w600,
                   color: fileName != null ? AppColors.textDark : stepColor,
                 ),
@@ -405,7 +405,7 @@ class Step9Screen extends StatelessWidget {
               ),
               child: const Text(
                 'Browse',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -433,7 +433,7 @@ class Step9Screen extends StatelessWidget {
             'Confirm Visa & Complete Step 9',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: complete ? Colors.white : AppColors.textGrey,
             ),

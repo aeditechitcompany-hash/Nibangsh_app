@@ -73,7 +73,7 @@ class McqScreen extends StatelessWidget {
                     'MCQ Practice',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -82,7 +82,7 @@ class McqScreen extends StatelessWidget {
                     'Test your knowledge',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.85),
-                      fontSize: 12.5,
+                      fontSize: 14.5,
                     ),
                   ),
                 ],
@@ -131,7 +131,7 @@ class McqScreen extends StatelessWidget {
             const SizedBox(height: 4),
             const Text(
               'Check back once your consultancy adds some',
-              style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+              style: TextStyle(color: AppColors.textGrey, fontSize: 14),
             ),
           ],
         ),
@@ -155,7 +155,7 @@ class McqScreen extends StatelessWidget {
             Text(
               'Question ${index + 1} of $total',
               style: const TextStyle(
-                fontSize: 12.5,
+                fontSize: 14.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textGrey,
               ),
@@ -163,7 +163,7 @@ class McqScreen extends StatelessWidget {
             Text(
               '${controller.selectedAnswers.length}/$total answered',
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 color: AppColors.textGrey,
               ),
             ),
@@ -202,7 +202,7 @@ class McqScreen extends StatelessWidget {
               Text(
                 q.question,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
@@ -256,7 +256,7 @@ class McqScreen extends StatelessWidget {
                             child: Text(
                               q.options[i],
                               style: TextStyle(
-                                fontSize: 13.5,
+                                fontSize: 15.5,
                                 fontWeight: isSelected
                                     ? FontWeight.w600
                                     : FontWeight.normal,
@@ -359,7 +359,7 @@ class McqScreen extends StatelessWidget {
               const Text(
                 'Quiz Complete!',
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 19.5,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
@@ -368,7 +368,7 @@ class McqScreen extends StatelessWidget {
               Text(
                 'You scored $score out of $total ($percent%)',
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 15,
                   color: AppColors.textGrey,
                 ),
               ),
@@ -401,7 +401,7 @@ class McqScreen extends StatelessWidget {
           child: Text(
             'Review',
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -446,7 +446,7 @@ class McqScreen extends StatelessWidget {
                       child: Text(
                         'Q${i + 1}. ${q.question}',
                         style: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textDark,
                         ),
@@ -458,7 +458,7 @@ class McqScreen extends StatelessWidget {
                 Text(
                   'Correct answer: ${q.options[q.correctOptionIndex]}',
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: Color(0xFF16A34A),
                   ),
                 ),
@@ -466,7 +466,7 @@ class McqScreen extends StatelessWidget {
                   Text(
                     'Your answer: ${q.options[picked]}',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       color: AppColors.primaryRed,
                     ),
                   ),

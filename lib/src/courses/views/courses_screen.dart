@@ -34,7 +34,7 @@ class CoursesScreen extends StatelessWidget {
                         child: Text(
                           '${controller.courses.length} COURSES OFFERED',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.8,
                             color: AppColors.textGrey.withOpacity(0.9),
@@ -85,10 +85,10 @@ class CoursesScreen extends StatelessWidget {
                     Text(
                       controller.universityName,
                       maxLines: 2,
-                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 20.5, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
-                    Text('Explore available courses', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12.5)),
+                    Text('Explore available courses', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14.5)),
                   ],
                 ),
               ),
@@ -136,12 +136,12 @@ class CoursesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(course.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                Text(course.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(20)),
-                  child: Text(course.level, style: const TextStyle(fontSize: 10.5, color: AppColors.textDark, fontWeight: FontWeight.w600)),
+                  child: Text(course.level, style: const TextStyle(fontSize: 12, color: AppColors.textDark, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),

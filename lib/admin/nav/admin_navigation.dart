@@ -34,38 +34,29 @@ class AdminNavigation extends StatelessWidget {
     return Container(
       color: AppColors.background,
       child: Obx(
-        () => AdaptiveNavShell(
+            () => AdaptiveNavShell(
           currentIndex: controller.currentIndex.value,
           onTap: controller.setIndex,
           railBackgroundColor: Colors.white,
           railLeading: const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: Icon(
-              Icons.admin_panel_settings_rounded,
-              color: AppColors.primaryBlue,
-              size: 28,
-            ),
+            child: Icon(Icons.admin_panel_settings_rounded,
+                color: AppColors.primaryBlue, size: 28),
           ),
           railDestinations: _railItems
-              .map(
-                (item) => NavigationRailDestination(
-                  icon: Icon(item['icon'] as IconData),
-                  selectedIcon: Icon(
-                    item['icon'] as IconData,
-                    color: AppColors.primaryBlue,
-                  ),
-                  label: Text(item['label'] as String),
-                ),
-              )
+              .map((item) => NavigationRailDestination(
+            icon: Icon(item['icon'] as IconData),
+            selectedIcon: Icon(item['icon'] as IconData,
+                color: AppColors.primaryBlue),
+            label: Text(item['label'] as String),
+          ))
               .toList(),
           bottomNavBar: _AdminBottomNav(
             currentIndex: controller.currentIndex.value,
             onTap: controller.setIndex,
           ),
           body: IndexedStack(
-            index: controller.currentIndex.value,
-            children: tabs,
-          ),
+              index: controller.currentIndex.value, children: tabs),
         ),
       ),
     );
@@ -128,7 +119,7 @@ class _AdminBottomNav extends StatelessWidget {
                     Text(
                       _items[index]['label'] as String,
                       style: TextStyle(
-                        fontSize: 10.5,
+                        fontSize: 12,
                         fontWeight: selected
                             ? FontWeight.bold
                             : FontWeight.normal,

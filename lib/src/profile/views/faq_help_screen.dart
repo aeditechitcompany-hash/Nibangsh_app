@@ -97,7 +97,7 @@ class FaqHelpScreen extends StatelessWidget {
           style: TextStyle(
             color: AppColors.textDark,
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20.5,
           ),
         ),
       ),
@@ -108,7 +108,7 @@ class FaqHelpScreen extends StatelessWidget {
             const Text(
               'Frequently Asked Questions',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20.5,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -116,7 +116,7 @@ class FaqHelpScreen extends StatelessWidget {
             const SizedBox(height: 4),
             const Text(
               'Quick answers to the questions we get asked most.',
-              style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+              style: TextStyle(fontSize: 15, color: AppColors.textGrey),
             ),
             const SizedBox(height: 16),
 
@@ -148,7 +148,7 @@ class FaqHelpScreen extends StatelessWidget {
                           title: Text(
                             faq.question,
                             style: const TextStyle(
-                              fontSize: 14.5,
+                              fontSize: 16.5,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textDark,
                             ),
@@ -159,7 +159,7 @@ class FaqHelpScreen extends StatelessWidget {
                               child: Text(
                                 faq.answer,
                                 style: const TextStyle(
-                                  fontSize: 13.5,
+                                  fontSize: 15.5,
                                   color: AppColors.textGrey,
                                   height: 1.5,
                                 ),
@@ -181,7 +181,7 @@ class FaqHelpScreen extends StatelessWidget {
             const Text(
               'Still need help?',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20.5,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -189,7 +189,7 @@ class FaqHelpScreen extends StatelessWidget {
             const SizedBox(height: 4),
             const Text(
               'Reach out to us directly \u2014 we\'re happy to help.',
-              style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+              style: TextStyle(fontSize: 15, color: AppColors.textGrey),
             ),
             const SizedBox(height: 16),
 
@@ -279,7 +279,7 @@ class FaqHelpScreen extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark,
                   ),
@@ -288,7 +288,7 @@ class FaqHelpScreen extends StatelessWidget {
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 15,
                     color: AppColors.textGrey,
                   ),
                 ),

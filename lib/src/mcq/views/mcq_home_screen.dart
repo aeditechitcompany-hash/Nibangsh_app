@@ -40,7 +40,7 @@ class McqHomeScreen extends StatelessWidget {
                     child: Text(
                       'List of Sets',
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 18.5,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -85,14 +85,14 @@ class McqHomeScreen extends StatelessWidget {
                 'Quizzes',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 21,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 4),
               Text(
                 'Test what you\'ve learned',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],
           ),
@@ -146,7 +146,7 @@ class McqHomeScreen extends StatelessWidget {
                   'Test Your Knowledge\nwith Quizzes',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 19.5,
                     fontWeight: FontWeight.bold,
                     height: 1.3,
                   ),
@@ -156,13 +156,13 @@ class McqHomeScreen extends StatelessWidget {
                   'Quick multiple-choice sets to check how much you remember.',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.85),
-                    fontSize: 11.5,
+                    fontSize: 13,
                   ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => Get.toNamed(
-                    AppRoute.mcqInstructions,
+                    AppRoute.mcqQuiz,
                     arguments: controller.firstSet,
                   ),
                   style: ElevatedButton.styleFrom(
@@ -179,7 +179,7 @@ class McqHomeScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'Play Now',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.navyLight),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.navyLight),
                   ),
                 ),
               ],
@@ -212,7 +212,7 @@ class McqHomeScreen extends StatelessWidget {
             hintText: 'Search sets...',
             hintStyle: const TextStyle(
               color: AppColors.textGrey,
-              fontSize: 13.5,
+              fontSize: 15.5,
             ),
             prefixIcon: const Icon(
               Icons.search,
@@ -253,7 +253,7 @@ class McqHomeScreen extends StatelessWidget {
 
   Widget _setTile(McqHomeController controller, QuizSet set) {
     return GestureDetector(
-      onTap: () => Get.toNamed(AppRoute.mcqInstructions, arguments: set),
+      onTap: () => Get.toNamed(AppRoute.mcqQuiz, arguments: set),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
@@ -288,7 +288,7 @@ class McqHomeScreen extends StatelessWidget {
                   Text(
                     set.title,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
                     ),
@@ -297,7 +297,7 @@ class McqHomeScreen extends StatelessWidget {
                   Text(
                     '${set.totalQuestions} Question',
                     style: const TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 13,
                       color: AppColors.textGrey,
                     ),
                   ),
@@ -339,7 +339,7 @@ class McqHomeScreen extends StatelessWidget {
               ? Text(
             '$score/$total',
             style: const TextStyle(
-              fontSize: 9,
+              fontSize: 10.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),

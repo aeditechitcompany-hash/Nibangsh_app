@@ -22,18 +22,18 @@ class StudentProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: ResponsiveDashboardWrapper(
-        child: Obx(() {
-          // Always read the live copy so edits made here (or elsewhere)
-          // show up immediately.
-          final student = controller.byId(initial.id) ?? initial;
+      body: Obx(() {
+        // Always read the live copy so edits made here (or elsewhere)
+        // show up immediately.
+        final student = controller.byId(initial.id) ?? initial;
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(student),
-                Container(
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(student),
+              ResponsiveDashboardWrapper(
+                child: Container(
                   decoration: const BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.only(
@@ -60,11 +60,11 @@ class StudentProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
-          );
-        }),
-      ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -110,7 +110,7 @@ class StudentProfileScreen extends StatelessWidget {
                 'Student Profile',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -132,7 +132,7 @@ class StudentProfileScreen extends StatelessWidget {
                   student.initials,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 19,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -146,7 +146,7 @@ class StudentProfileScreen extends StatelessWidget {
                       student.name,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 17,
+                        fontSize: 19.5,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -155,7 +155,7 @@ class StudentProfileScreen extends StatelessWidget {
                       student.email,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -177,7 +177,7 @@ class StudentProfileScreen extends StatelessWidget {
                             student.status.label,
                             style: TextStyle(
                               color: student.status.color,
-                              fontSize: 11,
+                              fontSize: 12.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -187,7 +187,7 @@ class StudentProfileScreen extends StatelessWidget {
                           'Joined ${student.joinedDate}',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.7),
-                            fontSize: 11,
+                            fontSize: 12.5,
                           ),
                         ),
                       ],
@@ -242,7 +242,7 @@ class StudentProfileScreen extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 20.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -250,7 +250,7 @@ class StudentProfileScreen extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             label,
-            style: const TextStyle(fontSize: 10.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
           ),
         ],
       ),
@@ -347,7 +347,7 @@ class StudentProfileScreen extends StatelessWidget {
                       Text(
                         row['label'] as String,
                         style: const TextStyle(
-                          fontSize: 11,
+                          fontSize: 12.5,
                           color: AppColors.textGrey,
                         ),
                       ),
@@ -355,7 +355,7 @@ class StudentProfileScreen extends StatelessWidget {
                       Text(
                         row['value'] as String,
                         style: const TextStyle(
-                          fontSize: 13.5,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDark,
                         ),
@@ -408,7 +408,7 @@ class StudentProfileScreen extends StatelessWidget {
                 ? 'Step $total of $total — Complete'
                 : 'Step ${student.currentStep} of $total — ${student.currentStepTitle}',
             style: const TextStyle(
-              fontSize: 12.5,
+              fontSize: 14.5,
               color: AppColors.textGrey,
               fontWeight: FontWeight.w600,
             ),
@@ -434,7 +434,7 @@ class StudentProfileScreen extends StatelessWidget {
       trailing: Text(
         '${student.documentsUploaded}/${student.documentsTotal}',
         style: const TextStyle(
-          fontSize: 13,
+          fontSize: 15,
           fontWeight: FontWeight.bold,
           color: AppColors.primaryBlue,
         ),
@@ -475,7 +475,7 @@ class StudentProfileScreen extends StatelessWidget {
                     child: Text(
                       doc.title,
                       style: const TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
@@ -495,7 +495,7 @@ class StudentProfileScreen extends StatelessWidget {
                           Text(
                             'View',
                             style: TextStyle(
-                              fontSize: 11.5,
+                              fontSize: 13,
                               color: Color(0xFF16A34A),
                               fontWeight: FontWeight.bold,
                             ),
@@ -518,7 +518,7 @@ class StudentProfileScreen extends StatelessWidget {
                           Text(
                             'Replace',
                             style: TextStyle(
-                              fontSize: 11.5,
+                              fontSize: 13,
                               color: AppColors.primaryBlue,
                               fontWeight: FontWeight.bold,
                             ),
@@ -541,7 +541,7 @@ class StudentProfileScreen extends StatelessWidget {
                           Text(
                             'Upload',
                             style: TextStyle(
-                              fontSize: 11.5,
+                              fontSize: 13,
                               color: Color(0xFFF59E0B),
                               fontWeight: FontWeight.bold,
                             ),
@@ -679,7 +679,7 @@ class StudentProfileScreen extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
@@ -696,7 +696,7 @@ class StudentProfileScreen extends StatelessWidget {
             child: Text(
               value,
               style: const TextStyle(
-                fontSize: 11,
+                fontSize: 12.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textGrey,
               ),
@@ -810,7 +810,7 @@ class StudentProfileScreen extends StatelessWidget {
         label: Text(
           label,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -829,7 +829,7 @@ class StudentProfileScreen extends StatelessWidget {
         label: Text(
           label,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
@@ -910,7 +910,7 @@ class StudentProfileScreen extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14.5,
+                    fontSize: 16.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
