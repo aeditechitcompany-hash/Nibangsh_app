@@ -94,7 +94,7 @@ class HomeScreen extends StatelessWidget {
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 17,
                   ),
                 ),
               ),
@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                       '${controller.greeting},',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                       ),
                     ),
                     Obx(
@@ -115,7 +115,7 @@ class HomeScreen extends StatelessWidget {
                         '${controller.userName} 👋',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 17,
+                          fontSize: 19.5,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -180,7 +180,7 @@ class HomeScreen extends StatelessWidget {
                         'Application Progress',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.85),
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                         ),
                       ),
                       Text(
@@ -188,7 +188,7 @@ class HomeScreen extends StatelessWidget {
                         style: const TextStyle(
                           color: Colors.amber,
                           fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                          fontSize: 15,
                         ),
                       ),
                     ],
@@ -235,14 +235,14 @@ class HomeScreen extends StatelessWidget {
                             : '$flag $country',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                       Text(
                         'GPA: ${controller.gpa.value.isEmpty ? '--' : controller.gpa.value}',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -291,7 +291,7 @@ class HomeScreen extends StatelessWidget {
           const Text(
             'Quick Actions',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 18.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -331,7 +331,7 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       action['title'] as String,
                       style: const TextStyle(
-                        fontSize: 11.5,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
@@ -374,7 +374,7 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'My Profile',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -395,7 +395,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         'Edit',
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryBlue,
                         ),
@@ -477,13 +477,13 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 10.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
           ),
           const SizedBox(height: 3),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 13.5,
+              fontSize: 15.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -567,7 +567,7 @@ class HomeScreen extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 25.5,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -575,7 +575,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 11.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
           ),
         ],
       ),
@@ -599,7 +599,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 14.5,
+                fontSize: 16.5,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -609,7 +609,7 @@ class HomeScreen extends StatelessWidget {
         Text(
           doneLabel,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: doneColor,
           ),
@@ -645,12 +645,8 @@ class HomeScreen extends StatelessWidget {
       pillIcon = Icons.hourglass_empty_rounded;
     }
 
-    // Step 3 (the documents step) stays tappable even after it's marked
-    // done, so the user can reopen the Docs screen at any time. Every
-    // other user step only opens while it's the active one.
-    final isTappable = step.owner == StepOwner.user &&
-        (step.status == StepStatus.active ||
-            (step.id == 3 && step.status == StepStatus.done));
+    final isTappable =
+        step.owner == StepOwner.user && step.status == StepStatus.active;
 
     return GestureDetector(
       onTap: isTappable
@@ -686,7 +682,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'Step ${step.id}',
                     style: const TextStyle(
-                      fontSize: 10.5,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textGrey,
                     ),
@@ -695,7 +691,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     step.title,
                     style: const TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 15.5,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
                     ),
@@ -720,7 +716,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     pillLabel,
                     style: TextStyle(
-                      fontSize: 10.5,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),
@@ -795,7 +791,7 @@ class HomeScreen extends StatelessWidget {
                 Text(
                   'Upload $actionLabel',
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -856,7 +852,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textDark,
               ),
@@ -889,7 +885,7 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'Select Language Test',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 18.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),

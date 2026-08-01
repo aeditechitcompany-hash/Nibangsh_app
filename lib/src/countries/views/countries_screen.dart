@@ -37,7 +37,7 @@ class CountriesScreen extends StatelessWidget {
                     child: Text(
                       'POPULAR DESTINATIONS',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.8,
                         color: AppColors.textGrey.withOpacity(0.9),
@@ -90,7 +90,7 @@ class CountriesScreen extends StatelessWidget {
                       'Choose Country',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -99,7 +99,7 @@ class CountriesScreen extends StatelessWidget {
                       'Select your study destination',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                       ),
                     ),
                   ],
@@ -165,7 +165,7 @@ class CountriesScreen extends StatelessWidget {
         controller: controller.searchController,
         decoration: InputDecoration(
           hintText: 'Search country...',
-          hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 13.5),
+          hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 15.5),
           prefixIcon: const Icon(
             Icons.search,
             color: AppColors.primaryBlue,
@@ -245,7 +245,7 @@ class CountriesScreen extends StatelessWidget {
                 child: Text(
                   country.code,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 18.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -259,7 +259,7 @@ class CountriesScreen extends StatelessWidget {
                     Text(
                       country.name,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -268,7 +268,7 @@ class CountriesScreen extends StatelessWidget {
                     Text(
                       '${country.universityCount} Universities',
                       style: const TextStyle(
-                        fontSize: 11.5,
+                        fontSize: 13,
                         color: AppColors.primaryBlue,
                         fontWeight: FontWeight.w600,
                       ),
@@ -290,7 +290,7 @@ class CountriesScreen extends StatelessWidget {
                           child: Text(
                             uni,
                             style: const TextStyle(
-                              fontSize: 10.5,
+                              fontSize: 12,
                               color: AppColors.textDark,
                               fontWeight: FontWeight.w600,
                             ),

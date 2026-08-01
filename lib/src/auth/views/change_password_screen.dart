@@ -22,7 +22,7 @@ class ChangePasswordScreen extends StatelessWidget {
           style: TextStyle(
             color: AppColors.textDark,
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20.5,
           ),
         ),
       ),
@@ -51,7 +51,7 @@ class ChangePasswordScreen extends StatelessWidget {
                 const Text(
                   'Update your password',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 23,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -59,8 +59,8 @@ class ChangePasswordScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 const Text(
                   'Enter your current password and choose a new one to '
-                  'keep your account secure.',
-                  style: TextStyle(fontSize: 14, color: AppColors.textGrey),
+                      'keep your account secure.',
+                  style: TextStyle(fontSize: 16, color: AppColors.textGrey),
                 ),
                 const SizedBox(height: 28),
 
@@ -68,13 +68,13 @@ class ChangePasswordScreen extends StatelessWidget {
                 _buildLabel('Current Password'),
                 const SizedBox(height: 8),
                 Obx(
-                  () => _buildPasswordField(
+                      () => _buildPasswordField(
                     controller: controller.currentPasswordController,
                     hintText: 'Enter current password',
                     obscureText: !controller.isCurrentPasswordVisible.value,
                     validator: controller.validateCurrentPassword,
                     onToggleVisibility:
-                        controller.toggleCurrentPasswordVisibility,
+                    controller.toggleCurrentPasswordVisibility,
                     isVisible: controller.isCurrentPasswordVisible.value,
                   ),
                 ),
@@ -84,7 +84,7 @@ class ChangePasswordScreen extends StatelessWidget {
                 _buildLabel('New Password'),
                 const SizedBox(height: 8),
                 Obx(
-                  () => _buildPasswordField(
+                      () => _buildPasswordField(
                     controller: controller.newPasswordController,
                     hintText: 'Enter new password',
                     obscureText: !controller.isNewPasswordVisible.value,
@@ -96,8 +96,8 @@ class ChangePasswordScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 const Text(
                   'Min. 8 characters with uppercase, lowercase, number '
-                  '& special character.',
-                  style: TextStyle(fontSize: 11.5, color: AppColors.textGrey),
+                      '& special character.',
+                  style: TextStyle(fontSize: 13, color: AppColors.textGrey),
                 ),
                 const SizedBox(height: 16),
 
@@ -105,20 +105,20 @@ class ChangePasswordScreen extends StatelessWidget {
                 _buildLabel('Confirm New Password'),
                 const SizedBox(height: 8),
                 Obx(
-                  () => _buildPasswordField(
+                      () => _buildPasswordField(
                     controller: controller.confirmPasswordController,
                     hintText: 'Re-enter new password',
                     obscureText: !controller.isConfirmPasswordVisible.value,
                     validator: controller.validateConfirmPassword,
                     onToggleVisibility:
-                        controller.toggleConfirmPasswordVisibility,
+                    controller.toggleConfirmPasswordVisibility,
                     isVisible: controller.isConfirmPasswordVisible.value,
                   ),
                 ),
                 const SizedBox(height: 32),
 
                 Obx(
-                  () => SizedBox(
+                      () => SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
@@ -138,21 +138,21 @@ class ChangePasswordScreen extends StatelessWidget {
                       ),
                       child: controller.isLoading.value
                           ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
                           : const Text(
-                              'Update Password',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                        'Update Password',
+                        style: TextStyle(
+                          fontSize: 18.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -168,7 +168,7 @@ class ChangePasswordScreen extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: AppColors.textDark,
       ),
@@ -187,10 +187,10 @@ class ChangePasswordScreen extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       validator: validator,
-      style: const TextStyle(fontSize: 14, color: AppColors.textDark),
+      style: const TextStyle(fontSize: 16, color: AppColors.textDark),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
+        hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 16),
         prefixIcon: const Icon(
           Icons.lock_outline,
           color: AppColors.primaryBlue,
@@ -198,9 +198,7 @@ class ChangePasswordScreen extends StatelessWidget {
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            isVisible
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
+            isVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
             color: AppColors.textGrey,
             size: 20,
           ),

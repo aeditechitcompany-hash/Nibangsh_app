@@ -13,13 +13,13 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(SettingsController(), permanent: true);
 
-    return ResponsiveDashboardWrapper(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            Container(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(context),
+          ResponsiveDashboardWrapper(
+            child: Container(
               decoration: const BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.only(
@@ -65,7 +65,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: const Text(
                         '1.0.0',
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           color: AppColors.textGrey,
                         ),
                       ),
@@ -88,8 +88,8 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -118,7 +118,7 @@ class SettingsScreen extends StatelessWidget {
             'Settings',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 21,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -127,7 +127,7 @@ class SettingsScreen extends StatelessWidget {
             'Manage your admin account',
             style: TextStyle(
               color: Colors.white.withOpacity(0.75),
-              fontSize: 12.5,
+              fontSize: 14.5,
             ),
           ),
           const SizedBox(height: 20),
@@ -152,14 +152,14 @@ class SettingsScreen extends StatelessWidget {
                       'Admin',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       'admin@nibangsh.com',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                   ],
                 ),
@@ -175,7 +175,7 @@ class SettingsScreen extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        fontSize: 13.5,
+        fontSize: 15.5,
         fontWeight: FontWeight.bold,
         color: AppColors.textDark,
       ),
@@ -246,7 +246,7 @@ class SettingsScreen extends StatelessWidget {
                 Text(
                   label,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark,
                   ),
@@ -255,7 +255,7 @@ class SettingsScreen extends StatelessWidget {
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -314,7 +314,7 @@ class SettingsScreen extends StatelessWidget {
                   child: Text(
                     label,
                     style: const TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 15.5,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textDark,
                     ),
@@ -351,7 +351,7 @@ class SettingsScreen extends StatelessWidget {
         icon: const Icon(Icons.logout_rounded, size: 18),
         label: const Text(
           'Log Out',
-          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.bold),
         ),
       ),
     );

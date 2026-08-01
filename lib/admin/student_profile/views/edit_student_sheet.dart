@@ -201,7 +201,7 @@ class _EditStudentSheetState extends State<_EditStudentSheet> {
                     const Text(
                       'Edit Student Profile',
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -307,7 +307,7 @@ class _EditStudentSheetState extends State<_EditStudentSheet> {
                         child: const Text(
                           'Save Changes',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

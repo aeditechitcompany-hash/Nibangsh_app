@@ -39,7 +39,7 @@ class UniversitiesScreen extends StatelessWidget {
                         child: Obx(() => Text(
                           '${controller.filteredUniversities.length} UNIVERSITIES FOUND',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.8,
                             color: AppColors.textGrey.withOpacity(0.9),
@@ -99,12 +99,12 @@ class UniversitiesScreen extends StatelessWidget {
                   children: [
                     Text(
                       controller.countryName,
-                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Choose your university',
-                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12.5),
+                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14.5),
                     ),
                   ],
                 ),
@@ -131,7 +131,7 @@ class UniversitiesScreen extends StatelessWidget {
         controller: controller.searchController,
         decoration: InputDecoration(
           hintText: 'Search university...',
-          hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 13.5),
+          hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 15.5),
           prefixIcon: const Icon(Icons.search, color: AppColors.primaryBlue, size: 22),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -197,12 +197,12 @@ class UniversitiesScreen extends StatelessWidget {
                   children: [
                     Text(
                       university.name,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '${university.city} · Est. ${university.founded}',
-                      style: const TextStyle(fontSize: 11.5, color: AppColors.primaryBlue, fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontSize: 13, color: AppColors.primaryBlue, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -229,7 +229,7 @@ class UniversitiesScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(20)),
-      child: Text(label, style: const TextStyle(fontSize: 10.5, color: AppColors.textDark, fontWeight: FontWeight.w600)),
+      child: Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textDark, fontWeight: FontWeight.w600)),
     );
   }
 }

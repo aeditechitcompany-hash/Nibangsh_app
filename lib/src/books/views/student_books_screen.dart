@@ -73,7 +73,7 @@ class StudentBooksScreen extends StatelessWidget {
                       'Books & Resources',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -82,7 +82,7 @@ class StudentBooksScreen extends StatelessWidget {
                       'Shared by your consultancy',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.85),
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                       ),
                     ),
                   ],
@@ -132,12 +132,12 @@ class StudentBooksScreen extends StatelessWidget {
             child: TextField(
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
-              style: const TextStyle(color: Colors.white, fontSize: 13.5),
+              style: const TextStyle(color: Colors.white, fontSize: 15.5),
               decoration: InputDecoration(
                 hintText: 'Search books...',
                 hintStyle: TextStyle(
                   color: Colors.white.withOpacity(0.75),
-                  fontSize: 13.5,
+                  fontSize: 15.5,
                 ),
                 prefixIcon: Icon(
                   Icons.search,
@@ -181,7 +181,7 @@ class StudentBooksScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   const Text(
                     'Your consultancy will post study materials here',
-                    style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -235,7 +235,7 @@ class StudentBooksScreen extends StatelessWidget {
                 Text(
                   book.title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -245,7 +245,7 @@ class StudentBooksScreen extends StatelessWidget {
                   Text(
                     book.description,
                     style: const TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 13,
                       color: AppColors.textGrey,
                     ),
                     maxLines: 2,
@@ -262,7 +262,7 @@ class StudentBooksScreen extends StatelessWidget {
                         label: const Text(
                           'View',
                           style: TextStyle(
-                            fontSize: 12.5,
+                            fontSize: 14.5,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -284,7 +284,7 @@ class StudentBooksScreen extends StatelessWidget {
                         label: const Text(
                           'Download',
                           style: TextStyle(
-                            fontSize: 12.5,
+                            fontSize: 14.5,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

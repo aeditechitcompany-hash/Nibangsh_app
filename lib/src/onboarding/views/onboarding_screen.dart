@@ -116,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     'Skip',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -181,7 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ? 'Get Started'
                             : 'Next',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 18.5,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         ),
@@ -199,7 +199,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         'Already have an account? ',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.8),
-                          fontSize: 14,
+                          fontSize: 16,
                         ),
                       ),
                       GestureDetector(
@@ -209,7 +209,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: 16,
                             decorationColor: Colors.white,
                           ),
                         ),
@@ -303,7 +303,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.85),
-                    fontSize: 14.5,
+                    fontSize: 16.5,
                     height: 1.6,
                   ),
                 ),

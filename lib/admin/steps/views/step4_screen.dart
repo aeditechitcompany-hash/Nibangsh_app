@@ -18,13 +18,13 @@ class Step4Screen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: ResponsiveDashboardWrapper(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context),
-              Padding(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context),
+            ResponsiveDashboardWrapper(
+              child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,8 +54,8 @@ class Step4Screen extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -104,7 +104,7 @@ class Step4Screen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Step 4 of 10 · Admin Approval',
-                  style: TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -126,9 +126,9 @@ class Step4Screen extends StatelessWidget {
               const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Interview', style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold)),
+                  Text('Interview', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                   SizedBox(height: 2),
-                  Text('Schedule & Record Interview', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text('Schedule & Record Interview', style: TextStyle(color: Colors.white70, fontSize: 14)),
                 ],
               ),
             ],
@@ -160,7 +160,7 @@ class Step4Screen extends StatelessWidget {
             ),
             child: Text(
               student.initials,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
             ),
           ),
           const SizedBox(width: 12),
@@ -168,10 +168,10 @@ class Step4Screen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(student.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                Text(student.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                 const SizedBox(height: 3),
                 Text('$flag ${student.countryName} • ${student.university}',
-                    style: const TextStyle(fontSize: 11, color: AppColors.textGrey)),
+                    style: const TextStyle(fontSize: 12.5, color: AppColors.textGrey)),
               ],
             ),
           ),
@@ -181,7 +181,7 @@ class Step4Screen extends StatelessWidget {
               color: AppColors.primaryBlue.withOpacity(0.12),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text('In Review', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+            child: const Text('In Review', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
           ),
         ],
       ),
@@ -198,11 +198,11 @@ class Step4Screen extends StatelessWidget {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Interview Details', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Color(0xFFB45309))),
+          Text('Interview Details', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: Color(0xFFB45309))),
           SizedBox(height: 4),
           Text(
             'Schedule and conduct the consultation interview with the student. Record the result below.',
-            style: TextStyle(fontSize: 12, color: Color(0xFFB45309), height: 1.4),
+            style: TextStyle(fontSize: 14, color: Color(0xFFB45309), height: 1.4),
           ),
         ],
       ),
@@ -211,7 +211,7 @@ class Step4Screen extends StatelessWidget {
 
   Widget _sectionLabel(String text) => Text(
     text,
-    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: AppColors.textGrey, letterSpacing: 0.4),
+    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textGrey, letterSpacing: 0.4),
   );
 
   // ── Date field ──
@@ -234,7 +234,7 @@ class Step4Screen extends StatelessWidget {
               Text(
                 hasDate ? controller.formattedDate : 'mm/dd/yyyy',
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 15.5,
                   color: hasDate ? AppColors.textDark : AppColors.textGrey,
                   fontWeight: hasDate ? FontWeight.w600 : FontWeight.normal,
                 ),
@@ -307,7 +307,7 @@ class Step4Screen extends StatelessWidget {
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: selected ? color : AppColors.textGrey,
           ),
@@ -327,10 +327,10 @@ class Step4Screen extends StatelessWidget {
       child: TextField(
         controller: controller.notesController,
         maxLines: 4,
-        style: const TextStyle(fontSize: 13),
+        style: const TextStyle(fontSize: 15),
         decoration: const InputDecoration(
           hintText: 'Interview feedback and observations...',
-          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 13),
+          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 15),
           contentPadding: EdgeInsets.all(14),
           border: InputBorder.none,
         ),
@@ -351,7 +351,7 @@ class Step4Screen extends StatelessWidget {
           label: Text(
             'Record Interview & Approve Step 4',
             style: TextStyle(
-              fontSize: 13.5,
+              fontSize: 15.5,
               fontWeight: FontWeight.bold,
               color: complete ? Colors.white : AppColors.textGrey,
             ),

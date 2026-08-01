@@ -72,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
                 'My Profile',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -123,7 +123,7 @@ class ProfileScreen extends StatelessWidget {
                           controller.initials,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 26,
+                            fontSize: 30,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -156,7 +156,7 @@ class ProfileScreen extends StatelessWidget {
                     controller.userName.value,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16.5,
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -169,7 +169,7 @@ class ProfileScreen extends StatelessWidget {
                         : controller.userEmail.value,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -214,7 +214,7 @@ class ProfileScreen extends StatelessWidget {
                 const Text(
                   'Change Profile Photo',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -275,7 +275,7 @@ class ProfileScreen extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textDark,
               ),
@@ -342,7 +342,7 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 'Student Information',
                 style: TextStyle(
-                  fontSize: 14.5,
+                  fontSize: 16.5,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
@@ -400,14 +400,14 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 13, color: AppColors.primaryBlue),
+            style: const TextStyle(fontSize: 15, color: AppColors.primaryBlue),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -482,7 +482,7 @@ class ProfileScreen extends StatelessWidget {
         '$count',
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 11,
+          fontSize: 12.5,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -532,7 +532,7 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 15.5,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textDark,
                 ),

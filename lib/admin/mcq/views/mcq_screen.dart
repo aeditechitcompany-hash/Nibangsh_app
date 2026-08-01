@@ -25,13 +25,13 @@ class AdminMcqScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: ResponsiveDashboardWrapper(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(controller, context),
-              Container(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(controller, context),
+            ResponsiveDashboardWrapper(
+              child: Container(
                 decoration: const BoxDecoration(
                   color: AppColors.background,
                   borderRadius: BorderRadius.only(
@@ -42,9 +42,9 @@ class AdminMcqScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 20),
                 child: _buildQuestionList(controller, context),
               ),
-              const SizedBox(height: 100),
-            ],
-          ),
+            ),
+            const SizedBox(height: 100),
+          ],
         ),
       ),
     );
@@ -109,7 +109,7 @@ class AdminMcqScreen extends StatelessWidget {
             'MCQ Manager',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 21,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -119,7 +119,7 @@ class AdminMcqScreen extends StatelessWidget {
               '${controller.questions.length} questions shared with students',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.75),
-                fontSize: 12.5,
+                fontSize: 14.5,
               ),
             ),
           ),
@@ -158,7 +158,7 @@ class AdminMcqScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   const Text(
                     'Tap "Add MCQ" to create one for students',
-                    style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 14),
                   ),
                 ],
               ),
@@ -203,7 +203,7 @@ class AdminMcqScreen extends StatelessWidget {
                   child: Text(
                     'Q${index + 1}. ${q.question}',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
                     ),
@@ -245,7 +245,7 @@ class AdminMcqScreen extends StatelessWidget {
                       child: Text(
                         q.options[i],
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           fontWeight: isCorrect
                               ? FontWeight.w600
                               : FontWeight.normal,
@@ -339,7 +339,7 @@ class AdminMcqScreen extends StatelessWidget {
                             ? 'Edit Question'
                             : 'Add a Question',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 17,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDark,
                         ),
@@ -361,7 +361,7 @@ class AdminMcqScreen extends StatelessWidget {
                     const Text(
                       'Options (tap the circle to mark correct answer)',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textGrey,
                       ),
@@ -411,7 +411,7 @@ class AdminMcqScreen extends StatelessWidget {
                     const Text(
                       'Audio (optional)',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textGrey,
                       ),
@@ -460,7 +460,7 @@ class AdminMcqScreen extends StatelessWidget {
                                       ? 'Keep current clip (tap to replace)'
                                       : 'Choose an MP3 file',
                                   style: const TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.textDark,
                                   ),
@@ -499,7 +499,7 @@ class AdminMcqScreen extends StatelessWidget {
                               () => Text(
                             controller.isEditing ? 'Save Changes' : 'Save MCQ',
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

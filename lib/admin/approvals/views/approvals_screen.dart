@@ -21,13 +21,13 @@ class ApprovalsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(ApprovalsController());
 
-    return ResponsiveDashboardWrapper(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            Container(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(controller),
+          ResponsiveDashboardWrapper(
+            child: Container(
               decoration: const BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.only(
@@ -48,8 +48,8 @@ class ApprovalsScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -78,7 +78,7 @@ class ApprovalsScreen extends StatelessWidget {
             'Approvals',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 21,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -87,7 +87,7 @@ class ApprovalsScreen extends StatelessWidget {
             'Admin steps 4-10 • Manage student progress',
             style: TextStyle(
               color: Colors.white.withOpacity(0.75),
-              fontSize: 12,
+              fontSize: 14,
             ),
           ),
           const SizedBox(height: 18),
@@ -137,7 +137,7 @@ class ApprovalsScreen extends StatelessWidget {
             value,
             style: TextStyle(
               color: valueColor,
-              fontSize: 17,
+              fontSize: 19.5,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -146,7 +146,7 @@ class ApprovalsScreen extends StatelessWidget {
             label,
             style: TextStyle(
               color: Colors.white.withOpacity(0.75),
-              fontSize: 10.5,
+              fontSize: 12,
             ),
           ),
         ],
@@ -190,7 +190,7 @@ class ApprovalsScreen extends StatelessWidget {
                 child: Text(
                   isAll ? 'All Steps' : 'Step ${step!.id}',
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: selected ? Colors.white : AppColors.textGrey,
                   ),
@@ -224,7 +224,7 @@ class ApprovalsScreen extends StatelessWidget {
                 child: Text(
                   tab.$2,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: selected ? AppColors.textDark : AppColors.textGrey,
                   ),
@@ -317,7 +317,7 @@ class ApprovalsScreen extends StatelessWidget {
                 child: Text(
                   student.initials,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryBlue,
                   ),
@@ -331,7 +331,7 @@ class ApprovalsScreen extends StatelessWidget {
                     Text(
                       student.name,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -340,7 +340,7 @@ class ApprovalsScreen extends StatelessWidget {
                     Text(
                       '$flag ${student.countryName} • ${student.university}',
                       style: const TextStyle(
-                        fontSize: 11.5,
+                        fontSize: 13,
                         color: AppColors.textGrey,
                       ),
                     ),
@@ -359,7 +359,7 @@ class ApprovalsScreen extends StatelessWidget {
                 child: Text(
                   badgeLabel,
                   style: TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: badgeColor,
                   ),
@@ -373,12 +373,12 @@ class ApprovalsScreen extends StatelessWidget {
             children: [
               const Text(
                 'Admin steps done',
-                style: TextStyle(fontSize: 11.5, color: AppColors.textGrey),
+                style: TextStyle(fontSize: 13, color: AppColors.textGrey),
               ),
               Text(
                 '$done/$total',
                 style: const TextStyle(
-                  fontSize: 11.5,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
@@ -426,7 +426,7 @@ class ApprovalsScreen extends StatelessWidget {
                       label: Text(
                         'Process Step ${student.currentStep}',
                         style: const TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -454,7 +454,7 @@ class ApprovalsScreen extends StatelessWidget {
                 label: const Text(
                   'Profile',
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textGrey,
                   ),
@@ -496,7 +496,7 @@ class ApprovalsScreen extends StatelessWidget {
                 Text(
                   'Step ${student.currentStep} · Awaiting Action',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.bold,
                     color: currentMeta.color,
                   ),
@@ -505,7 +505,7 @@ class ApprovalsScreen extends StatelessWidget {
                 Text(
                   currentMeta.title,
                   style: const TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark,
                   ),
@@ -543,7 +543,7 @@ class ApprovalsScreen extends StatelessWidget {
             child: Text(
               'All 10 Steps Completed',
               style: TextStyle(
-                fontSize: 12.5,
+                fontSize: 14.5,
                 fontWeight: FontWeight.bold,
                 color: doneColor,
               ),

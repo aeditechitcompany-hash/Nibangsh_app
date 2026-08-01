@@ -15,13 +15,13 @@ class AdminOverviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(AdminOverviewController());
 
-    return ResponsiveDashboardWrapper(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller, context),
-            Container(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(controller, context),
+          ResponsiveDashboardWrapper(
+            child: Container(
               decoration: const BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.only(
@@ -44,8 +44,8 @@ class AdminOverviewScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -94,7 +94,7 @@ class AdminOverviewScreen extends StatelessWidget {
                       'Welcome back,',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.75),
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -104,7 +104,7 @@ class AdminOverviewScreen extends StatelessWidget {
                           'Admin Dashboard',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16.5,
+                            fontSize: 19,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -178,7 +178,7 @@ class AdminOverviewScreen extends StatelessWidget {
             value,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 17,
+              fontSize: 19.5,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -187,7 +187,7 @@ class AdminOverviewScreen extends StatelessWidget {
             label,
             style: TextStyle(
               color: Colors.white.withOpacity(0.75),
-              fontSize: 11,
+              fontSize: 12.5,
             ),
           ),
         ],
@@ -243,14 +243,14 @@ class AdminOverviewScreen extends StatelessWidget {
                       'Add MCQ',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       'Create questions (with optional audio) for students',
-                      style: TextStyle(color: Colors.white70, fontSize: 11.5),
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
                   ],
                 ),
@@ -289,7 +289,7 @@ class AdminOverviewScreen extends StatelessWidget {
           const Text(
             'Students by Destination',
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -307,7 +307,7 @@ class AdminOverviewScreen extends StatelessWidget {
                     child: Text(
                       flag,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textGrey,
                       ),
@@ -320,7 +320,7 @@ class AdminOverviewScreen extends StatelessWidget {
                         Text(
                           dest.name,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textDark,
                           ),
@@ -351,7 +351,7 @@ class AdminOverviewScreen extends StatelessWidget {
                   Text(
                     '${dest.studentCount} students',
                     style: const TextStyle(
-                      fontSize: 11,
+                      fontSize: 12.5,
                       color: AppColors.textGrey,
                     ),
                   ),
@@ -433,7 +433,7 @@ class AdminOverviewScreen extends StatelessWidget {
                       action['title'] as String,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 11,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
@@ -461,7 +461,7 @@ class AdminOverviewScreen extends StatelessWidget {
               const Text(
                 'Recent Activity',
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
@@ -471,7 +471,7 @@ class AdminOverviewScreen extends StatelessWidget {
                 child: const Text(
                   'View All',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryBlue,
                   ),
@@ -524,7 +524,7 @@ class AdminOverviewScreen extends StatelessWidget {
                         Text(
                           activity.name,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textDark,
                           ),
@@ -533,7 +533,7 @@ class AdminOverviewScreen extends StatelessWidget {
                         Text(
                           activity.action,
                           style: const TextStyle(
-                            fontSize: 11.5,
+                            fontSize: 13,
                             color: AppColors.textGrey,
                           ),
                         ),
@@ -543,7 +543,7 @@ class AdminOverviewScreen extends StatelessWidget {
                   Text(
                     activity.time,
                     style: const TextStyle(
-                      fontSize: 10.5,
+                      fontSize: 12,
                       color: AppColors.textGrey,
                     ),
                   ),

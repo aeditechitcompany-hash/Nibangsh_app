@@ -96,7 +96,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                       'Notifications',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 19,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -106,7 +106,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                         '${controller.unreadCount} updates',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.75),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -166,7 +166,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                 Text(
                   notification.title,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -175,7 +175,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                 Text(
                   notification.message,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -183,7 +183,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                 Text(
                   notification.time,
                   style: const TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 12,
                     color: AppColors.textGrey,
                   ),
                 ),
