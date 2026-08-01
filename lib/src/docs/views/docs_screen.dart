@@ -16,10 +16,6 @@ class DocsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(DocsController());
 
-    // Wrapped in a Scaffold so this screen has a proper Material ancestor
-    // when it's pushed as its own route (e.g. from Step 3 on Home). Without
-    // it, Text widgets fall back to Flutter's "no DefaultTextStyle found"
-    // error style, which renders as a yellow/red underline under the text.
     return Scaffold(
         backgroundColor: AppColors.background,
         body: SingleChildScrollView(
