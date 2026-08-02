@@ -45,7 +45,8 @@ class DocsController extends GetxController {
     _completionHandled = false;
   }
 
-  // Picks a photo for a specific document and marks it uploaded once a file is chosen.
+  // Picks a photo (camera or gallery) for a specific document and marks
+  // it uploaded once a file is chosen.
   Future<void> pickDocumentPhoto(String id, ImageSource source) async {
     try {
       final XFile? picked = await _picker.pickImage(
@@ -94,6 +95,8 @@ class DocsController extends GetxController {
       Get.find<HomeController>().markStep3Done();
     }
 
+    const snackbarDuration = Duration(seconds: 2);
+
     Get.snackbar(
       'All Set!',
       'All documents uploaded — Step 3 is complete.',
@@ -102,9 +105,10 @@ class DocsController extends GetxController {
       colorText: Colors.white,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
+      duration: snackbarDuration,
     );
 
-    Future.delayed(const Duration(milliseconds: 700), () {
+    Future.delayed(snackbarDuration + const Duration(milliseconds: 300), () {
       if (Get.currentRoute == AppRoute.docs) {
         Get.back();
       }
