@@ -1,7 +1,7 @@
 import '../api_models/auth_response.dart';
 import 'api_constants.dart';
 import 'api_service.dart';
-import 'storage_service.dart';
+import 'token_storage_service.dart';
 
 class AuthService {
   final ApiService _api = const ApiService();
@@ -47,6 +47,10 @@ class AuthService {
         "password": password,
       },
     );
+
+    print("========== LOGIN RESPONSE ==========");
+    print(response);
+    print("====================================");
 
     final auth = AuthResponse.fromJson(response);
 

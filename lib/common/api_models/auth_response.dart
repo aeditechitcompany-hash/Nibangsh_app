@@ -13,8 +13,8 @@ class AuthResponse {
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      access: json["access"],
-      refresh: json["refresh"],
+      access: json["access"].toString(),
+      refresh: json["refresh"].toString(),
       user: UserModel.fromJson(json["user"]),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/api_services/auth_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -9,6 +10,7 @@ import '../../../common/util/app_route.dart';
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   final RxBool isLoading = false.obs;
   final RxBool isPasswordVisible = false.obs;
@@ -47,49 +49,49 @@ class LoginController extends GetxController {
 
   // Email & password login
   Future<void> login() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-
     if (!formKey.currentState!.validate()) return;
+
     isLoading.value = true;
 
-    if (email.toLowerCase() == _adminEmail && password == _adminPassword) {
-      isLoading.value = true;
-      try {
-        await Future.delayed(const Duration(seconds: 2));
-        Get.offAllNamed(AppRoute.adminDashboard);
-      } finally {
-        isLoading.value = false;
-      }
-      return;
-    }
-
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      final email = emailController.text.trim();
+      final password = passwordController.text;
 
-      // Keep the name saved at signup if this is the same account; otherwise
-      // (e.g. no local signup record yet) fall back to a readable name
-      // derived from the email so the home screen never just says "Student".
-      final storedEmail = await StorageService.getUserEmail();
-      final storedName = await StorageService.getUserName();
-      final isSameAccount =
-          storedEmail != null &&
-          storedEmail.toLowerCase() == email.toLowerCase();
-      final resolvedName =
-          (isSameAccount && (storedName?.trim().isNotEmpty ?? false))
-          ? storedName!.trim()
-          : (email.split('@').first.isEmpty
-                ? 'Student'
-                : email.split('@').first);
-      await StorageService.saveUserInfo(email: email, name: resolvedName);
+      // Local admin login
+      if (email.toLowerCase() == _adminEmail &&
+          password == _adminPassword) {
+        Get.offAllNamed(AppRoute.adminDashboard);
+        return;
+      }
 
-      // if (AppStorage.isProfileComplete) {
-      //   Get.offAllNamed(AppRoute.home);
-      // } else {
-      Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
-      // }
+      // Login through Django API
+      final auth = await _authService.login(
+        email: email,
+        password: password,
+      );
+
+      // Save user information locally
+      await StorageService.saveUserInfo(
+        email: auth.user.email,
+        name: auth.user.fullName.trim().isEmpty
+            ? auth.user.username
+            : auth.user.fullName.trim(),
+      );
+
+      await StorageService.saveUserPassword(password);
+
+      Get.offAllNamed(AppRoute.home);
     } catch (e) {
-      _showError('Login Failed', e.toString());
+      print("LOGIN ERROR:");
+      print(e);
+
+      Get.snackbar(
+        "Login Failed",
+        e.toString().replaceAll("Exception: ", ""),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
