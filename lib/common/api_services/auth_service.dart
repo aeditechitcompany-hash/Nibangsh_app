@@ -1,0 +1,64 @@
+import '../api_models/auth_response.dart';
+import 'api_constants.dart';
+import 'api_service.dart';
+import 'storage_service.dart';
+
+class AuthService {
+  final ApiService _api = const ApiService();
+
+  Future<void> register({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+  }) async {
+    final username = email.split('@').first;
+
+    final names = fullName.trim().split(' ');
+
+    final firstName = names.first;
+
+    final lastName =
+        names.length > 1 ? names.sublist(1).join(' ') : "";
+
+    final response = await _api.post(
+      url: ApiConstants.register,
+      body: {
+        "username": username,
+        "email": email,
+        "phone_number": phone,
+        "password": password,
+        "first_name": firstName,
+        "last_name": lastName,
+        "role": "student",
+      },
+    );
+    print("Register Response: $response");
+  }
+
+  Future<AuthResponse> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await _api.post(
+      url: ApiConstants.login,
+      body: {
+        "email": email,
+        "password": password,
+      },
+    );
+
+    final auth = AuthResponse.fromJson(response);
+
+    await StorageService.saveTokens(
+      accessToken: auth.access,
+      refreshToken: auth.refresh,
+    );
+
+    return auth;
+  }
+
+  Future<void> logout() async {
+    await StorageService.clearStorage();
+  }
+}

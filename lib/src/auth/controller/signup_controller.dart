@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/api_services/auth_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -101,77 +102,68 @@ class SignupController extends GetxController {
   }
 
   String? validateAddress(String? value) {
-    if (value == null || value.isEmpty) return 'Address is required';
+    // if (value == null || value.isEmpty) return 'Address is required';
     return null;
   }
 
   String? validateDistrict(String? value) {
-    if (selectedDistrict.value.isEmpty) return 'Please select a district';
+    // if (selectedDistrict.value.isEmpty) return 'Please select a district';
     return null;
   }
 
   String? validateProvince(String? value) {
-    if (selectedProvince.value.isEmpty) return 'Please select a province';
+    // if (selectedProvince.value.isEmpty) return 'Please select a province';
     return null;
   }
 
   Future<void> signup() async {
-    if (!formKey.currentState!.validate()) return;
-    if (selectedDistrict.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a district',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-      );
-      return;
-    }
-    if (selectedProvince.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a province',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-      );
-      return;
-    }
+  if (!formKey.currentState!.validate()) return;
 
-    isLoading.value = true;
-    try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 2));
+  isLoading.value = true;
 
-      // Save the name locally so the home screen can greet the user by name
-      // once they log in (replaces the hardcoded "Student" placeholder).
-      await StorageService.saveUserInfo(
-        email: emailController.text.trim(),
-        name: fullNameController.text.trim(),
-      );
-      await StorageService.saveUserPassword(passwordController.text);
+  try {
+    final authService = AuthService();
 
-      Get.snackbar(
-        'Success!',
-        'Account created successfully. Please log in.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade700,
-        colorText: Colors.white,
-      );
+    await authService.register(
+      fullName: fullNameController.text.trim(),
+      email: emailController.text.trim(),
+      phone: phoneController.text.trim(),
+      password: passwordController.text,
+    );
 
-      Get.offNamed(AppRoute.login);
-    } catch (e) {
-      Get.snackbar(
-        'Signup Failed',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-      );
-    } finally {
-      isLoading.value = false;
-    }
+    await StorageService.saveUserInfo(
+      email: emailController.text.trim(),
+      name: fullNameController.text.trim(),
+    );
+
+    await StorageService.saveUserPassword(
+      passwordController.text,
+    );
+
+    Get.snackbar(
+      "Success",
+      "Account created successfully.",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+
+    Get.offNamed(AppRoute.login);
+  } catch (e) {
+    print("REGISTER ERROR");
+    print(e);
+
+    Get.snackbar(
+      "Signup Failed",
+      e.toString(),
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  } finally {
+    isLoading.value = false;
   }
+}
 
   // Google Sign-In
   Future<void> signInWithGoogle() async {
