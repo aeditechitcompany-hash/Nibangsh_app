@@ -367,7 +367,12 @@ class ProfileScreen extends StatelessWidget {
                         ? '--'
                         : controller.degree.value,
                   ),
-                  _infoRow('Phone Number', '+977 9810203040'),
+                  _infoRow(
+                    'Phone Number',
+                    controller.userPhone.value.isEmpty
+                        ? '--'
+                        : controller.userPhone.value,
+                  ),
                   _infoRow(
                     'Target Country',
                     controller.country.value.isEmpty
