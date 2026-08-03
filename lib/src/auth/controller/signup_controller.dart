@@ -134,6 +134,8 @@ class SignupController extends GetxController {
     await StorageService.saveUserInfo(
       email: emailController.text.trim(),
       name: fullNameController.text.trim(),
+      phone: phoneController.text.trim(),
+      role: "student",
     );
 
     await StorageService.saveUserPassword(

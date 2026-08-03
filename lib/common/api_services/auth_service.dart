@@ -54,7 +54,7 @@ class AuthService {
 
     final auth = AuthResponse.fromJson(response);
 
-    await StorageService.saveTokens(
+    await TokenStorageService.saveTokens(
       accessToken: auth.access,
       refreshToken: auth.refresh,
     );
@@ -63,6 +63,6 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    await StorageService.clearStorage();
+    await TokenStorageService.clearStorage();
   }
 }

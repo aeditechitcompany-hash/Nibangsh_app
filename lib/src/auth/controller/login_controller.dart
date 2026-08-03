@@ -73,9 +73,9 @@ class LoginController extends GetxController {
       // Save user information locally
       await StorageService.saveUserInfo(
         email: auth.user.email,
-        name: auth.user.fullName.trim().isEmpty
-            ? auth.user.username
-            : auth.user.fullName.trim(),
+        name: auth.user.fullName,
+        phone: auth.user.phoneNumber,
+        role: auth.user.role,
       );
 
       await StorageService.saveUserPassword(password);
