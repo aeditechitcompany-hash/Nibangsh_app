@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../common/models/application_step_model.dart';
+import '../../../common/util/academic_constants.dart';
 import '../../../common/services/storage.dart';
 
 class HomeController extends GetxController {
@@ -80,6 +81,7 @@ class HomeController extends GetxController {
     userName.value = nameFromEmail(email.value);
 
     _loadUserName();
+    _loadAcademicDetails();
     _rebuildSteps();
   }
 
@@ -87,6 +89,27 @@ class HomeController extends GetxController {
     final storedName = await StorageService.getUserName();
     if (storedName != null && storedName.trim().isNotEmpty) {
       userName.value = storedName.trim();
+    }
+  }
+
+  // Falls back to the last saved academic details whenever they weren't
+  // passed in via route arguments (e.g. opening Home directly, or after
+  // an app restart) so the profile card doesn't show blank fields.
+  Future<void> _loadAcademicDetails() async {
+    final stored = await StorageService.getAcademicDetails();
+
+    if (country.value.isEmpty && (stored['country'] ?? '').isNotEmpty) {
+      country.value = stored['country']!;
+    }
+    if (gpa.value.isEmpty && (stored['gpa'] ?? '').isNotEmpty) {
+      gpa.value = stored['gpa']!;
+    }
+    if (passoutYear.value.isEmpty &&
+        (stored['passoutYear'] ?? '').isNotEmpty) {
+      passoutYear.value = stored['passoutYear']!;
+    }
+    if (degree.value.isEmpty && (stored['degree'] ?? '').isNotEmpty) {
+      degree.value = stored['degree']!;
     }
   }
 

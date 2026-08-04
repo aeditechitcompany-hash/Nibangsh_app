@@ -14,32 +14,48 @@ class StudentBooksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(StudentBooksController());
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(controller, context),
-          ResponsiveWrapper(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
-                ),
-              ),
-              padding: const EdgeInsets.only(top: 20),
+    // ConstrainedBox + IntrinsicHeight + Expanded lets the rounded
+    // background container stretch to fill the full viewport when content
+    // is short (e.g. empty state), while still scrolling normally once
+    // content grows taller than the screen.
+    return LayoutBuilder(
+      builder: (context, outerConstraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: outerConstraints.maxHeight),
+            child: IntrinsicHeight(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildBookList(controller),
-                  const SizedBox(height: 100),
+                  _buildHeader(controller, context),
+                  Expanded(
+                    child: ResponsiveWrapper(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: AppColors.background,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(28),
+                            topRight: Radius.circular(28),
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildBookList(controller),
+                            const SizedBox(height: 100),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
