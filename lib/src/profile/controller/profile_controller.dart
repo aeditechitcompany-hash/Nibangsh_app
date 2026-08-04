@@ -42,6 +42,26 @@ class ProfileController extends GetxController {
       passoutYear.value = args["passoutYear"]?.toString() ?? "";
       degree.value = args["degree"]?.toString() ?? "";
     }
+
+    // Fall back to the last saved academic details whenever they weren't
+    // passed in via route arguments, so Profile stays correct no matter
+    // how the user got here (e.g. bottom nav instead of straight after
+    // filling the form).
+    final stored = await StorageService.getAcademicDetails();
+
+    if (country.value.isEmpty && (stored['country'] ?? '').isNotEmpty) {
+      country.value = stored['country']!;
+    }
+    if (gpa.value.isEmpty && (stored['gpa'] ?? '').isNotEmpty) {
+      gpa.value = stored['gpa']!;
+    }
+    if (passoutYear.value.isEmpty &&
+        (stored['passoutYear'] ?? '').isNotEmpty) {
+      passoutYear.value = stored['passoutYear']!;
+    }
+    if (degree.value.isEmpty && (stored['degree'] ?? '').isNotEmpty) {
+      degree.value = stored['degree']!;
+    }
   }
 
   Future<void> pickProfileImage(ImageSource source) async {

@@ -47,6 +47,31 @@ class LoginController extends GetxController {
     return null;
   }
 
+  // Academic details are stored locally, keyed to whichever account was
+  // last logged in on this device. If a different email is now logging in,
+  // the previous account's academic details no longer apply — clear them
+  // so the new user goes through the form themselves instead of seeing
+  // stale data from whoever used the device before.
+  Future<void> _resetAcademicDetailsIfNewUser(String newEmail) async {
+    final previousEmail = await StorageService.getUserEmail();
+    if (previousEmail != null &&
+        previousEmail.isNotEmpty &&
+        previousEmail.toLowerCase() != newEmail.toLowerCase()) {
+      await StorageService.clearAcademicDetails();
+    }
+  }
+
+  // After a successful login, send first-time users to fill in their
+  // academic details; everyone else goes straight to Home.
+  Future<void> _navigateAfterLogin(String email) async {
+    final hasAcademicDetails = await StorageService.hasAcademicDetails();
+    if (hasAcademicDetails) {
+      Get.offAllNamed(AppRoute.home);
+    } else {
+      Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
+    }
+  }
+
   // Email & password login
   Future<void> login() async {
     if (!formKey.currentState!.validate()) return;
@@ -70,6 +95,10 @@ class LoginController extends GetxController {
         password: password,
       );
 
+      // If this is a different account than whoever was last logged in on
+      // this device, clear out their leftover academic details first.
+      await _resetAcademicDetailsIfNewUser(auth.user.email);
+
       // Save user information locally
       await StorageService.saveUserInfo(
         email: auth.user.email,
@@ -80,7 +109,7 @@ class LoginController extends GetxController {
 
       await StorageService.saveUserPassword(password);
 
-      Get.offAllNamed(AppRoute.home);
+      await _navigateAfterLogin(auth.user.email);
     } catch (e) {
       print("LOGIN ERROR:");
       print(e);
@@ -104,13 +133,14 @@ class LoginController extends GetxController {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? account = await googleSignIn.signIn();
       if (account != null) {
+        await _resetAcademicDetailsIfNewUser(account.email);
         await StorageService.saveUserInfo(
           email: account.email,
           name: account.displayName?.trim().isNotEmpty == true
               ? account.displayName!.trim()
               : account.email.split('@').first,
         );
-        Get.offAllNamed(AppRoute.home);
+        await _navigateAfterLogin(account.email);
       }
     } catch (e) {
       _showError('Google Sign-In Failed', e.toString());
@@ -126,11 +156,13 @@ class LoginController extends GetxController {
       final LoginResult result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) {
         final userData = await FacebookAuth.instance.getUserData();
+        final email = userData['email']?.toString() ?? '';
+        await _resetAcademicDetailsIfNewUser(email);
         await StorageService.saveUserInfo(
-          email: userData['email']?.toString() ?? '',
+          email: email,
           name: userData['name']?.toString() ?? 'Student',
         );
-        Get.offAllNamed(AppRoute.home);
+        await _navigateAfterLogin(email);
       }
     } catch (e) {
       _showError('Facebook Sign-In Failed', e.toString());

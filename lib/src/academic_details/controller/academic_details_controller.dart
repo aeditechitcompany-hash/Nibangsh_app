@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/services/storage.dart';
 import '../../../common/util/app_route.dart';
 
 class AcademicDetailsController extends GetxController {
@@ -61,12 +62,23 @@ class AcademicDetailsController extends GetxController {
     try {
       await Future.delayed(const Duration(milliseconds: 600));
 
+      final gpa = gpaController.text.trim();
+
+      // Persist so Home (and any other screen) can read these back later,
+      // regardless of how the user navigates there.
+      await StorageService.saveAcademicDetails(
+        country: selectedCountry.value,
+        gpa: gpa,
+        passoutYear: selectedPassoutYear.value,
+        degree: selectedDegree.value,
+      );
+
       Get.offAllNamed(
         AppRoute.home,
         arguments: {
           'email': _email,
           'country': selectedCountry.value,
-          'gpa': gpaController.text.trim(),
+          'gpa': gpa,
           'passoutYear': selectedPassoutYear.value,
           'degree': selectedDegree.value,
         },
