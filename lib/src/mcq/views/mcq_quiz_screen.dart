@@ -7,12 +7,34 @@ import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_quiz_controller.dart';
 import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
+const double _kWideLayoutBreakpoint = 700;
+
 class McqQuizScreen extends StatelessWidget {
   const McqQuizScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(McqQuizController());
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWideLayout = screenWidth >= _kWideLayoutBreakpoint;
+
+    final body = Container(
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+      ),
+      padding: const EdgeInsets.only(top: 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildQuestionCard(controller, context, isWideLayout),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -21,25 +43,7 @@ class McqQuizScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(controller),
-            ResponsiveWrapper(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
-                  ),
-                ),
-                padding: const EdgeInsets.only(top: 22),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildQuestionCard(controller, context),
-                    const SizedBox(height: 40),
-                  ],
-                ),
-              ),
-            ),
+            isWideLayout ? body : ResponsiveWrapper(child: body),
           ],
         ),
       ),
@@ -156,6 +160,7 @@ class McqQuizScreen extends StatelessWidget {
   Widget _buildQuestionCard(
       McqQuizController controller,
       BuildContext context,
+      bool isWideLayout,
       ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -179,139 +184,203 @@ class McqQuizScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Question: ${controller.currentIndex.value + 1}/${controller.totalQuestions}',
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _confirmQuit(context),
-                    child: const Text(
-                      'Quit',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.errorColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _buildQuestionMeta(controller, context),
               const SizedBox(height: 16),
-              if (question.hasQuestionText)
-                Text(
-                  question.question!,
-                  style: const TextStyle(
-                    fontSize: 19.5,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                    height: 1.4,
-                  ),
-                ),
-
-              if (question.hasImage) ...[
-                const SizedBox(height: 14),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Container(
-                    width: double.infinity,
-                    color: AppColors.background,
-                    padding: const EdgeInsets.all(10),
-                    child: Image.asset(
-                      question.imageAsset!,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(
-                          'Image not found: ${question.imageAsset}',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.errorColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-
-              // Listening clip, if this question has one.
-              if (question.hasAudio) ...[
-                const SizedBox(height: 12),
-                AudioPlayButton(
-                  filePath: question.audioAsset!,
-                  isAsset: true,
-                  label: 'Listen',
-                ),
-              ],
-
-              const SizedBox(height: 18),
-              question.hasOptionImages
-                  ? _buildImageOptionsGrid(controller, question)
-                  : _buildOptionsList(controller, question),
+              isWideLayout
+                  ? _buildWideBody(controller, question)
+                  : _buildNarrowBody(controller, question),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 46,
-                      child: OutlinedButton(
-                        onPressed: controller.isFirstQuestion
-                            ? null
-                            : controller.goPrevious,
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.borderGrey),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Previous',
-                          style: TextStyle(
-                            color: AppColors.textDark,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: SizedBox(
-                      height: 46,
-                      child: ElevatedButton(
-                        onPressed: controller.selectedForCurrent == null
-                            ? null
-                            : controller.goNextOrFinish,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryBlue,
-                          disabledBackgroundColor: AppColors.primaryBlue
-                              .withOpacity(0.4),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          controller.isLastQuestion ? 'Finish' : 'Next',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _buildNavButtons(controller),
             ],
           );
         }),
       ),
+    );
+  }
+
+  Widget _buildQuestionMeta(McqQuizController controller, BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Question: ${controller.currentIndex.value + 1}/${controller.totalQuestions}',
+          style: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryBlue,
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _confirmQuit(context),
+          child: const Text(
+            'Quit',
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.bold,
+              color: AppColors.errorColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Phone layout
+  Widget _buildNarrowBody(McqQuizController controller, QuizQuestion question) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildQuestionContent(question),
+        const SizedBox(height: 18),
+        _buildOptionsSection(controller, question, isWideLayout: false),
+      ],
+    );
+  }
+
+  // Tablet/desktop layout
+  Widget _buildWideBody(McqQuizController controller, QuizQuestion question) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: _buildQuestionContent(question),
+        ),
+        const SizedBox(width: 24),
+        Expanded(
+          flex: 2,
+          child: Container(
+            padding: const EdgeInsets.only(left: 24),
+            decoration: const BoxDecoration(
+              border: Border(
+                left: BorderSide(color: AppColors.borderGrey, width: 1),
+              ),
+            ),
+            child: _buildOptionsSection(controller, question, isWideLayout: true),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuestionContent(QuizQuestion question) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (question.hasQuestionText)
+          Text(
+            question.question!,
+            style: const TextStyle(
+              fontSize: 19.5,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+              height: 1.4,
+            ),
+          ),
+        if (question.hasImage) ...[
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              width: double.infinity,
+              color: AppColors.background,
+              padding: const EdgeInsets.all(10),
+              child: Image.asset(
+                question.imageAsset!,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    'Image not found: ${question.imageAsset}',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.errorColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+
+        // Listening clip, if this question has one.
+        if (question.hasAudio) ...[
+          const SizedBox(height: 12),
+          AudioPlayButton(
+            filePath: question.audioAsset!,
+            isAsset: true,
+            label: 'Listen',
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildOptionsSection(
+      McqQuizController controller,
+      QuizQuestion question, {
+        required bool isWideLayout,
+      }) {
+    if (question.hasOptionImages) {
+      return isWideLayout
+          ? _buildImageOptionsList(controller, question)
+          : _buildImageOptionsGrid(controller, question);
+    }
+    return _buildOptionsList(controller, question);
+  }
+
+  Widget _buildNavButtons(McqQuizController controller) {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 46,
+            child: OutlinedButton(
+              onPressed: controller.isFirstQuestion
+                  ? null
+                  : controller.goPrevious,
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: AppColors.borderGrey),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Previous',
+                style: TextStyle(
+                  color: AppColors.textDark,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: SizedBox(
+            height: 46,
+            child: ElevatedButton(
+              onPressed: controller.selectedForCurrent == null
+                  ? null
+                  : controller.goNextOrFinish,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                disabledBackgroundColor: AppColors.primaryBlue
+                    .withOpacity(0.4),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                controller.isLastQuestion ? 'Finish' : 'Next',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -437,6 +506,76 @@ class McqQuizScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildImageOptionsList(McqQuizController controller, QuizQuestion question) {
+    return Column(
+      children: List.generate(question.optionCount, (index) {
+        final selected = controller.selectedForCurrent == index;
+        final imagePath = question.hasOptionImageAt(index)
+            ? question.optionImages![index]
+            : null;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: GestureDetector(
+            onTap: () => controller.selectOption(index),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: selected
+                    ? AppColors.primaryBlue.withOpacity(0.08)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: selected ? AppColors.primaryBlue : AppColors.borderGrey,
+                  width: selected ? 2 : 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _optionNumberBadge(index, selected: selected),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        height: 150,
+                        width: double.infinity,
+                        color: AppColors.background,
+                        padding: const EdgeInsets.all(8),
+                        child: imagePath == null
+                            ? const Center(
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            size: 28,
+                            color: AppColors.textGrey,
+                          ),
+                        )
+                            : Image.asset(
+                          imagePath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              size: 28,
+                              color: AppColors.textGrey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 
