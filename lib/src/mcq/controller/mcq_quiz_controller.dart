@@ -36,6 +36,11 @@ class McqQuizController extends GetxController {
   bool get isFirstQuestion => currentIndex.value == 0;
   int? get selectedForCurrent => selectedAnswers[currentIndex.value];
 
+  int get answeredCount => selectedAnswers.length;
+
+  bool isAnswered(int questionIndex) =>
+      selectedAnswers.containsKey(questionIndex);
+
   String get formattedTime {
     final minutes = (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
     final seconds = (remainingSeconds.value % 60).toString().padLeft(2, '0');
@@ -72,6 +77,17 @@ class McqQuizController extends GetxController {
       currentIndex.value++;
     }
   }
+
+  // Jump directly to a specific question, e.g. from the question-number
+  // navigator grid.
+  void jumpToQuestion(int index) {
+    if (index >= 0 && index < totalQuestions) {
+      currentIndex.value = index;
+    }
+  }
+
+  // Public entry point for "Submit and Finish Exam" from the navigator.
+  void submitExam() => _finish();
 
   void _finish({bool timeUp = false}) {
     if (_finished) return;
