@@ -60,7 +60,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(controller),
+            _buildHeader(controller, context),
             isWideLayout ? body : ResponsiveWrapper(child: body),
           ],
         ),
@@ -69,7 +69,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   }
 
   // ── Header ──
-  Widget _buildHeader(McqQuizController controller) {
+  Widget _buildHeader(McqQuizController controller, BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
@@ -133,6 +133,22 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => _showQuestionNavigator(context, controller),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.14),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.grid_view_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -632,6 +648,232 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           fontWeight: FontWeight.bold,
           color: text,
         ),
+      ),
+    );
+  }
+
+  // ── Question-number navigator ──
+  void _showQuestionNavigator(BuildContext context, McqQuizController controller) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.borderGrey,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Jump to Question',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    Obx(
+                          () => Text(
+                        '${controller.answeredCount}/${controller.totalQuestions} answered',
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                _buildNavigatorLegend(),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: controller.totalQuestions,
+                      gridDelegate:
+                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 64,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        // Obx must live INSIDE itemBuilder (per grid cell),
+                        // not wrapped around the whole GridView.builder.
+                        // itemBuilder callbacks run during layout, after
+                        // the outer Obx's build() already finished, so an
+                        // outer Obx never sees currentIndex/selectedAnswers
+                        // being read -> "no observables found" error.
+                        return Obx(() {
+                          final isCurrent =
+                              controller.currentIndex.value == index;
+                          final answered = controller.isAnswered(index);
+
+                          final Color background;
+                          final Color border;
+                          final Color text;
+
+                          if (isCurrent) {
+                            background = AppColors.primaryBlue;
+                            border = AppColors.primaryBlue;
+                            text = Colors.white;
+                          } else if (answered) {
+                            background = AppColors.primaryBlue.withOpacity(0.1);
+                            border = AppColors.primaryBlue.withOpacity(0.4);
+                            text = AppColors.primaryBlue;
+                          } else {
+                            background = Colors.white;
+                            border = AppColors.borderGrey;
+                            text = AppColors.textDark;
+                          }
+
+                          return GestureDetector(
+                            onTap: () {
+                              controller.jumpToQuestion(index);
+                              Get.back();
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: background,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: border, width: 1.4),
+                              ),
+                              child: Text(
+                                '${index + 1}',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: text,
+                                ),
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      _confirmSubmit(context, controller);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryBlue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Submit and Finish Exam',
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNavigatorLegend() {
+    return Row(
+      children: [
+        _legendDot(AppColors.primaryBlue, 'Current'),
+        const SizedBox(width: 16),
+        _legendDot(AppColors.primaryBlue.withOpacity(0.15), 'Answered', borderColor: AppColors.primaryBlue.withOpacity(0.4)),
+        const SizedBox(width: 16),
+        _legendDot(Colors.white, 'Unanswered', borderColor: AppColors.borderGrey),
+      ],
+    );
+  }
+
+  Widget _legendDot(Color color, String label, {Color? borderColor}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            border: Border.all(color: borderColor ?? color),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+        ),
+      ],
+    );
+  }
+
+  void _confirmSubmit(BuildContext context, McqQuizController controller) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Submit Exam?'),
+        content: Obx(
+              () => Text(
+            controller.answeredCount < controller.totalQuestions
+                ? 'You have answered ${controller.answeredCount} of ${controller.totalQuestions} questions. Unanswered questions will be marked wrong.'
+                : 'You have answered all questions. Submit now?',
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Get.back();
+              controller.submitExam();
+            },
+            child: const Text('Submit'),
+          ),
+        ],
       ),
     );
   }
