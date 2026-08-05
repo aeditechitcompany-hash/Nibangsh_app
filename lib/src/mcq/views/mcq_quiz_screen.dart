@@ -3,14 +3,32 @@ import 'package:get/get.dart';
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
+import '../../../common/util/secure_screen.dart';
 import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_quiz_controller.dart';
 import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 const double _kWideLayoutBreakpoint = 700;
 
-class McqQuizScreen extends StatelessWidget {
+class McqQuizScreen extends StatefulWidget {
   const McqQuizScreen({super.key});
+
+  @override
+  State<McqQuizScreen> createState() => _McqQuizScreenState();
+}
+
+class _McqQuizScreenState extends State<McqQuizScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SecureScreen.enable();
+  }
+
+  @override
+  void dispose() {
+    SecureScreen.disable();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
