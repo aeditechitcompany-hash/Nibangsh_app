@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_route.dart';
+import '../../home/controller/home_controller.dart';
+import '../../profile/controller/profile_controller.dart';
 
 class AcademicDetailsController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -59,12 +61,13 @@ class AcademicDetailsController extends GetxController {
     }
 
     isLoading.value = true;
+    late final String gpa;
     try {
       await Future.delayed(const Duration(milliseconds: 600));
 
-      final gpa = gpaController.text.trim();
+      gpa = gpaController.text.trim();
 
-      // Persist so Home (and any other screen) can read these back later,
+      // Persist so Home (and Profile) can read these back later,
       // regardless of how the user navigates there.
       await StorageService.saveAcademicDetails(
         country: selectedCountry.value,
@@ -73,6 +76,28 @@ class AcademicDetailsController extends GetxController {
         degree: selectedDegree.value,
       );
 
+      if (Get.isRegistered<HomeController>()) {
+        final homeController = Get.find<HomeController>();
+        homeController.country.value = selectedCountry.value;
+        homeController.gpa.value = gpa;
+        homeController.passoutYear.value = selectedPassoutYear.value;
+        homeController.degree.value = selectedDegree.value;
+      }
+
+      if (Get.isRegistered<ProfileController>()) {
+        final profileController = Get.find<ProfileController>();
+        profileController.country.value = selectedCountry.value;
+        profileController.gpa.value = gpa;
+        profileController.passoutYear.value = selectedPassoutYear.value;
+        profileController.degree.value = selectedDegree.value;
+      }
+    } finally {
+      isLoading.value = false;
+    }
+
+    if (isEditMode) {
+      Get.back();
+    } else {
       Get.offAllNamed(
         AppRoute.home,
         arguments: {
@@ -83,8 +108,6 @@ class AcademicDetailsController extends GetxController {
           'degree': selectedDegree.value,
         },
       );
-    } finally {
-      isLoading.value = false;
     }
   }
 
