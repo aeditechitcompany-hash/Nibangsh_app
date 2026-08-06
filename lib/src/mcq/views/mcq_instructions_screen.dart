@@ -26,46 +26,43 @@ class McqInstructionsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Before You Begin',
+                      'सुरु गर्नु अघि',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Please read the instructions carefully.',
-                      style: TextStyle(fontSize: 12.5, color: AppColors.textGrey),
+                      'कृपया निर्देशनहरू ध्यानपूर्वक पढ्नुहोस्।',
+                      style: TextStyle(fontSize: 16.5, color: AppColors.textGrey),
                     ),
                     const SizedBox(height: 20),
                     _instructionTile(
                       icon: Icons.timer_outlined,
                       color: AppColors.primaryBlue,
-                      title: 'Time Limit',
-                      description:
-                      'You will have 50 minutes to complete this set once you tap Continue. The timer keeps running in the background even if you move between questions.',
+                      title: 'समय सीमा',
+                      description: 'यो सेट पूरा गर्न तपाईंलाई ५० मिनेट समय हुनेछ।',
                     ),
                     _instructionTile(
                       icon: Icons.flag_outlined,
                       color: AppColors.primaryRed,
-                      title: 'Finishing the Quiz',
+                      title: 'क्विज सकाउने तरिका',
                       description:
-                      'After answering all ${quizSet.totalQuestions} question${quizSet.totalQuestions == 1 ? '' : 's'}, tap Finish on the last question to reveal your score immediately.',
+                      'सबै ${quizSet.totalQuestions} प्रश्न${quizSet.totalQuestions == 1 ? '' : 'हरू'} उत्तर दिएपछि "समाप्त गर्नुहोस्" थिच्नुहोस्।',
                     ),
                     _instructionTile(
                       icon: Icons.hourglass_bottom_rounded,
                       color: AppColors.darkBlue,
-                      title: 'If Time Runs Out',
-                      description:
-                      'If the 50 minutes end before you finish, the quiz will stop automatically and you\'ll be taken straight to your result, based on whatever answers you\'ve selected so far.',
+                      title: 'समय सकिएमा',
+                      description: 'समय सकिए क्विज स्वतः रोकिन्छ र तपाईंको नतिजा देखिन्छ।',
                     ),
                     _instructionTile(
                       icon: Icons.touch_app_outlined,
                       color: AppColors.navyLight,
-                      title: 'Answering Questions',
-                      description:
-                      'Use Previous and Next to move between questions. You can change your answer any time before the timer ends.',
+                      title: 'प्रश्नहरूको उत्तर दिने तरिका',
+                      description: '"अघिल्लो" र "अर्को" ले सर्नुहोस्। उत्तर जुनसुकै बेला बदल्न सकिन्छ।',
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -89,7 +86,7 @@ class McqInstructionsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),
-              child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              child: const Text('जारी राख्नुहोस्', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ),
           ),
         ),
@@ -137,13 +134,13 @@ class McqInstructionsScreen extends StatelessWidget {
                   children: [
                     Text(
                       quizSet.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     const Text(
-                      'Terms & Conditions',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                      'नियम र शर्तहरू',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                   ],
                 ),
@@ -186,9 +183,9 @@ class McqInstructionsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                 const SizedBox(height: 4),
-                Text(description, style: const TextStyle(fontSize: 12, color: AppColors.textGrey, height: 1.4)),
+                Text(description, style: const TextStyle(fontSize: 15, color: AppColors.textGrey, height: 1.4)),
               ],
             ),
           ),

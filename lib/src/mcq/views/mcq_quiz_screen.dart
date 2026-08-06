@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
@@ -22,11 +23,23 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   void initState() {
     super.initState();
     SecureScreen.enable();
+    // Quiz screen is landscape-only on phones and tablets alike.
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
 
   @override
   void dispose() {
     SecureScreen.disable();
+    // Restore all orientations for the rest of the app once we leave.
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
   }
 
@@ -117,7 +130,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                             controller.quizSet.title,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 17,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -126,7 +139,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                             '${controller.totalQuestions} Question',
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.75),
-                              fontSize: 12,
+                              fontSize: 14,
                             ),
                           ),
                         ],
@@ -181,7 +194,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
             controller.formattedTime,
             style: TextStyle(
               color: lowTime ? AppColors.errorColor : Colors.white,
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -239,7 +252,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
         Text(
           'Question: ${controller.currentIndex.value + 1}/${controller.totalQuestions}',
           style: const TextStyle(
-            fontSize: 12.5,
+            fontSize: 14.5,
             fontWeight: FontWeight.bold,
             color: AppColors.primaryBlue,
           ),
@@ -249,7 +262,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           child: const Text(
             'Quit',
             style: TextStyle(
-              fontSize: 12.5,
+              fontSize: 16.5,
               fontWeight: FontWeight.bold,
               color: AppColors.errorColor,
             ),
@@ -305,7 +318,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           Text(
             question.question!,
             style: const TextStyle(
-              fontSize: 19.5,
+              fontSize: 22.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
               height: 1.4,
@@ -457,7 +470,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                         : Text(
                       displayText,
                       style: TextStyle(
-                        fontSize: 16.5,
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                         color: selected ? Colors.white : AppColors.textDark,
                       ),
@@ -644,7 +657,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
       child: Text(
         '${index + 1}',
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: text,
         ),
@@ -698,7 +711,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                           () => Text(
                         '${controller.answeredCount}/${controller.totalQuestions} answered',
                         style: const TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textGrey,
                         ),
@@ -799,7 +812,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                     child: const Text(
                       'Submit and Finish Exam',
                       style: TextStyle(
-                        fontSize: 15.5,
+                        fontSize: 16.5,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -841,7 +854,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+          style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
         ),
       ],
     );

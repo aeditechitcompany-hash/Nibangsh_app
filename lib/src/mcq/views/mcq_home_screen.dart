@@ -161,8 +161,11 @@ class McqHomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
+                  // Was: Get.toNamed(AppRoute.mcqQuiz, arguments: controller.firstSet)
+                  // Now goes to the instructions screen first; its own
+                  // "Continue" button takes the user into the quiz.
                   onPressed: () => Get.toNamed(
-                    AppRoute.mcqQuiz,
+                    AppRoute.mcqInstructions,
                     arguments: controller.firstSet,
                   ),
                   style: ElevatedButton.styleFrom(
@@ -253,7 +256,10 @@ class McqHomeScreen extends StatelessWidget {
 
   Widget _setTile(McqHomeController controller, QuizSet set) {
     return GestureDetector(
-      onTap: () => Get.toNamed(AppRoute.mcqQuiz, arguments: set),
+      // Was: Get.toNamed(AppRoute.mcqQuiz, arguments: set)
+      // Now goes to the instructions screen first; its own
+      // "Continue" button takes the user into the quiz.
+      onTap: () => Get.toNamed(AppRoute.mcqInstructions, arguments: set),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
