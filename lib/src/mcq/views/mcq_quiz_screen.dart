@@ -319,6 +319,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
             question.question!,
             style: const TextStyle(
               fontSize: 22.5,
+              fontFamily: 'NotoSansKR',
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
               height: 1.4,
@@ -471,7 +472,8 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                       displayText,
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                        fontFamily: 'NotoSansKR',
+                        fontWeight: FontWeight.w500,
                         color: selected ? Colors.white : AppColors.textDark,
                       ),
                     ),
