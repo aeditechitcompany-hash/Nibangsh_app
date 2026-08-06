@@ -36,7 +36,7 @@ class McqInstructionsScreen extends StatelessWidget {
                     const SizedBox(height: 4),
                     const Text(
                       'कृपया निर्देशनहरू ध्यानपूर्वक पढ्नुहोस्।',
-                      style: TextStyle(fontSize: 16.5, color: AppColors.textGrey),
+                      style: TextStyle(fontSize: 18.5, color: AppColors.textGrey),
                     ),
                     const SizedBox(height: 20),
                     _instructionTile(
@@ -86,7 +86,7 @@ class McqInstructionsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),
-              child: const Text('जारी राख्नुहोस्', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              child: const Text('जारी राख्नुहोस्', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
             ),
           ),
         ),
@@ -134,13 +134,13 @@ class McqInstructionsScreen extends StatelessWidget {
                   children: [
                     Text(
                       quizSet.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     const Text(
                       'नियम र शर्तहरू',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
                     ),
                   ],
                 ),
@@ -183,9 +183,9 @@ class McqInstructionsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                Text(title, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                 const SizedBox(height: 4),
-                Text(description, style: const TextStyle(fontSize: 15, color: AppColors.textGrey, height: 1.4)),
+                Text(description, style: const TextStyle(fontSize: 17, color: AppColors.textGrey, height: 1.4)),
               ],
             ),
           ),
