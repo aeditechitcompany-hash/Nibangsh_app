@@ -11,6 +11,9 @@ class AuthService {
     required String email,
     required String phone,
     required String password,
+    required String address,
+    required String district,
+    required String province,
   }) async {
     final username = email.split('@').first;
 
@@ -31,6 +34,9 @@ class AuthService {
         "first_name": firstName,
         "last_name": lastName,
         "role": "student",
+        "street_address": address,
+        "district": district,
+        "province": province,
       },
     );
     print("Register Response: $response");
