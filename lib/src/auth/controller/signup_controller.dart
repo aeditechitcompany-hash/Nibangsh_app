@@ -137,8 +137,8 @@ class SignupController extends GetxController {
         phone: phoneController.text.trim(),
         password: passwordController.text,
         address: addressController.text.trim(),
-        district: selectedDistrict.value,
-        province: selectedProvince.value,
+        district: AppConstants.districtValues[selectedDistrict.value] ?? selectedDistrict.value.toLowerCase(),
+        province: AppConstants.provinceValues[selectedProvince.value] ?? selectedProvince.value.toLowerCase(),
       );
 
     // Clear any stale academic details from a previous user on this device
