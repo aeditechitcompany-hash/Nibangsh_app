@@ -13,6 +13,16 @@ class AppConstants {
     'Sudurpashchim Province',
   ];
 
+  static const Map<String, String> provinceValues = {
+    'Koshi Province': 'koshi',
+    'Madhesh Province': 'madhesh',
+    'Bagmati Province': 'bagmati',
+    'Gandaki Province': 'gandaki',
+    'Lumbini Province': 'lumbini',
+    'Karnali Province': 'karnali',
+    'Sudurpashchim Province': 'sudurpashchim',
+  };
+
   // Nepal Districts (common ones)
   static const List<String> districts = [
     'Kathmandu',
@@ -31,4 +41,22 @@ class AppConstants {
     'Janakpur',
     'Bharatpur',
   ];
+
+  static const Map<String, String> districtValues = {
+    'Kathmandu': 'kathmandu',
+    'Lalitpur': 'lalitpur',
+    'Bhaktapur': 'bhaktapur',
+    'Pokhara': 'pokhara',
+    'Chitwan': 'chitwan',
+    'Butwal': 'butwal',
+    'Biratnagar': 'biratnagar',
+    'Birgunj': 'birgunj',
+    'Dharan': 'dharan',
+    'Hetauda': 'hetauda',
+    'Nepalgunj': 'nepalgunj',
+    'Dhangadhi': 'dhangadhi',
+    'Itahari': 'itahari',
+    'Janakpur': 'janakpur',
+    'Bharatpur': 'bharatpur',
+  };
 }
