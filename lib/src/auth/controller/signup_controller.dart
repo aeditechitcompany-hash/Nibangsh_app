@@ -102,34 +102,48 @@ class SignupController extends GetxController {
   }
 
   String? validateAddress(String? value) {
-    // if (value == null || value.isEmpty) return 'Address is required';
+    if (value == null || value.trim().isEmpty) return 'Street address is required';
     return null;
   }
 
   String? validateDistrict(String? value) {
-    // if (selectedDistrict.value.isEmpty) return 'Please select a district';
+    if (selectedDistrict.value.isEmpty) return 'Please select a district';
+    if (!districts.contains(selectedDistrict.value)) {
+      return 'Invalid district selected';
+    }
     return null;
   }
 
   String? validateProvince(String? value) {
-    // if (selectedProvince.value.isEmpty) return 'Please select a province';
+    if (selectedProvince.value.isEmpty) return 'Please select a province';
+    if (!provinces.contains(selectedProvince.value)) {
+      return 'Invalid province selected';
+    }
     return null;
   }
 
   Future<void> signup() async {
-  if (!formKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) return;
+    if (validateDistrict(null) != null || validateProvince(null) != null) return;
 
-  isLoading.value = true;
+    isLoading.value = true;
 
-  try {
-    final authService = AuthService();
+    try {
+      final authService = AuthService();
 
-    await authService.register(
-      fullName: fullNameController.text.trim(),
-      email: emailController.text.trim(),
-      phone: phoneController.text.trim(),
-      password: passwordController.text,
-    );
+      await authService.register(
+        fullName: fullNameController.text.trim(),
+        email: emailController.text.trim(),
+        phone: phoneController.text.trim(),
+        password: passwordController.text,
+        address: addressController.text.trim(),
+        district: selectedDistrict.value,
+        province: selectedProvince.value,
+      );
+
+    // Clear any stale academic details from a previous user on this device
+    // so the new account correctly flows to the academic details form.
+    await StorageService.clearAcademicDetails();
 
     await StorageService.saveUserInfo(
       email: emailController.text.trim(),
