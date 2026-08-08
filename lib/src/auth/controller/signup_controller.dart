@@ -164,7 +164,9 @@ class SignupController extends GetxController {
       colorText: Colors.white,
     );
 
-    Get.offNamed(AppRoute.login);
+    Get.offAllNamed(AppRoute.academicDetails, arguments: {
+      'email': emailController.text.trim(),
+    });
   } catch (e) {
     print("REGISTER ERROR");
     print(e);
