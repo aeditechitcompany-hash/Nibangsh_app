@@ -9,4 +9,7 @@ class ApiConstants {
 
   static const String refresh =
       "$baseUrl/accounts/auth/token/refresh/";
+
+  static const String students =
+      "$baseUrl/accounts/users/";
 }
