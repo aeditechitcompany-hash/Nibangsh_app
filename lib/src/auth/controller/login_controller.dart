@@ -16,9 +16,6 @@ class LoginController extends GetxController {
   final RxBool isPasswordVisible = false.obs;
   final formKey = GlobalKey<FormState>();
 
-  static const String _adminEmail = 'admin@nibangsh.com';
-  static const String _adminPassword = 'Admin#123';
-
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
@@ -82,22 +79,17 @@ class LoginController extends GetxController {
       final email = emailController.text.trim();
       final password = passwordController.text;
 
-      // Local admin login
-      if (email.toLowerCase() == _adminEmail &&
-          password == _adminPassword) {
-        Get.offAllNamed(AppRoute.adminDashboard);
-        return;
-      }
-
-      // Login through Django API
+      // Login through Django API for ALL accounts,
+      // including admin accounts.
       final auth = await _authService.login(
         email: email,
         password: password,
       );
 
-      // If this is a different account than whoever was last logged in on
-      // this device, clear out their leftover academic details first.
-      await _resetAcademicDetailsIfNewUser(auth.user.email);
+      print("========== LOGGED IN USER ==========");
+      print("Email: ${auth.user.email}");
+      print("Role: ${auth.user.role}");
+      print("====================================");
 
       // Save user information locally
       await StorageService.saveUserInfo(
@@ -109,7 +101,27 @@ class LoginController extends GetxController {
 
       await StorageService.saveUserPassword(password);
 
-      await _navigateAfterLogin(auth.user.email);
+      // Admin → Admin Dashboard
+      if (auth.user.role.toLowerCase() == 'admin') {
+        Get.offAllNamed(AppRoute.adminDashboard);
+        return;
+      }
+
+      // Counselor → Counselor area
+      if (auth.user.role.toLowerCase() == 'counselor') {
+        // Change this route if your project has a counselor route.
+        Get.offAllNamed(AppRoute.home);
+        return;
+      }
+
+      // Student → normal student flow
+      await _resetAcademicDetailsIfNewUser(
+        auth.user.email,
+      );
+
+      await _navigateAfterLogin(
+        auth.user.email,
+      );
     } catch (e) {
       print("LOGIN ERROR:");
       print(e);

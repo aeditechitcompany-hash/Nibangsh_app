@@ -1,5 +1,8 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
+import 'token_storage_service.dart';
 
 class ApiService {
   const ApiService();
@@ -44,16 +47,67 @@ class ApiService {
       return data;
     }
 
-    if (data is Map<String, dynamic>) {
-      final buffer = StringBuffer();
+    final buffer = StringBuffer();
 
-      data.forEach((key, value) {
-        buffer.writeln("$key : $value");
-      });
+    data.forEach((key, value) {
+      buffer.writeln("$key : $value");
+    });
 
-      throw Exception(buffer.toString());
+    throw Exception(
+      buffer.toString().isNotEmpty
+          ? buffer.toString()
+          : "Unknown Error",
+    );
+  }
+
+  Future<dynamic> get({
+    required String url,
+    Map<String, String>? headers,
+  }) async {
+    final accessToken =
+        await TokenStorageService.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+
+        if (accessToken != null &&
+            accessToken.isNotEmpty)
+          "Authorization": "Bearer $accessToken",
+
+        ...?headers,
+      },
+    );
+
+    print("================================");
+    print("GET URL: $url");
+    print("ACCESS TOKEN EXISTS: ${accessToken != null}");
+    print("STATUS CODE: ${response.statusCode}");
+    print("RESPONSE BODY: ${response.body}");
+    print("================================");
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      if (response.body.isEmpty) {
+        return [];
+      }
+
+      try {
+        return jsonDecode(response.body);
+      } catch (_) {
+        throw Exception(
+          "Server returned invalid JSON.\n"
+          "Status Code: ${response.statusCode}\n"
+          "Body:\n${response.body}",
+        );
+      }
     }
 
-    throw Exception("Unknown Error");
+    throw Exception(
+      "GET request failed.\n"
+      "Status Code: ${response.statusCode}\n"
+      "Body:\n${response.body}",
+    );
   }
 }

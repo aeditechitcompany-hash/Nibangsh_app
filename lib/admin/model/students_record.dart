@@ -258,12 +258,125 @@ class StudentRecord {
       ticketFileName: ticketFileName ?? this.ticketFileName,
     );
   }
+
+  factory StudentRecord.fromJson(Map<String, dynamic> json) {
+    final firstName = json['first_name'] ?? '';
+    final lastName = json['last_name'] ?? '';
+
+    final fullName = '$firstName $lastName'.trim();
+
+    final isActive = json['is_active_student'] ?? true;
+
+    return StudentRecord(
+      id: json['id'].toString(),
+
+      name: fullName.isNotEmpty
+          ? fullName
+          : (json['username'] ?? 'Unknown Student'),
+
+      email: json['email'] ?? '',
+
+      phone: json['phone_number'] ?? '',
+
+      // These don't exist in accounts_user yet.
+      countryCode: '',
+      countryName: '',
+
+      university: '',
+      course: '',
+      gpa: '',
+      degree: '',
+      passoutYear: '',
+
+      languageTestName: '',
+      languageTestScore: '',
+
+      joinedDate: _formatJoinedDate(json['created_at']),
+
+      visaStatus: 'Not Started',
+      flightStatus: 'Not booked',
+
+      currentStep: 1,
+
+      status: isActive
+          ? StudentStatus.active
+          : StudentStatus.pending,
+
+      documents: RequiredDocumentsCatalog.seed,
+
+      interviewDate: null,
+      interviewMode: null,
+      interviewResult: null,
+      interviewNotes: null,
+
+      applicationRefNo: null,
+      submissionDate: null,
+      confirmationFileName: null,
+
+      offerFileName: null,
+      offerType: null,
+      offerExpiryDate: null,
+
+      locFileName: null,
+      locVerified: false,
+
+      courseCommencementDate: null,
+      scholarshipStatus: null,
+      finalSelectionNotes: null,
+      finalSelectionConfirmed: false,
+
+      visaRefNo: null,
+      visaStatusUpdate: null,
+      visaApprovalLetterFileName: null,
+
+      flightNumber: null,
+      airline: null,
+      departureAirport: null,
+      arrivalAirport: null,
+      departureDateTime: null,
+      ticketFileName: null,
+    );
+  }
+
+  static String _formatJoinedDate(dynamic value) {
+    if (value == null) return '';
+
+    try {
+      final date = DateTime.parse(value.toString());
+
+      return '${_monthName(date.month)} '
+          '${date.day.toString().padLeft(2, '0')}, '
+          '${date.year}';
+    } catch (_) {
+      return value.toString();
+    }
+  }
+
+  static String _monthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return months[month - 1];
+  }
 }
 
 // Builds a per-student copy of the required-documents catalog, marking the
 // first [uploadedCount] of them as already uploaded (just for seed/demo
 // data). Admin can then upload/replace any of these from the student
 // profile screen, which is real per-document state from here on.
+
 List<RequiredDocument> _seedDocs(int uploadedCount) {
   return RequiredDocumentsCatalog.seed
       .asMap()
