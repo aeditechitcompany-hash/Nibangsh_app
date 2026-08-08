@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -41,6 +42,22 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
       DeviceOrientation.landscapeRight,
     ]);
     super.dispose();
+  }
+
+  // Bundled Korean-quiz assets are referenced like 'assets/quiz/set1/...'.
+  // Admin-uploaded files come from file_picker as absolute device paths
+  // (e.g. '/data/user/0/.../image.jpg'). This tells the two apart so the
+  // right Flutter image/audio API gets used for each.
+  bool _isBundledAsset(String path) => path.startsWith('assets/');
+
+  Widget _quizImage(
+    String path, {
+    required BoxFit fit,
+    required Widget Function(BuildContext, Object, StackTrace?) errorBuilder,
+  }) {
+    return _isBundledAsset(path)
+        ? Image.asset(path, fit: fit, errorBuilder: errorBuilder)
+        : Image.file(File(path), fit: fit, errorBuilder: errorBuilder);
   }
 
   @override
@@ -205,10 +222,10 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
 
   // ── Question card ──
   Widget _buildQuestionCard(
-      McqQuizController controller,
-      BuildContext context,
-      bool isWideLayout,
-      ) {
+    McqQuizController controller,
+    BuildContext context,
+    bool isWideLayout,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -290,12 +307,12 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          flex: 3,
+          flex: 1,
           child: _buildQuestionContent(question),
         ),
         const SizedBox(width: 24),
         Expanded(
-          flex: 2,
+          flex: 1,
           child: Container(
             padding: const EdgeInsets.only(left: 24),
             decoration: const BoxDecoration(
@@ -333,7 +350,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
               width: double.infinity,
               color: AppColors.background,
               padding: const EdgeInsets.all(10),
-              child: Image.asset(
+              child: _quizImage(
                 question.imageAsset!,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) => Padding(
@@ -356,7 +373,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           const SizedBox(height: 12),
           AudioPlayButton(
             filePath: question.audioAsset!,
-            isAsset: true,
+            isAsset: _isBundledAsset(question.audioAsset!),
             label: 'Listen',
           ),
         ],
@@ -365,10 +382,10 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   }
 
   Widget _buildOptionsSection(
-      McqQuizController controller,
-      QuizQuestion question, {
-        required bool isWideLayout,
-      }) {
+    McqQuizController controller,
+    QuizQuestion question, {
+    required bool isWideLayout,
+  }) {
     if (question.hasOptionImages) {
       return isWideLayout
           ? _buildImageOptionsList(controller, question)
@@ -462,21 +479,21 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                   Expanded(
                     child: hasAudioOption
                         ? AudioPlayButton(
-                      filePath: question.optionAudios![index],
-                      isAsset: true,
-                      label: displayText.isNotEmpty
-                          ? displayText
-                          : 'Listen ${index + 1}',
-                    )
+                            filePath: question.optionAudios![index],
+                            isAsset: _isBundledAsset(question.optionAudios![index]),
+                            label: displayText.isNotEmpty
+                                ? displayText
+                                : 'Listen ${index + 1}',
+                          )
                         : Text(
-                      displayText,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'NotoSansKR',
-                        fontWeight: FontWeight.w500,
-                        color: selected ? Colors.white : AppColors.textDark,
-                      ),
-                    ),
+                            displayText,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'NotoSansKR',
+                              fontWeight: FontWeight.w500,
+                              color: selected ? Colors.white : AppColors.textDark,
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -525,24 +542,24 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                     padding: const EdgeInsets.fromLTRB(10, 30, 10, 10),
                     child: imagePath == null
                         ? const Center(
-                      child: Icon(
-                        Icons.broken_image_outlined,
-                        size: 28,
-                        color: AppColors.textGrey,
-                      ),
-                    )
-                        : Image.asset(
-                      imagePath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                      const Center(
-                        child: Icon(
-                          Icons.broken_image_outlined,
-                          size: 28,
-                          color: AppColors.textGrey,
-                        ),
-                      ),
-                    ),
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              size: 28,
+                              color: AppColors.textGrey,
+                            ),
+                          )
+                        : _quizImage(
+                            imagePath,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Center(
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                size: 28,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 Positioned(
@@ -598,24 +615,24 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                         padding: const EdgeInsets.all(8),
                         child: imagePath == null
                             ? const Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            size: 28,
-                            color: AppColors.textGrey,
-                          ),
-                        )
-                            : Image.asset(
-                          imagePath,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                          const Center(
-                            child: Icon(
-                              Icons.broken_image_outlined,
-                              size: 28,
-                              color: AppColors.textGrey,
-                            ),
-                          ),
-                        ),
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 28,
+                                  color: AppColors.textGrey,
+                                ),
+                              )
+                            : _quizImage(
+                                imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Center(
+                                  child: Icon(
+                                    Icons.broken_image_outlined,
+                                    size: 28,
+                                    color: AppColors.textGrey,
+                                  ),
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -629,10 +646,10 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   }
 
   Widget _optionNumberBadge(
-      int index, {
-        required bool selected,
-        bool onColoredBackground = false,
-      }) {
+    int index, {
+    required bool selected,
+    bool onColoredBackground = false,
+  }) {
     final Color background;
     final Color border;
     final Color text;
@@ -710,7 +727,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                       ),
                     ),
                     Obx(
-                          () => Text(
+                      () => Text(
                         '${controller.answeredCount}/${controller.totalQuestions} answered',
                         style: const TextStyle(
                           fontSize: 14.5,
@@ -731,7 +748,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: controller.totalQuestions,
                       gridDelegate:
-                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 64,
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
@@ -869,7 +886,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Submit Exam?'),
         content: Obx(
-              () => Text(
+          () => Text(
             controller.answeredCount < controller.totalQuestions
                 ? 'You have answered ${controller.answeredCount} of ${controller.totalQuestions} questions. Unanswered questions will be marked wrong.'
                 : 'You have answered all questions. Submit now?',

@@ -17,12 +17,26 @@ class McqRepository extends GetxService {
 
   final questions = <McqQuestion>[].obs;
 
-  void addQuestion(McqQuestion question) => questions.insert(0, question);
+  void addQuestion(McqQuestion question) {
+    questions.add(question);
+    _sortQuestions();
+  }
 
   void updateQuestion(McqQuestion updated) {
     final index = questions.indexWhere((q) => q.id == updated.id);
-    if (index != -1) questions[index] = updated;
+    if (index != -1) {
+      questions[index] = updated;
+      _sortQuestions();
+    }
   }
 
   void removeQuestion(String id) => questions.removeWhere((q) => q.id == id);
+
+  void _sortQuestions() {
+    questions.sort((a, b) {
+      final createdAtOrder = a.createdAt.compareTo(b.createdAt);
+      if (createdAtOrder != 0) return createdAtOrder;
+      return a.id.compareTo(b.id);
+    });
+  }
 }
