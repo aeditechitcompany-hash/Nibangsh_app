@@ -3,6 +3,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../common/api_services/auth_service.dart';
+import '../../../common/api_services/academic_details_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -44,28 +45,23 @@ class LoginController extends GetxController {
     return null;
   }
 
-  // Academic details are stored locally, keyed to whichever account was
-  // last logged in on this device. If a different email is now logging in,
-  // the previous account's academic details no longer apply — clear them
-  // so the new user goes through the form themselves instead of seeing
-  // stale data from whoever used the device before.
-  Future<void> _resetAcademicDetailsIfNewUser(String newEmail) async {
-    final previousEmail = await StorageService.getUserEmail();
-    if (previousEmail != null &&
-        previousEmail.isNotEmpty &&
-        previousEmail.toLowerCase() != newEmail.toLowerCase()) {
-      await StorageService.clearAcademicDetails();
-    }
-  }
+  final AcademicDetailsService _academicDetailsService =
+      AcademicDetailsService();
 
-  // After a successful login, send first-time users to fill in their
-  // academic details; everyone else goes straight to Home.
+  /// The database is the source of truth.
+  /// Existing education -> Home.
+  /// No education -> Academic Details.
   Future<void> _navigateAfterLogin(String email) async {
-    final hasAcademicDetails = await StorageService.hasAcademicDetails();
+    final hasAcademicDetails =
+        await _academicDetailsService.hasAcademicDetails();
+
     if (hasAcademicDetails) {
       Get.offAllNamed(AppRoute.home);
     } else {
-      Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
+      Get.offAllNamed(
+        AppRoute.academicDetails,
+        arguments: {'email': email},
+      );
     }
   }
 
@@ -93,6 +89,7 @@ class LoginController extends GetxController {
 
       // Save user information locally
       await StorageService.saveUserInfo(
+        id: auth.user.id,
         email: auth.user.email,
         name: auth.user.fullName,
         phone: auth.user.phoneNumber,
@@ -114,14 +111,8 @@ class LoginController extends GetxController {
         return;
       }
 
-      // Student → normal student flow
-      await _resetAcademicDetailsIfNewUser(
-        auth.user.email,
-      );
-
-      await _navigateAfterLogin(
-        auth.user.email,
-      );
+      // Student → database-backed academic-details check.
+      await _navigateAfterLogin(auth.user.email);
     } catch (e) {
       print("LOGIN ERROR:");
       print(e);
@@ -145,7 +136,6 @@ class LoginController extends GetxController {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? account = await googleSignIn.signIn();
       if (account != null) {
-        await _resetAcademicDetailsIfNewUser(account.email);
         await StorageService.saveUserInfo(
           email: account.email,
           name: account.displayName?.trim().isNotEmpty == true
@@ -169,7 +159,6 @@ class LoginController extends GetxController {
       if (result.status == LoginStatus.success) {
         final userData = await FacebookAuth.instance.getUserData();
         final email = userData['email']?.toString() ?? '';
-        await _resetAcademicDetailsIfNewUser(email);
         await StorageService.saveUserInfo(
           email: email,
           name: userData['name']?.toString() ?? 'Student',

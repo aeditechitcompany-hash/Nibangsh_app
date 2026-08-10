@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/api_services/academic_details_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_route.dart';
 import '../../home/controller/home_controller.dart';
@@ -16,6 +17,9 @@ class AcademicDetailsController extends GetxController {
 
   final isLoading = false.obs;
   final showErrors = false.obs;
+
+  final AcademicDetailsService _academicDetailsService =
+      AcademicDetailsService();
 
   bool isEditMode = false;
   String _email = '';
@@ -61,11 +65,24 @@ class AcademicDetailsController extends GetxController {
     }
 
     isLoading.value = true;
-    late final String gpa;
-    try {
-      await Future.delayed(const Duration(milliseconds: 600));
+    final gpa = gpaController.text.trim();
 
-      gpa = gpaController.text.trim();
+    try {
+      final userId = await StorageService.getUserId();
+      if (userId == null || userId.isEmpty) {
+        // Shouldn't normally happen — this screen is only reachable after
+        // login, which is what saves the user id.
+        throw Exception('Not logged in — please log in again.');
+      }
+
+      // Save to the backend first; only persist locally / navigate on success.
+      await _academicDetailsService.submitAcademicDetails(
+        userId: userId,
+        country: selectedCountry.value,
+        gpa: gpa,
+        passoutYear: selectedPassoutYear.value,
+        degree: selectedDegree.value,
+      );
 
       // Persist so Home (and Profile) can read these back later,
       // regardless of how the user navigates there.
@@ -91,6 +108,19 @@ class AcademicDetailsController extends GetxController {
         profileController.passoutYear.value = selectedPassoutYear.value;
         profileController.degree.value = selectedDegree.value;
       }
+    } catch (e) {
+      print('SUBMIT ACADEMIC DETAILS ERROR:');
+      print(e);
+
+      Get.snackbar(
+        'Could not save your details',
+        e.toString().replaceAll('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      isLoading.value = false;
+      return;
     } finally {
       isLoading.value = false;
     }

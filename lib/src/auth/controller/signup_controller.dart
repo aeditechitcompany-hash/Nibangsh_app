@@ -124,64 +124,71 @@ class SignupController extends GetxController {
 
   Future<void> signup() async {
     if (!formKey.currentState!.validate()) return;
-    if (validateDistrict(null) != null || validateProvince(null) != null) return;
+    if (validateDistrict(null) != null || validateProvince(null) != null) {
+      return;
+    }
 
     isLoading.value = true;
 
     try {
       final authService = AuthService();
 
-      await authService.register(
+      // Register + immediately log in so JWT tokens and user.id are available
+      // before AcademicDetailsScreen calls the protected API.
+      final auth = await authService.register(
         fullName: fullNameController.text.trim(),
         email: emailController.text.trim(),
         phone: phoneController.text.trim(),
         password: passwordController.text,
         address: addressController.text.trim(),
-        district: AppConstants.districtValues[selectedDistrict.value] ?? selectedDistrict.value.toLowerCase(),
-        province: AppConstants.provinceValues[selectedProvince.value] ?? selectedProvince.value.toLowerCase(),
+        district: AppConstants.districtValues[selectedDistrict.value] ??
+            selectedDistrict.value.toLowerCase(),
+        province: AppConstants.provinceValues[selectedProvince.value] ??
+            selectedProvince.value.toLowerCase(),
       );
 
-    // Clear any stale academic details from a previous user on this device
-    // so the new account correctly flows to the academic details form.
-    await StorageService.clearAcademicDetails();
+      // Never inherit academic details from another account on this device.
+      await StorageService.clearAcademicDetails();
 
-    await StorageService.saveUserInfo(
-      email: emailController.text.trim(),
-      name: fullNameController.text.trim(),
-      phone: phoneController.text.trim(),
-      role: "student",
-    );
+      await StorageService.saveUserInfo(
+        id: auth.user.id,
+        email: auth.user.email,
+        name: auth.user.fullName.trim(),
+        phone: auth.user.phoneNumber,
+        role: auth.user.role,
+      );
 
-    await StorageService.saveUserPassword(
-      passwordController.text,
-    );
+      await StorageService.saveUserPassword(passwordController.text);
 
-    Get.snackbar(
-      "Success",
-      "Account created successfully.",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
+      Get.snackbar(
+        "Success",
+        "Account created successfully.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
 
-    Get.offAllNamed(AppRoute.academicDetails, arguments: {
-      'email': emailController.text.trim(),
-    });
-  } catch (e) {
-    print("REGISTER ERROR");
-    print(e);
+      // First-time student flow:
+      // signup -> academic details -> home
+      Get.offAllNamed(
+        AppRoute.academicDetails,
+        arguments: {'email': auth.user.email},
+      );
+    } catch (e) {
+      print("REGISTER ERROR");
+      print(e);
 
-    Get.snackbar(
-      "Signup Failed",
-      e.toString(),
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-  } finally {
-    isLoading.value = false;
+      Get.snackbar(
+        "Signup Failed",
+        e.toString().replaceAll("Exception: ", ""),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
 
   // Google Sign-In
   Future<void> signInWithGoogle() async {
