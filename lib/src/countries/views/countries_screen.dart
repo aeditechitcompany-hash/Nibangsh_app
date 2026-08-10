@@ -210,9 +210,7 @@ class CountriesScreen extends StatelessWidget {
       return GestureDetector(
         onTap: () {
           controller.selectCountry(country.name);
-          if (country.name == 'South Korea') {
-            Get.toNamed(AppRoute.universities, arguments: {'country': country.name});
-          }
+          Get.toNamed(AppRoute.universities, arguments: {'country': country.name});
         },
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),

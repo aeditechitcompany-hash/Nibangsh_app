@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../common/models/application_step_model.dart';
-import '../../../common/util/academic_constants.dart';
 import '../../../common/services/storage.dart';
 
 class HomeController extends GetxController {
