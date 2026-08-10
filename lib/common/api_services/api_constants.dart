@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = "http://192.168.254.13:8000/api";
+  static const String baseUrl = "http://192.168.101.8:8000/api";
 
   static const String register =
       "$baseUrl/accounts/auth/register/";

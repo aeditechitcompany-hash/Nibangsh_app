@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../common/util/app_colors.dart';
 
 class ForgotPasswordController extends GetxController {
   final emailController = TextEditingController();

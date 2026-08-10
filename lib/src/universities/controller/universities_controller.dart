@@ -18,6 +18,9 @@ class UniversitiesController extends GetxController {
     });
   }
 
+  /// Whether we have any university data at all for this country.
+  bool get hasCountryData => UniversityCatalog.byCountry.containsKey(countryName);
+
   List<UniversityInfo> get filteredUniversities {
     final all = UniversityCatalog.byCountry[countryName] ?? [];
     if (searchQuery.value.isEmpty) return all;

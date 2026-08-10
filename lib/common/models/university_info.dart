@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../util/app_colors.dart';
 
 class UniversityInfo {
   final String name;

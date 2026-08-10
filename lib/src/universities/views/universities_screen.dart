@@ -146,6 +146,29 @@ class UniversitiesScreen extends StatelessWidget {
       child: Obx(() {
         final results = controller.filteredUniversities;
         if (results.isEmpty) {
+          if (!controller.hasCountryData) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.school_outlined, color: AppColors.textGrey.withOpacity(0.5), size: 40),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'No universities available right now',
+                      style: TextStyle(color: AppColors.textGrey, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'We\'re still adding universities for ${controller.countryName}. Please check back soon.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.textGrey.withOpacity(0.8), fontSize: 12.5),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 40),
             child: Center(
