@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
+  static const String _userIdKey = 'user_id';
   static const String _userEmailKey = 'user_email';
   static const String _userNameKey = 'user_name';
   static const String _userPhoneKey = 'user_phone';
@@ -17,6 +18,7 @@ class StorageService {
   static const String _academicDetailsCompleteKey = 'academic_details_complete';
 
   static Future<void> saveUserInfo({
+    String id = '',
     required String email,
     required String name,
     String phone = '',
@@ -24,12 +26,20 @@ class StorageService {
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
+    if (id.isNotEmpty) {
+      await prefs.setString(_userIdKey, id);
+    }
     await prefs.setString(_userEmailKey, email);
     await prefs.setString(_userNameKey, name);
     await prefs.setString(_userPhoneKey, phone);
     await prefs.setString(_userRoleKey, role);
 
     await prefs.setBool(_isLoggedInKey, true);
+  }
+
+  static Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userIdKey);
   }
 
   static Future<String?> getUserEmail() async {
