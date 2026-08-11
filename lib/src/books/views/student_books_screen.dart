@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
+
 import '../../../common/models/book_resource.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -14,25 +15,282 @@ class StudentBooksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(StudentBooksController());
 
-    // ConstrainedBox + IntrinsicHeight + Expanded lets the rounded
-    // background container stretch to fill the full viewport when content
-    // is short (e.g. empty state), while still scrolling normally once
-    // content grows taller than the screen.
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: AppColors.background,
+      child: Obx(() {
+        // ═══════════════════════════════════════
+        // CHECKING BOOK ACCESS
+        // ═══════════════════════════════════════
+
+        if (controller.isCheckingBookAccess.value) {
+          return _buildCheckingScreen();
+        }
+
+        // ═══════════════════════════════════════
+        // BOOK ACCESS NOT GRANTED
+        // ═══════════════════════════════════════
+
+        if (!controller.bookAccess.value) {
+          return _buildBookAccessPendingScreen(controller);
+        }
+
+        // ═══════════════════════════════════════
+        // BOOK ACCESS GRANTED
+        // ═══════════════════════════════════════
+
+        return _buildBooksContent(controller, context);
+      }),
+    );
+  }
+
+  // ═════════════════════════════════════════════
+  // CHECKING SCREEN
+  // ═════════════════════════════════════════════
+
+  Widget _buildCheckingScreen() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: AppColors.background,
+      child: const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              color: AppColors.primaryBlue,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Checking Books access...',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.textGrey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═════════════════════════════════════════════
+  // BOOK ACCESS PENDING
+  // ═════════════════════════════════════════════
+
+  Widget _buildBookAccessPendingScreen(
+    StudentBooksController controller,
+  ) {
+    return RefreshIndicator(
+      onRefresh: controller.refreshBookAccess,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: Column(
+                children: [
+                  // Keep the same Books header
+                  // even when access is pending.
+                  _buildHeader(controller, context),
+
+                  ResponsiveWrapper(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(
+                          24,
+                          30,
+                          24,
+                          20,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.borderGrey,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.03),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            // ─────────────────────────
+                            // ICON
+                            // ─────────────────────────
+
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryBlue
+                                    .withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.menu_book_rounded,
+                                size: 40,
+                                color: AppColors.primaryBlue,
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // ─────────────────────────
+                            // TITLE
+                            // ─────────────────────────
+
+                            const Text(
+                              'Books Access Pending',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            // ─────────────────────────
+                            // DESCRIPTION
+                            // ─────────────────────────
+
+                            const Text(
+                              'Your Books access has not been granted yet.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textGrey,
+                                height: 1.5,
+                              ),
+                            ),
+
+                            const SizedBox(height: 6),
+
+                            const Text(
+                              'Please wait for an administrator to approve your access.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: AppColors.textGrey,
+                                height: 1.5,
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // ─────────────────────────
+                            // CHECK AGAIN BUTTON
+                            // ─────────────────────────
+
+                            Obx(() {
+                              final refreshing =
+                                  controller.isRefreshingBookAccess.value;
+
+                              return OutlinedButton.icon(
+                                onPressed: refreshing
+                                    ? null
+                                    : controller.refreshBookAccess,
+                                icon: refreshing
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.refresh_rounded,
+                                      ),
+                                label: Text(
+                                  refreshing
+                                      ? 'Checking...'
+                                      : 'Check Again',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      AppColors.primaryBlue,
+                                  side: const BorderSide(
+                                    color: AppColors.primaryBlue,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            }),
+
+                            const SizedBox(height: 16),
+
+                            const Text(
+                              'This page checks automatically for admin approval.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // ═════════════════════════════════════════════
+  // NORMAL BOOKS CONTENT
+  // ═════════════════════════════════════════════
+
+  Widget _buildBooksContent(
+    StudentBooksController controller,
+    BuildContext context,
+  ) {
     return LayoutBuilder(
       builder: (context, outerConstraints) {
         return SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: outerConstraints.maxHeight),
+            constraints: BoxConstraints(
+              minHeight: outerConstraints.maxHeight,
+            ),
             child: IntrinsicHeight(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(controller, context),
+
                   Expanded(
                     child: ResponsiveWrapper(
                       child: Container(
                         width: double.infinity,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: AppColors.background,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(28),
@@ -41,9 +299,11 @@ class StudentBooksScreen extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.only(top: 20),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
                           children: [
                             _buildBookList(controller),
+
                             const SizedBox(height: 100),
                           ],
                         ),
@@ -59,17 +319,32 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(StudentBooksController controller, BuildContext context) {
+  // ═════════════════════════════════════════════
+  // HEADER
+  // ═════════════════════════════════════════════
+
+  Widget _buildHeader(
+    StudentBooksController controller,
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        20,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.navyDark, AppColors.navyLight],
+          colors: [
+            AppColors.navyDark,
+            AppColors.navyLight,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
         ),
@@ -78,12 +353,14 @@ class StudentBooksScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Books & Resources',
@@ -93,7 +370,9 @@ class StudentBooksScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
                     Text(
                       'Shared by your consultancy',
                       style: TextStyle(
@@ -104,8 +383,11 @@ class StudentBooksScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
               GestureDetector(
-                onTap: () => Get.toNamed(AppRoute.studentNotifications),
+                onTap: () => Get.toNamed(
+                  AppRoute.studentNotifications,
+                ),
                 child: Stack(
                   children: [
                     Container(
@@ -120,6 +402,7 @@ class StudentBooksScreen extends StatelessWidget {
                         size: 20,
                       ),
                     ),
+
                     Positioned(
                       right: 0,
                       top: 0,
@@ -129,7 +412,10 @@ class StudentBooksScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.primaryRed,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.navyDark, width: 1.5),
+                          border: Border.all(
+                            color: AppColors.navyDark,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -138,55 +424,79 @@ class StudentBooksScreen extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 18),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.16),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
-            ),
-            child: TextField(
-              controller: controller.searchController,
-              onChanged: controller.onSearchChanged,
-              style: const TextStyle(color: Colors.white, fontSize: 15.5),
-              decoration: InputDecoration(
-                hintText: 'Search books...',
-                hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.75),
+
+          // Search bar only appears when access is granted.
+          if (controller.bookAccess.value)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.16),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                ),
+              ),
+              child: TextField(
+                controller: controller.searchController,
+                onChanged: controller.onSearchChanged,
+                style: const TextStyle(
+                  color: Colors.white,
                   fontSize: 15.5,
                 ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Colors.white.withOpacity(0.85),
-                  size: 21,
+                decoration: InputDecoration(
+                  hintText: 'Search books...',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.75),
+                    fontSize: 15.5,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.white.withOpacity(0.85),
+                    size: 21,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(
+                    vertical: 14,
+                  ),
                 ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildBookList(StudentBooksController controller) {
+  // ═════════════════════════════════════════════
+  // BOOK LIST
+  // ═════════════════════════════════════════════
+
+  Widget _buildBookList(
+    StudentBooksController controller,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
         final books = controller.filteredBooks;
+
         if (books.isEmpty) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 60),
+            padding: const EdgeInsets.symmetric(
+              vertical: 60,
+            ),
             child: Center(
               child: Column(
                 children: [
                   Icon(
                     Icons.menu_book_rounded,
                     size: 40,
-                    color: AppColors.textGrey.withOpacity(0.4),
+                    color:
+                        AppColors.textGrey.withOpacity(0.4),
                   ),
+
                   const SizedBox(height: 12),
+
                   const Text(
                     'No books shared yet',
                     style: TextStyle(
@@ -194,10 +504,15 @@ class StudentBooksScreen extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+
                   const SizedBox(height: 4),
+
                   const Text(
                     'Your consultancy will post study materials here',
-                    style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                    style: TextStyle(
+                      color: AppColors.textGrey,
+                      fontSize: 14,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -205,10 +520,21 @@ class StudentBooksScreen extends StatelessWidget {
             ),
           );
         }
-        return Column(children: books.map((b) => _bookCard(b)).toList());
+
+        return Column(
+          children: books
+              .map(
+                (book) => _bookCard(book),
+              )
+              .toList(),
+        );
       }),
     );
   }
+
+  // ═════════════════════════════════════════════
+  // BOOK CARD
+  // ═════════════════════════════════════════════
 
   Widget _bookCard(BookResource book) {
     return Container(
@@ -217,7 +543,9 @@ class StudentBooksScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.borderGrey),
+        border: Border.all(
+          color: AppColors.borderGrey,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -243,10 +571,13 @@ class StudentBooksScreen extends StatelessWidget {
               size: 22,
             ),
           ),
+
           const SizedBox(width: 12),
+
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 Text(
                   book.title,
@@ -256,8 +587,10 @@ class StudentBooksScreen extends StatelessWidget {
                     color: AppColors.textDark,
                   ),
                 ),
+
                 if (book.description.isNotEmpty) ...[
                   const SizedBox(height: 3),
+
                   Text(
                     book.description,
                     style: const TextStyle(
@@ -268,13 +601,20 @@ class StudentBooksScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
+
                 const SizedBox(height: 10),
+
                 Row(
                   children: [
+                    // VIEW
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => OpenFile.open(book.filePath),
-                        icon: const Icon(Icons.visibility_outlined, size: 16),
+                        onPressed: () =>
+                            OpenFile.open(book.filePath),
+                        icon: const Icon(
+                          Icons.visibility_outlined,
+                          size: 16,
+                        ),
                         label: const Text(
                           'View',
                           style: TextStyle(
@@ -283,20 +623,34 @@ class StudentBooksScreen extends StatelessWidget {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primaryBlue,
-                          side: const BorderSide(color: AppColors.primaryBlue),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          foregroundColor:
+                              AppColors.primaryBlue,
+                          side: const BorderSide(
+                            color: AppColors.primaryBlue,
+                          ),
+                          padding:
+                              const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius:
+                                BorderRadius.circular(10),
                           ),
                         ),
                       ),
                     ),
+
                     const SizedBox(width: 8),
+
+                    // DOWNLOAD
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () => OpenFile.open(book.filePath),
-                        icon: const Icon(Icons.download_rounded, size: 16),
+                        onPressed: () =>
+                            OpenFile.open(book.filePath),
+                        icon: const Icon(
+                          Icons.download_rounded,
+                          size: 16,
+                        ),
                         label: const Text(
                           'Download',
                           style: TextStyle(
@@ -305,11 +659,16 @@ class StudentBooksScreen extends StatelessWidget {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryBlue,
+                          backgroundColor:
+                              AppColors.primaryBlue,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding:
+                              const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius:
+                                BorderRadius.circular(10),
                           ),
                           elevation: 0,
                         ),

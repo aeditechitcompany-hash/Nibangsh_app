@@ -325,7 +325,7 @@ class McqHomeScreen extends StatelessWidget {
       // gradient goes behind the time / battery area.
       padding: EdgeInsets.fromLTRB(
         20,
-        topPadding + 20,
+        topPadding + 10,
         20,
         40,
       ),
@@ -357,7 +357,7 @@ class McqHomeScreen extends StatelessWidget {
                 'Quizzes',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
               ),
