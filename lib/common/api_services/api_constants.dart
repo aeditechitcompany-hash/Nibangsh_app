@@ -16,6 +16,9 @@ class ApiConstants {
   static const String studentProfiles =
       "$baseUrl/students/profiles/";
 
+  static const String myStudentProfile =
+      "$baseUrl/students/profiles/me/";
+
   static const String education =
       "$baseUrl/students/education/";
 
@@ -23,5 +26,12 @@ class ApiConstants {
       "$baseUrl/countries/";
       
   static const String myEducationStatus =
-    "$baseUrl/students/education/my-status/";
+      "$baseUrl/students/education/my-status/";
+
+  static const String questionSets =
+     "$baseUrl/mcq/question-sets/";
+
+  static const String myMcqAccess =
+      "$baseUrl/students/profiles/my-mcq-access/";
+
 }
