@@ -28,7 +28,7 @@ class CountriesCatalog {
       accentColor: Color(0xFF2563EB),
     ),
     CountryInfo(
-      code: 'GB',
+      code: 'UK',
       name: 'United Kingdom',
       universityCount: 14,
       topUniversities: ['Oxford', 'Cambridge'],

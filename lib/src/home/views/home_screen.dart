@@ -63,10 +63,7 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.navyDark,
-            AppColors.navyLight,
-          ],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -111,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     Obx(
-                          () => Text(
+                      () => Text(
                         '${controller.userName} 👋',
                         style: const TextStyle(
                           color: Colors.white,
@@ -149,7 +146,10 @@ class HomeScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.primaryRed,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.navyDark, width: 1.5),
+                          border: Border.all(
+                            color: AppColors.navyDark,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -200,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                       builder: (context, constraints) {
                         final fillWidth =
                             constraints.maxWidth *
-                                (controller.progressPercent.value / 100);
+                            (controller.progressPercent.value / 100);
                         return Stack(
                           children: [
                             Container(
@@ -269,7 +269,6 @@ class HomeScreen extends StatelessWidget {
         'title': 'Apply',
         'icon': Icons.description_outlined,
         'color': AppColors.primaryRed,
-        'targetIndex': 2,
       },
       {
         'title': 'Visa',
@@ -297,52 +296,113 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: actions.map((action) {
-              final color = action['color'] as Color;
-              final targetIndex = action['targetIndex'] as int?;
-              return GestureDetector(
-                onTap: targetIndex == null
-                    ? null
-                    : () {
-                  if (Get.isRegistered<MainNavigationController>()) {
-                    Get.find<MainNavigationController>().setIndex(
-                      targetIndex,
-                    );
-                  }
-                },
-                child: Column(
-                  children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Icon(
-                        action['icon'] as IconData,
-                        color: color,
-                        size: 24,
-                      ),
+          Builder(
+            builder: (context) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: actions.map((action) {
+                  final color = action['color'] as Color;
+                  final title = action['title'] as String;
+                  final targetIndex = action['targetIndex'] as int?;
+
+                  return GestureDetector(
+                    onTap: () =>
+                        _handleQuickAction(context, title, targetIndex),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 58,
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Icon(
+                            action['icon'] as IconData,
+                            color: color,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      action['title'] as String,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                }).toList(),
               );
-            }).toList(),
+            },
           ),
         ],
       ),
+    );
+  }
+
+  void _handleQuickAction(
+    BuildContext context,
+    String title,
+    int? targetIndex,
+  ) {
+    switch (title) {
+      case 'Countries':
+        if (targetIndex != null &&
+            Get.isRegistered<MainNavigationController>()) {
+          Get.find<MainNavigationController>().setIndex(targetIndex);
+        }
+        break;
+      case 'Apply':
+        Get.toNamed(AppRoute.docs);
+        break;
+      case 'Visa':
+        _showStatusDialog(context, 'Visa', 'Not started');
+        break;
+      case 'Flight':
+        _showStatusDialog(context, 'Flight', 'Not booked');
+        break;
+    }
+  }
+
+  void _showStatusDialog(BuildContext context, String label, String status) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          ),
+          content: Text(
+            '$status',
+            style: const TextStyle(color: AppColors.textGrey, fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryBlue,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -413,7 +473,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Obx(
-                  () => Row(
+              () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -437,7 +497,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Obx(
-                  () => Row(
+              () => Row(
                 children: [
                   Expanded(
                     child: _profileField(
@@ -619,10 +679,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _stepTile(
-      HomeController controller,
-      ApplicationStepModel step,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    ApplicationStepModel step,
+    BuildContext context,
+  ) {
     Color color;
     String pillLabel;
     IconData pillIcon;
@@ -731,10 +791,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _handleStepTap(
-      HomeController controller,
-      ApplicationStepModel step,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    ApplicationStepModel step,
+    BuildContext context,
+  ) {
     if (step.id == 2) {
       _showLanguageTestSheet(controller, context);
       return;
@@ -754,11 +814,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _showStepUploadOptions(
-      HomeController controller,
-      int stepId,
-      String actionLabel,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    int stepId,
+    String actionLabel,
+    BuildContext context,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -892,7 +952,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 ...AcademicConstants.languageTests.map(
-                      (test) => ListTile(
+                  (test) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(
                       Icons.menu_book_outlined,
