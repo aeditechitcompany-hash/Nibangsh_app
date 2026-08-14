@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nibangsh_consultancy/common/api_services/academic_details_service.dart';
+import '../../../common/api_services/api_constants.dart';
+import '../../../common/api_services/api_service.dart';
 import '../../../common/models/application_step_model.dart';
 import '../../../common/services/storage.dart';
 
@@ -22,8 +25,10 @@ class HomeController extends GetxController {
   String _step2LanguageTest = '';
   bool _step3Done = false;
 
-  // TODO: replace with the real logged-in user's name once auth exists.
   final userName = ''.obs;
+  final ApiService _api = const ApiService();
+  final AcademicDetailsService _academicDetailsService = AcademicDetailsService();
+  final isLoadingAcademicDetails = false.obs;
 
   // Steps 1-3 belong to the student, steps 4-10 belong to the admin.
   List<ApplicationStepModel> get userSteps =>
@@ -69,18 +74,15 @@ class HomeController extends GetxController {
     super.onInit();
 
     final args = Get.arguments;
+
     if (args is Map) {
       email.value = args['email']?.toString() ?? '';
-      country.value = args['country']?.toString() ?? '';
-      gpa.value = args['gpa']?.toString() ?? '';
-      passoutYear.value = args['passoutYear']?.toString() ?? '';
-      degree.value = args['degree']?.toString() ?? '';
     }
 
     userName.value = nameFromEmail(email.value);
 
     _loadUserName();
-    _loadAcademicDetails();
+    _loadAcademicDetailsFromBackend();
     _rebuildSteps();
   }
 
@@ -91,24 +93,51 @@ class HomeController extends GetxController {
     }
   }
 
-  // Falls back to the last saved academic details whenever they weren't
-  // passed in via route arguments (e.g. opening Home directly, or after
-  // an app restart) so the profile card doesn't show blank fields.
-  Future<void> _loadAcademicDetails() async {
-    final stored = await StorageService.getAcademicDetails();
+  Future<void> _loadAcademicDetailsFromBackend() async {
+    try {
+      isLoadingAcademicDetails.value = true;
 
-    if (country.value.isEmpty && (stored['country'] ?? '').isNotEmpty) {
-      country.value = stored['country']!;
-    }
-    if (gpa.value.isEmpty && (stored['gpa'] ?? '').isNotEmpty) {
-      gpa.value = stored['gpa']!;
-    }
-    if (passoutYear.value.isEmpty &&
-        (stored['passoutYear'] ?? '').isNotEmpty) {
-      passoutYear.value = stored['passoutYear']!;
-    }
-    if (degree.value.isEmpty && (stored['degree'] ?? '').isNotEmpty) {
-      degree.value = stored['degree']!;
+      final education =
+      await _academicDetailsService.getMyAcademicDetails();
+
+      if (education == null) {
+        return;
+      }
+
+      // Country name from countries_country table
+      final countryName =
+          education['country_name']?.toString() ?? '';
+
+      // Human-readable Django choice label
+      final degreeName =
+          education['degree_level']?.toString() ?? '';
+
+      final gpaValue =
+          education['gpa']?.toString() ?? '';
+
+      final passoutValue =
+          education['passout_year']?.toString() ?? '';
+
+      country.value = countryName;
+      gpa.value = gpaValue;
+      passoutYear.value = passoutValue;
+      switch (degreeName) {
+        case 'bachelor':
+          degree.value = 'Bachelors';
+          break;
+        case 'master':
+          degree.value = 'Masters';
+          break;
+        case 'phd':
+          degree.value = 'PHD';
+          break;
+        default:
+          degree.value = degreeName;
+      }
+    } catch (e) {
+      print('LOAD ACADEMIC DETAILS ERROR: $e');
+    } finally {
+      isLoadingAcademicDetails.value = false;
     }
   }
 

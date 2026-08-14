@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-
 import 'api_constants.dart';
 import 'token_storage_service.dart';
 
@@ -193,11 +191,39 @@ class ApiService {
     required String url,
     Map<String, String>? headers,
   }) async {
-    return _sendJson(
-      method: "GET",
-      url: url,
-      headers: headers,
-      authenticated: true,
+    final accessToken =
+        await TokenStorageService.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+        if (accessToken != null && accessToken.isNotEmpty)
+          "Authorization": "Bearer $accessToken",
+        ...?headers,
+      },
+    );
+
+    print("================================");
+    print("GET URL: $url");
+    print("ACCESS TOKEN EXISTS: ${accessToken != null}");
+    print("STATUS CODE: ${response.statusCode}");
+    print("RESPONSE BODY: ${response.body}");
+    print("================================");
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      if (response.body.isEmpty) {
+        return {};
+      }
+
+      return jsonDecode(response.body);
+    }
+
+    throw Exception(
+      "GET request failed.\n"
+      "Status Code: ${response.statusCode}\n"
+      "Body: ${response.body}",
     );
   }
 }
