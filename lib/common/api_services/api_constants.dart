@@ -38,8 +38,10 @@ class ApiConstants {
   static const String myEducationStatus =
       '$baseUrl/students/education/my-status/';
 
-  // MCQ QUESTION SETS
+  static const String myAcademicDetails =
+      '$baseUrl/students/education/my-status/';
 
+  // MCQ QUESTION SETS
   static const String questionSets =
       '$baseUrl/mcq/question-sets/';
 

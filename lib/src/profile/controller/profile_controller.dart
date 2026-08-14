@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../common/services/storage.dart';
+import '../../../common/api_services/academic_details_service.dart';
 
 class ProfileController extends GetxController {
   final country = ''.obs;
@@ -22,6 +23,9 @@ class ProfileController extends GetxController {
 
   final notificationCount = 4.obs;
 
+  final AcademicDetailsService _academicDetailsService =
+  AcademicDetailsService();
+
   @override
   void onInit() {
     super.onInit();
@@ -29,40 +33,83 @@ class ProfileController extends GetxController {
   }
 
   Future<void> loadUser() async {
+    // --------------------------------------------------
+    // USER INFORMATION
+    // --------------------------------------------------
+
     userName.value = await StorageService.getUserName() ?? "Student";
     userEmail.value = await StorageService.getUserEmail() ?? "";
     userPhone.value = await StorageService.getUserPhone() ?? "";
     userRole.value = await StorageService.getUserRole() ?? "";
 
-    final args = Get.arguments;
+    // --------------------------------------------------
+    // ACADEMIC DETAILS FROM DATABASE
+    // --------------------------------------------------
 
-    if (args is Map) {
-      country.value = args["country"]?.toString() ?? "";
-      gpa.value = args["gpa"]?.toString() ?? "";
-      passoutYear.value = args["passoutYear"]?.toString() ?? "";
-      degree.value = args["degree"]?.toString() ?? "";
-    }
+    try {
+      final academic =
+      await _academicDetailsService.getMyAcademicDetails();
 
-    // Fall back to the last saved academic details whenever they weren't
-    // passed in via route arguments, so Profile stays correct no matter
-    // how the user got here (e.g. bottom nav instead of straight after
-    // filling the form).
-    final stored = await StorageService.getAcademicDetails();
+      if (academic != null) {
+        // GPA
+        country.value = academic['country_name']?.toString() ?? '';
 
-    if (country.value.isEmpty && (stored['country'] ?? '').isNotEmpty) {
-      country.value = stored['country']!;
-    }
-    if (gpa.value.isEmpty && (stored['gpa'] ?? '').isNotEmpty) {
-      gpa.value = stored['gpa']!;
-    }
-    if (passoutYear.value.isEmpty &&
-        (stored['passoutYear'] ?? '').isNotEmpty) {
-      passoutYear.value = stored['passoutYear']!;
-    }
-    if (degree.value.isEmpty && (stored['degree'] ?? '').isNotEmpty) {
-      degree.value = stored['degree']!;
+        // If backend returns country as an ID instead of country_name,
+        // this will remain empty. We handle that below.
+        gpa.value = academic['gpa']?.toString() ?? '';
+
+        passoutYear.value =
+            academic['passout_year']?.toString() ?? '';
+
+        // Django stores:
+        // bachelor
+        // master
+        // phd
+        //
+        // Flutter displays:
+        // Bachelors
+        // Masters
+        // PHD
+        degree.value = _formatDegree(
+          academic['degree_level']?.toString() ?? '',
+        );
+      }
+    } catch (e) {
+      debugPrint(
+        'PROFILE ACADEMIC DETAILS ERROR: $e',
+      );
     }
   }
+
+  // --------------------------------------------------
+  // Convert Django degree values to Flutter labels
+  // --------------------------------------------------
+
+  String _formatDegree(String value) {
+    switch (value.toLowerCase()) {
+      case 'bachelor':
+        return 'Bachelors';
+
+      case 'master':
+        return 'Masters';
+
+      case 'phd':
+        return 'PHD';
+
+      case 'high_school':
+        return 'High School';
+
+      case 'diploma':
+        return 'Diploma';
+
+      default:
+        return value;
+    }
+  }
+
+  // --------------------------------------------------
+  // PROFILE IMAGE
+  // --------------------------------------------------
 
   Future<void> pickProfileImage(ImageSource source) async {
     try {
@@ -86,6 +133,10 @@ class ProfileController extends GetxController {
       );
     }
   }
+
+  // --------------------------------------------------
+  // INITIALS
+  // --------------------------------------------------
 
   String get initials {
     final name = userName.value.trim();

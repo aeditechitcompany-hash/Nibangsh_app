@@ -9,9 +9,9 @@ class McqRepository extends GetxService {
       Get.isRegistered<McqRepository>()
           ? Get.find<McqRepository>()
           : Get.put(
-              McqRepository(),
-              permanent: true,
-            );
+        McqRepository(),
+        permanent: true,
+      );
 
   final ApiService _apiService = const ApiService();
 
@@ -38,7 +38,7 @@ class McqRepository extends GetxService {
         return response
             .map(
               (item) => Map<String, dynamic>.from(item),
-            )
+        )
             .toList();
       }
 
@@ -48,7 +48,7 @@ class McqRepository extends GetxService {
         return (response['results'] as List)
             .map(
               (item) => Map<String, dynamic>.from(item),
-            )
+        )
             .toList();
       }
 
@@ -66,8 +66,8 @@ class McqRepository extends GetxService {
   /// IMPORTANT:
   /// This endpoint does NOT contain correct answers.
   Future<Map<String, dynamic>?> fetchQuestionSet(
-    String questionSetId,
-  ) async {
+      String questionSetId,
+      ) async {
     try {
       final response = await _apiService.get(
         url: ApiConstants.questionSetTake(
@@ -89,10 +89,10 @@ class McqRepository extends GetxService {
   /// Convert one backend question into the existing
   /// McqQuestion model.
   McqQuestion questionFromBackend(
-    Map<String, dynamic> json, {
-    String? setName,
-    String? questionSetId,
-  }) {
+      Map<String, dynamic> json, {
+        String? setName,
+        String? questionSetId,
+      }) {
     final rawOptions = json['options'] as List? ?? [];
 
     final optionIds = <String>[];
@@ -123,7 +123,7 @@ class McqRepository extends GetxService {
     }
 
     final createdAtString =
-        json['created_at']?.toString();
+    json['created_at']?.toString();
 
     DateTime createdAt;
 
@@ -167,8 +167,8 @@ class McqRepository extends GetxService {
   /// Convert a complete backend question-set response
   /// into McqQuestion objects.
   List<McqQuestion> questionsFromBackend(
-    Map<String, dynamic> json,
-  ) {
+      Map<String, dynamic> json,
+      ) {
     final setId = json['id']?.toString();
     final setName = json['title']?.toString();
 
@@ -178,33 +178,33 @@ class McqRepository extends GetxService {
     return rawQuestions
         .map(
           (raw) => questionFromBackend(
-            Map<String, dynamic>.from(raw),
-            setName: setName,
-            questionSetId: setId,
-          ),
-        )
+        Map<String, dynamic>.from(raw),
+        setName: setName,
+        questionSetId: setId,
+      ),
+    )
         .toList();
   }
 
   void setQuestions(
-    List<McqQuestion> newQuestions,
-  ) {
+      List<McqQuestion> newQuestions,
+      ) {
     questions.assignAll(newQuestions);
     _sortQuestions();
   }
 
   void addQuestion(
-    McqQuestion question,
-  ) {
+      McqQuestion question,
+      ) {
     questions.add(question);
     _sortQuestions();
   }
 
   void updateQuestion(
-    McqQuestion updated,
-  ) {
+      McqQuestion updated,
+      ) {
     final index = questions.indexWhere(
-      (q) => q.id == updated.id,
+          (q) => q.id == updated.id,
     );
 
     if (index != -1) {
@@ -214,16 +214,16 @@ class McqRepository extends GetxService {
   }
 
   void removeQuestion(
-    String id,
-  ) {
+      String id,
+      ) {
     questions.removeWhere(
-      (q) => q.id == id,
+          (q) => q.id == id,
     );
   }
 
   void _sortQuestions() {
     questions.sort(
-      (a, b) =>
+          (a, b) =>
           a.createdAt.compareTo(b.createdAt),
     );
   }

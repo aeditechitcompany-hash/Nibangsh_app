@@ -1,5 +1,6 @@
 import 'api_constants.dart';
 import 'api_service.dart';
+import 'package:flutter/foundation.dart';
 
 /// Maps the labels shown in Flutter to Education.DegreeLevel choices in Django.
 const Map<String, String> kDegreeLevelApiValues = {
@@ -80,6 +81,30 @@ class AcademicDetailsService {
     );
 
     return created['id'].toString();
+  }
+
+  Future<Map<String, dynamic>?> getMyAcademicDetails() async {
+    final response = await _api.get(
+      url: ApiConstants.myEducationStatus,
+    );
+
+    if (response is! Map<String, dynamic>) {
+      return null;
+    }
+
+    final education = response['education'];
+
+    if (education is! List || education.isEmpty) {
+      return null;
+    }
+
+    final firstEducation = education.first;
+
+    if (firstEducation is! Map) {
+      return null;
+    }
+
+    return Map<String, dynamic>.from(firstEducation);
   }
 
   /// Returns true when the backend already has an education record for the
