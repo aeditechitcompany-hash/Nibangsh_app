@@ -61,11 +61,26 @@ class QuizQuestion {
     r'^\s*(?:[①-⑳]|\(\d{1,2}\)|\d{1,2}[.):\-])\s*',
   );
 
-  bool get hasQuestionText => question != null && question!.trim().isNotEmpty;
-  bool get hasImage => imageAsset != null && imageAsset!.trim().isNotEmpty;
-  bool get hasOptionImages => optionImages != null && optionImages!.isNotEmpty;
-  bool get hasAudio => audioAsset != null && audioAsset!.trim().isNotEmpty;
-  bool get hasOptionAudios => optionAudios != null && optionAudios!.isNotEmpty;
+  bool get hasQuestionText =>
+    question != null && question!.trim().isNotEmpty;
+
+bool get hasImage =>
+    imageAsset != null && imageAsset!.trim().isNotEmpty;
+
+bool get hasOptionImages =>
+    optionImages != null &&
+    optionImages!.any(
+      (image) => image.trim().isNotEmpty,
+    );
+
+bool get hasAudio =>
+    audioAsset != null && audioAsset!.trim().isNotEmpty;
+
+bool get hasOptionAudios =>
+    optionAudios != null &&
+    optionAudios!.any(
+      (audio) => audio.trim().isNotEmpty,
+    );
 
   int get optionCount => options.isNotEmpty
       ? options.length
