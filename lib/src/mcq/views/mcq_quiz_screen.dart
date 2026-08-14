@@ -382,17 +382,26 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   }
 
   Widget _buildOptionsSection(
-    McqQuizController controller,
-    QuizQuestion question, {
-    required bool isWideLayout,
-  }) {
-    if (question.hasOptionImages) {
-      return isWideLayout
-          ? _buildImageOptionsList(controller, question)
-          : _buildImageOptionsGrid(controller, question);
-    }
-    return _buildOptionsList(controller, question);
+  McqQuizController controller,
+  QuizQuestion question, {
+  required bool isWideLayout,
+}) {
+  final hasText = question.options.any(
+    (text) => text.trim().isNotEmpty,
+  );
+
+  final hasImages = question.hasOptionImages;
+
+  // Use image layout only when options are actually image-only.
+  if (hasImages && !hasText) {
+    return isWideLayout
+        ? _buildImageOptionsList(controller, question)
+        : _buildImageOptionsGrid(controller, question);
   }
+
+  // Normal text/audio options
+  return _buildOptionsList(controller, question);
+}
 
   Widget _buildNavButtons(McqQuizController controller) {
     return Row(

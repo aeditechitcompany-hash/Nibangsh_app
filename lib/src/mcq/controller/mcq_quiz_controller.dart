@@ -1,28 +1,67 @@
 import 'dart:async';
+
 import 'package:get/get.dart';
+
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_route.dart';
+import '../../../common/api_services/api_service.dart';
+import '../../../common/api_services/api_constants.dart';
+
 import 'mcq_home_controller.dart';
 
 class McqQuizController extends GetxController {
+  // ============================================================
+  // QUIZ SETTINGS
+  // ============================================================
+
   static const int quizDurationSeconds = 50 * 60;
 
   late final QuizSet quizSet;
 
+  // ============================================================
+  // API
+  // ============================================================
+
+  final ApiService _apiService = const ApiService();
+
+  // ============================================================
+  // QUIZ STATE
+  // ============================================================
+
   final currentIndex = 0.obs;
+
   final selectedAnswers = <int, int>{}.obs;
 
   final remainingSeconds = quizDurationSeconds.obs;
 
   Timer? _timer;
+
   bool _finished = false;
+
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
 
   @override
   void onInit() {
     super.onInit();
-    quizSet = Get.arguments as QuizSet;
+
+    final arguments = Get.arguments;
+
+    if (arguments is QuizSet) {
+      quizSet = arguments;
+    } else {
+      // Safety fallback.
+      Get.back();
+      return;
+    }
+
     _startTimer();
   }
+
+  // ============================================================
+  // CLEANUP
+  // ============================================================
 
   @override
   void onClose() {
@@ -30,44 +69,94 @@ class McqQuizController extends GetxController {
     super.onClose();
   }
 
-  QuizQuestion get currentQuestion => quizSet.questions[currentIndex.value];
-  int get totalQuestions => quizSet.questions.length;
-  bool get isLastQuestion => currentIndex.value == totalQuestions - 1;
-  bool get isFirstQuestion => currentIndex.value == 0;
-  int? get selectedForCurrent => selectedAnswers[currentIndex.value];
+  // ============================================================
+  // CURRENT QUESTION
+  // ============================================================
 
-  int get answeredCount => selectedAnswers.length;
+  QuizQuestion get currentQuestion {
+    return quizSet.questions[currentIndex.value];
+  }
 
-  bool isAnswered(int questionIndex) =>
-      selectedAnswers.containsKey(questionIndex);
+  int get totalQuestions {
+    return quizSet.questions.length;
+  }
+
+  bool get isLastQuestion {
+    return currentIndex.value == totalQuestions - 1;
+  }
+
+  bool get isFirstQuestion {
+    return currentIndex.value == 0;
+  }
+
+  int? get selectedForCurrent {
+    return selectedAnswers[currentIndex.value];
+  }
+
+  int get answeredCount {
+    return selectedAnswers.length;
+  }
+
+  bool isAnswered(int questionIndex) {
+    return selectedAnswers.containsKey(questionIndex);
+  }
+
+  // ============================================================
+  // TIMER
+  // ============================================================
 
   String get formattedTime {
-    final minutes = (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
-    final seconds = (remainingSeconds.value % 60).toString().padLeft(2, '0');
+    final minutes =
+        (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
+
+    final seconds =
+        (remainingSeconds.value % 60).toString().padLeft(2, '0');
+
     return '$minutes:$seconds';
   }
 
-  bool get isTimeRunningLow => remainingSeconds.value <= 30;
+  bool get isTimeRunningLow {
+    return remainingSeconds.value <= 30;
+  }
 
   void _startTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (remainingSeconds.value <= 1) {
-        remainingSeconds.value = 0;
-        timer.cancel();
-        _finish(timeUp: true);
-      } else {
-        remainingSeconds.value--;
-      }
-    });
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        if (remainingSeconds.value <= 1) {
+          remainingSeconds.value = 0;
+
+          timer.cancel();
+
+          _finish(timeUp: true);
+        } else {
+          remainingSeconds.value--;
+        }
+      },
+    );
   }
+
+  // ============================================================
+  // ANSWER SELECTION
+  // ============================================================
 
   void selectOption(int optionIndex) {
     selectedAnswers[currentIndex.value] = optionIndex;
+
+    // Make sure Obx widgets listening to selectedAnswers rebuild.
+    selectedAnswers.refresh();
   }
 
+  // ============================================================
+  // QUESTION NAVIGATION
+  // ============================================================
+
   void goPrevious() {
-    if (!isFirstQuestion) currentIndex.value--;
+    if (!isFirstQuestion) {
+      currentIndex.value--;
+    }
   }
 
   void goNextOrFinish() {
@@ -78,34 +167,74 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // Jump directly to a specific question, e.g. from the question-number
-  // navigator grid.
   void jumpToQuestion(int index) {
     if (index >= 0 && index < totalQuestions) {
       currentIndex.value = index;
     }
   }
 
-  // Public entry point for "Submit and Finish Exam" from the navigator.
-  void submitExam() => _finish();
+  // ============================================================
+  // SUBMIT EXAM
+  // ============================================================
 
-  void _finish({bool timeUp = false}) {
-    if (_finished) return;
+  void submitExam() {
+    _finish();
+  }
+
+  // ============================================================
+  // FINISH QUIZ
+  // ============================================================
+
+  Future<void> _finish({
+    bool timeUp = false,
+  }) async {
+    if (_finished) {
+      return;
+    }
+
     _finished = true;
+
     _timer?.cancel();
 
+    // ==========================================================
+    // CALCULATE SCORE
+    // ==========================================================
+
     var score = 0;
+
     for (var i = 0; i < quizSet.questions.length; i++) {
-      if (selectedAnswers[i] == quizSet.questions[i].correctIndex) score++;
+      final selectedAnswer = selectedAnswers[i];
+
+      final correctAnswer =
+          quizSet.questions[i].correctIndex;
+
+      if (selectedAnswer == correctAnswer) {
+        score++;
+      }
     }
 
+    // ==========================================================
+    // SAVE BEST SCORE LOCALLY
+    // ==========================================================
+
     if (Get.isRegistered<McqHomeController>()) {
-      Get.find<McqHomeController>().recordScore(quizSet.id, score);
+      Get.find<McqHomeController>().recordScore(
+        quizSet.id,
+        score,
+      );
     }
+
+    // ==========================================================
+    // GO TO RESULT SCREEN
+    // ==========================================================
 
     Get.offNamed(
       AppRoute.mcqResult,
-      arguments: {'quizSet': quizSet, 'score': score, 'timeUp': timeUp},
+      arguments: {
+        'quizSet': quizSet,
+        'score': score,
+        'timeUp': timeUp,
+      },
     );
   }
 }
