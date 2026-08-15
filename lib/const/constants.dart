@@ -102,17 +102,6 @@ class AppConstants {
     'Taplejung',
     'Tehrathum',
     'Udayapur',
-    'Chitwan',
-    'Butwal',
-    'Biratnagar',
-    'Birgunj',
-    'Dharan',
-    'Hetauda',
-    'Nepalgunj',
-    'Dhangadhi',
-    'Itahari',
-    'Janakpur',
-    'Bharatpur',
   ];
 
   static const Map<String, String> districtValues = {
