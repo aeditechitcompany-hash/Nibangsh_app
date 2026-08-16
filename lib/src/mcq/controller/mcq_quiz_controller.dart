@@ -10,23 +10,17 @@ import '../../../common/api_services/api_constants.dart';
 import 'mcq_home_controller.dart';
 
 class McqQuizController extends GetxController {
-  // ============================================================
   // QUIZ SETTINGS
-  // ============================================================
 
   static const int quizDurationSeconds = 50 * 60;
 
   late final QuizSet quizSet;
 
-  // ============================================================
   // API
-  // ============================================================
 
   final ApiService _apiService = const ApiService();
 
-  // ============================================================
   // QUIZ STATE
-  // ============================================================
 
   final currentIndex = 0.obs;
 
@@ -38,9 +32,7 @@ class McqQuizController extends GetxController {
 
   bool _finished = false;
 
-  // ============================================================
   // INITIALIZATION
-  // ============================================================
 
   @override
   void onInit() {
@@ -59,9 +51,7 @@ class McqQuizController extends GetxController {
     _startTimer();
   }
 
-  // ============================================================
   // CLEANUP
-  // ============================================================
 
   @override
   void onClose() {
@@ -69,9 +59,7 @@ class McqQuizController extends GetxController {
     super.onClose();
   }
 
-  // ============================================================
   // CURRENT QUESTION
-  // ============================================================
 
   QuizQuestion get currentQuestion {
     return quizSet.questions[currentIndex.value];
@@ -101,9 +89,7 @@ class McqQuizController extends GetxController {
     return selectedAnswers.containsKey(questionIndex);
   }
 
-  // ============================================================
   // TIMER
-  // ============================================================
 
   String get formattedTime {
     final minutes =
@@ -138,9 +124,7 @@ class McqQuizController extends GetxController {
     );
   }
 
-  // ============================================================
   // ANSWER SELECTION
-  // ============================================================
 
   void selectOption(int optionIndex) {
     selectedAnswers[currentIndex.value] = optionIndex;
@@ -149,9 +133,7 @@ class McqQuizController extends GetxController {
     selectedAnswers.refresh();
   }
 
-  // ============================================================
   // QUESTION NAVIGATION
-  // ============================================================
 
   void goPrevious() {
     if (!isFirstQuestion) {
@@ -173,17 +155,13 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // ============================================================
   // SUBMIT EXAM
-  // ============================================================
 
   void submitExam() {
     _finish();
   }
 
-  // ============================================================
   // FINISH QUIZ
-  // ============================================================
 
   Future<void> _finish({
     bool timeUp = false,
@@ -196,9 +174,7 @@ class McqQuizController extends GetxController {
 
     _timer?.cancel();
 
-    // ==========================================================
     // CALCULATE SCORE
-    // ==========================================================
 
     var score = 0;
 
@@ -213,9 +189,7 @@ class McqQuizController extends GetxController {
       }
     }
 
-    // ==========================================================
     // SAVE BEST SCORE LOCALLY
-    // ==========================================================
 
     if (Get.isRegistered<McqHomeController>()) {
       Get.find<McqHomeController>().recordScore(
@@ -224,9 +198,7 @@ class McqQuizController extends GetxController {
       );
     }
 
-    // ==========================================================
     // GO TO RESULT SCREEN
-    // ==========================================================
 
     Get.offNamed(
       AppRoute.mcqResult,
