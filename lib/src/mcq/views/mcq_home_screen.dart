@@ -28,25 +28,19 @@ class McqHomeScreen extends StatelessWidget {
         height: double.infinity,
         color: AppColors.background,
         child: Obx(() {
-          // ─────────────────────────────────────────
           // INITIAL CHECK
-          // ─────────────────────────────────────────
 
           if (controller.isCheckingAccess.value) {
             return _buildCheckingScreen();
           }
 
-          // ─────────────────────────────────────────
           // ACCESS NOT GRANTED
-          // ─────────────────────────────────────────
 
           if (!controller.mcqAccess.value) {
             return _buildWaitingScreen(controller);
           }
 
-          // ─────────────────────────────────────────
           // ACCESS GRANTED
-          // ─────────────────────────────────────────
 
           return _buildMcqContent(controller);
         }),
@@ -54,9 +48,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // CHECKING SCREEN
-  // ═══════════════════════════════════════════════
 
   Widget _buildCheckingScreen() {
     return Container(
@@ -84,9 +76,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // WAITING FOR ADMIN APPROVAL
-  // ═══════════════════════════════════════════════
 
   Widget _buildWaitingScreen(
     McqHomeController controller,
@@ -244,9 +234,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // NORMAL MCQ CONTENT
-  // ═══════════════════════════════════════════════
 
   Widget _buildMcqContent(
     McqHomeController controller,
@@ -310,9 +298,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // HEADER
-  // ═══════════════════════════════════════════════
 
   Widget _buildHeader(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
@@ -391,9 +377,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // BANNER
-  // ═══════════════════════════════════════════════
 
   Widget _buildBanner(
     McqHomeController controller,
@@ -552,9 +536,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // SEARCH
-  // ═══════════════════════════════════════════════
 
   Widget _buildSearchBar(
     McqHomeController controller,
@@ -600,9 +582,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // SET LIST
-  // ═══════════════════════════════════════════════
 
   Widget _buildSetList(
     McqHomeController controller,
@@ -644,9 +624,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // SET TILE
-  // ═══════════════════════════════════════════════
 
   Widget _setTile(
     McqHomeController controller,
@@ -753,10 +731,7 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // ═══════════════════════════════════════════════
   // SCORE RING
-  // ═══════════════════════════════════════════════
-
   Widget _scoreRing(
     int? score,
     int total,

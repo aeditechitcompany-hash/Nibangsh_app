@@ -20,34 +20,26 @@ class StudentBooksScreen extends StatelessWidget {
       height: double.infinity,
       color: AppColors.background,
       child: Obx(() {
-        // ═══════════════════════════════════════
         // CHECKING BOOK ACCESS
-        // ═══════════════════════════════════════
 
         if (controller.isCheckingBookAccess.value) {
           return _buildCheckingScreen();
         }
 
-        // ═══════════════════════════════════════
         // BOOK ACCESS NOT GRANTED
-        // ═══════════════════════════════════════
 
         if (!controller.bookAccess.value) {
           return _buildBookAccessPendingScreen(controller);
         }
 
-        // ═══════════════════════════════════════
         // BOOK ACCESS GRANTED
-        // ═══════════════════════════════════════
 
         return _buildBooksContent(controller, context);
       }),
     );
   }
 
-  // ═════════════════════════════════════════════
   // CHECKING SCREEN
-  // ═════════════════════════════════════════════
 
   Widget _buildCheckingScreen() {
     return Container(
@@ -75,9 +67,7 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  // ═════════════════════════════════════════════
   // BOOK ACCESS PENDING
-  // ═════════════════════════════════════════════
 
   Widget _buildBookAccessPendingScreen(
     StudentBooksController controller,
@@ -125,9 +115,7 @@ class StudentBooksScreen extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            // ─────────────────────────
                             // ICON
-                            // ─────────────────────────
 
                             Container(
                               width: 80,
@@ -146,10 +134,7 @@ class StudentBooksScreen extends StatelessWidget {
 
                             const SizedBox(height: 20),
 
-                            // ─────────────────────────
                             // TITLE
-                            // ─────────────────────────
-
                             const Text(
                               'Books Access Pending',
                               textAlign: TextAlign.center,
@@ -162,10 +147,7 @@ class StudentBooksScreen extends StatelessWidget {
 
                             const SizedBox(height: 10),
 
-                            // ─────────────────────────
                             // DESCRIPTION
-                            // ─────────────────────────
-
                             const Text(
                               'Your Books access has not been granted yet.',
                               textAlign: TextAlign.center,
@@ -190,10 +172,7 @@ class StudentBooksScreen extends StatelessWidget {
 
                             const SizedBox(height: 24),
 
-                            // ─────────────────────────
                             // CHECK AGAIN BUTTON
-                            // ─────────────────────────
-
                             Obx(() {
                               final refreshing =
                                   controller.isRefreshingBookAccess.value;
@@ -265,9 +244,7 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  // ═════════════════════════════════════════════
   // NORMAL BOOKS CONTENT
-  // ═════════════════════════════════════════════
 
   Widget _buildBooksContent(
     StudentBooksController controller,
@@ -319,9 +296,7 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  // ═════════════════════════════════════════════
   // HEADER
-  // ═════════════════════════════════════════════
 
   Widget _buildHeader(
     StudentBooksController controller,
@@ -468,9 +443,7 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  // ═════════════════════════════════════════════
   // BOOK LIST
-  // ═════════════════════════════════════════════
 
   Widget _buildBookList(
     StudentBooksController controller,
@@ -532,9 +505,7 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  // ═════════════════════════════════════════════
   // BOOK CARD
-  // ═════════════════════════════════════════════
 
   Widget _bookCard(BookResource book) {
     return Container(
