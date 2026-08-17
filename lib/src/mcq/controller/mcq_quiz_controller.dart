@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../common/api_services/mcq_service.dart';
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_route.dart';
+import 'mcq_home_controller.dart';
 
 class McqQuizController extends GetxController {
   // QUIZ SETTINGS
@@ -175,7 +176,7 @@ class McqQuizController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Could not save your answer: $e',
+        'Could not save your answer',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -272,6 +273,15 @@ class McqQuizController extends GetxController {
 
       final passed =
           result['passed'] == true;
+
+      // Record the score in the home controller
+      // so the score ring updates on the home screen
+      try {
+        final homeController = Get.find<McqHomeController>();
+        homeController.recordScore(quizSet.id, score.toInt());
+      } catch (e) {
+        print('Could not record score: $e');
+      }
 
       // SEND DATABASE RESULT TO RESULT SCREEN
       Get.offNamed(
