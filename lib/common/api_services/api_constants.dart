@@ -2,10 +2,10 @@ class ApiConstants {
   // BASE URL
 
   static const String baseUrl =
-      'http://192.168.101.29:8000/api';
+      'http://192.168.1.92:8000/api';
 
   static const String serverUrl =
-      'http://192.168.101.29:8000';
+      'http://192.168.1.92:8000';
 
   // AUTH
 
