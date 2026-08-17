@@ -112,12 +112,10 @@ class ApiService {
         throw ArgumentError("Unsupported method: $method");
     }
 
-    print("================================");
     print("$method URL: $url");
     if (body != null) print("REQUEST BODY: $body");
     print("STATUS CODE: ${response.statusCode}");
     print("RESPONSE BODY: ${response.body}");
-    print("================================");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return method == "GET" ? [] : {};
@@ -204,12 +202,10 @@ class ApiService {
       },
     );
 
-    print("================================");
     print("GET URL: $url");
     print("ACCESS TOKEN EXISTS: ${accessToken != null}");
     print("STATUS CODE: ${response.statusCode}");
     print("RESPONSE BODY: ${response.body}");
-    print("================================");
 
     if (response.statusCode >= 200 &&
         response.statusCode < 300) {

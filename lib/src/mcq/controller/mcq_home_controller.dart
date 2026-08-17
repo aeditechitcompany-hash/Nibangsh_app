@@ -181,21 +181,22 @@ class McqHomeController extends GetxController {
       return [];
     }
 
+    // Group by actual question_set_id (UUID) from backend
     final grouped =
         <String, List<McqQuestion>>{};
 
     for (final q
         in _repository.questions) {
-      final setName =
-          (q.setName ?? '').trim();
+      final questionSetId =
+          (q.questionSetId ?? '').trim();
 
-      if (setName.isEmpty) {
+      if (questionSetId.isEmpty) {
         continue;
       }
 
       grouped
           .putIfAbsent(
-            setName,
+            questionSetId,
             () => [],
           )
           .add(q);
@@ -205,6 +206,7 @@ class McqHomeController extends GetxController {
         grouped.entries
             .map(
               (entry) => _toQuizSet(
+                entry.value[0].setName ?? 'Quiz',
                 entry.key,
                 entry.value,
               ),
@@ -246,6 +248,7 @@ class McqHomeController extends GetxController {
 
   QuizSet _toQuizSet(
     String setName,
+    String questionSetId,
     List<McqQuestion> questions,
   ) {
     final ordered = [...questions]
@@ -258,12 +261,12 @@ class McqHomeController extends GetxController {
 
     final color =
         _adminSetPalette[
-          setName.hashCode.abs() %
+          questionSetId.hashCode.abs() %
               _adminSetPalette.length
         ];
 
     return QuizSet(
-      id: 'backend_$setName',
+      id: questionSetId,
       title: setName,
       icon: Icons.quiz_outlined,
       color: color,
@@ -276,7 +279,28 @@ class McqHomeController extends GetxController {
   QuizQuestion _toQuizQuestion(
     McqQuestion q,
   ) {
+    // Build QuizOption objects from backend option IDs.
+    final quizOpts = <QuizOption>[];
+    final optionIds = q.optionIds ?? [];
+    
+    for (int i = 0; i < q.options.length; i++) {
+      quizOpts.add(
+        QuizOption(
+          id: i < optionIds.length ? optionIds[i] : null,
+          text: q.options[i],
+          image: i < (q.optionImagePaths?.length ?? 0)
+              ? q.optionImagePaths![i]
+              : null,
+          audio: i < (q.optionAudioPaths?.length ?? 0)
+              ? q.optionAudioPaths![i]
+              : null,
+          order: i,
+        ),
+      );
+    }
+
     return QuizQuestion(
+      id: q.id,
       question:
           q.question.trim().isEmpty
               ? null
@@ -299,6 +323,8 @@ class McqHomeController extends GetxController {
 
       optionAudios:
           q.optionAudioPaths,
+      
+      quizOptions: quizOpts,
     );
   }
 

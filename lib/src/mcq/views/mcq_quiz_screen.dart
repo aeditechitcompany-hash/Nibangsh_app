@@ -791,70 +791,174 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                 const SizedBox(height: 16),
                 Flexible(
                   child: SingleChildScrollView(
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.totalQuestions,
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 64,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 1,
-                      ),
-                      itemBuilder: (context, index) {
-                        // Obx must live INSIDE itemBuilder (per grid cell),
-                        // not wrapped around the whole GridView.builder.
-                        // itemBuilder callbacks run during layout, after
-                        // the outer Obx's build() already finished, so an
-                        // outer Obx never sees currentIndex/selectedAnswers
-                        // being read -> "no observables found" error.
-                        return Obx(() {
-                          final isCurrent =
-                              controller.currentIndex.value == index;
-                          final answered = controller.isAnswered(index);
+                    child: Builder(
+                      builder: (context) {
+                        final totalQuestions = controller.totalQuestions;
+                        final midpoint = (totalQuestions / 2).ceil();
+                        final readingCount = midpoint;
+                        final listeningCount = totalQuestions - midpoint;
 
-                          final Color background;
-                          final Color border;
-                          final Color text;
-
-                          if (isCurrent) {
-                            background = AppColors.primaryBlue;
-                            border = AppColors.primaryBlue;
-                            text = Colors.white;
-                          } else if (answered) {
-                            background = AppColors.primaryBlue.withOpacity(0.1);
-                            border = AppColors.primaryBlue.withOpacity(0.4);
-                            text = AppColors.primaryBlue;
-                          } else {
-                            background = Colors.white;
-                            border = AppColors.borderGrey;
-                            text = AppColors.textDark;
-                          }
-
-                          return GestureDetector(
-                            onTap: () {
-                              controller.jumpToQuestion(index);
-                              Get.back();
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: background,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: border, width: 1.4),
-                              ),
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: text,
+                        return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Reading section
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Reading',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 12),
+                                GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: readingCount,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 64,
+                                    mainAxisSpacing: 10,
+                                    crossAxisSpacing: 10,
+                                    childAspectRatio: 1,
+                                  ),
+                                  itemBuilder: (context, index) {
+                                    return Obx(() {
+                                      final isCurrent =
+                                          controller.currentIndex.value == index;
+                                      final answered = controller.isAnswered(index);
+
+                                      final Color background;
+                                      final Color border;
+                                      final Color text;
+
+                                      if (isCurrent) {
+                                        background = AppColors.primaryBlue;
+                                        border = AppColors.primaryBlue;
+                                        text = Colors.white;
+                                      } else if (answered) {
+                                        background = AppColors.primaryBlue.withOpacity(0.1);
+                                        border = AppColors.primaryBlue.withOpacity(0.4);
+                                        text = AppColors.primaryBlue;
+                                      } else {
+                                        background = Colors.white;
+                                        border = AppColors.borderGrey;
+                                        text = AppColors.textDark;
+                                      }
+
+                                      return GestureDetector(
+                                        onTap: () {
+                                          controller.jumpToQuestion(index);
+                                          Get.back();
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: background,
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(color: border, width: 1.4),
+                                          ),
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: text,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
-                          );
-                        });
+                          ),
+                          const SizedBox(width: 24),
+                          // Listening section
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Listening',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: listeningCount,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 64,
+                                    mainAxisSpacing: 10,
+                                    crossAxisSpacing: 10,
+                                    childAspectRatio: 1,
+                                  ),
+                                  itemBuilder: (context, index) {
+                                    final questionIndex = index + midpoint;
+                                    return Obx(() {
+                                      final isCurrent =
+                                          controller.currentIndex.value == questionIndex;
+                                      final answered = controller.isAnswered(questionIndex);
+
+                                      final Color background;
+                                      final Color border;
+                                      final Color text;
+
+                                      if (isCurrent) {
+                                        background = AppColors.primaryBlue;
+                                        border = AppColors.primaryBlue;
+                                        text = Colors.white;
+                                      } else if (answered) {
+                                        background = AppColors.primaryBlue.withOpacity(0.1);
+                                        border = AppColors.primaryBlue.withOpacity(0.4);
+                                        text = AppColors.primaryBlue;
+                                      } else {
+                                        background = Colors.white;
+                                        border = AppColors.borderGrey;
+                                        text = AppColors.textDark;
+                                      }
+
+                                      return GestureDetector(
+                                        onTap: () {
+                                          controller.jumpToQuestion(questionIndex);
+                                          Get.back();
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: background,
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(color: border, width: 1.4),
+                                          ),
+                                          child: Text(
+                                            '${questionIndex + 1}',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: text,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
                       },
                     ),
                   ),
