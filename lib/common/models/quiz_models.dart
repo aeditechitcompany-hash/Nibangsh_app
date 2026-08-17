@@ -1,117 +1,296 @@
 import 'package:flutter/material.dart';
 
+class QuizOption {
+  final String? id;
+  final String text;
+
+  final String? image;
+  final String? audio;
+
+  final int order;
+
+  QuizOption({
+    this.id,
+    this.text = '',
+    this.image,
+    this.audio,
+    this.order = 0,
+  });
+
+  factory QuizOption.fromJson(Map<String, dynamic> json) {
+    return QuizOption(
+      id: json['id']?.toString(),
+      text: (json['text'] ?? '').toString(),
+      image: json['image']?.toString(),
+      audio: json['audio']?.toString(),
+      order: _toInt(json['order']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'text': text,
+      'image': image,
+      'audio': audio,
+      'order': order,
+    };
+  }
+
+  static int _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+}
+
 class QuizQuestion {
+  final String? id;
+
   final String? question;
+
   final List<String> options;
-  final int correctIndex;
+
+  // Used only by the old/local hard-coded quiz catalog.
+  // Database quizzes intentionally do NOT need to provide this value.
+  final int? correctIndex;
 
   final String? imageAsset;
   final List<String>? optionImages;
+
   final String? audioAsset;
   final List<String>? optionAudios;
 
+  // Database-backed options.
+  final List<QuizOption> quizOptions;
+
   QuizQuestion({
+    this.id,
     this.question,
     this.options = const [],
-    required this.correctIndex,
+    this.correctIndex,
     this.imageAsset,
     this.optionImages,
     this.audioAsset,
     this.optionAudios,
+    this.quizOptions = const [],
   }) : assert(
-  (question != null && question != '') ||
-      (imageAsset != null && imageAsset != '') ||
-      (audioAsset != null && audioAsset != ''),
-  'A QuizQuestion needs at least one of: question text, imageAsset, '
-      'or audioAsset — it cannot be entirely empty.',
-  ),
-        assert(
-        options.length > 0 ||
-            (optionImages != null && optionImages.length > 0) ||
-            (optionAudios != null && optionAudios.length > 0),
-        'A QuizQuestion needs at least one choice, via options, '
-            'optionImages, and/or optionAudios.',
+          (question != null && question != '') ||
+              (imageAsset != null && imageAsset != '') ||
+              (audioAsset != null && audioAsset != ''),
+          'A QuizQuestion needs at least one of: question text, imageAsset, '
+          'or audioAsset — it cannot be entirely empty.',
         ),
         assert(
-        optionImages == null ||
-            options.length == 0 ||
-            options.length == optionImages.length,
-        'options and optionImages must be the same length when both are '
-            'provided — leave options empty for fully image-only choices.',
+          options.length > 0 ||
+              quizOptions.length > 0 ||
+              (optionImages != null && optionImages.length > 0) ||
+              (optionAudios != null && optionAudios.length > 0),
+          'A QuizQuestion needs at least one choice, via options, '
+          'quizOptions, optionImages, and/or optionAudios.',
         ),
         assert(
-        optionAudios == null ||
-            options.length == 0 ||
-            options.length == optionAudios.length,
-        'options and optionAudios must be the same length when both are '
-            'provided — leave options empty for fully audio-only choices.',
+          optionImages == null ||
+              options.length == 0 ||
+              options.length == optionImages.length,
+          'options and optionImages must be the same length when both '
+          'are provided — leave options empty for fully image-only choices.',
         ),
         assert(
-        optionImages == null ||
-            optionAudios == null ||
-            optionImages.length == optionAudios.length,
-        'optionImages and optionAudios must be the same length when both '
-            'are provided.',
+          optionAudios == null ||
+              options.length == 0 ||
+              options.length == optionAudios.length,
+          'options and optionAudios must be the same length when both '
+          'are provided — leave options empty for fully audio-only choices.',
+        ),
+        assert(
+          optionImages == null ||
+              optionAudios == null ||
+              optionImages.length == optionAudios.length,
+          'optionImages and optionAudios must be the same length when both '
+          'are provided.',
         );
 
-  // Matches numbering that quiz authors embed inside the option text itself,
-  // e.g. "① ", "(1) ", "1) ", "1. ", "1: ", "1- " — so it can be stripped
-  // and rendered as a separate widget instead of as part of the string.
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) {
+    final rawOptions = json['options'];
+
+    final parsedOptions = rawOptions is List
+        ? rawOptions
+            .whereType<Map>()
+            .map(
+              (option) => QuizOption.fromJson(
+                Map<String, dynamic>.from(option),
+              ),
+            )
+            .toList()
+        : <QuizOption>[];
+
+    return QuizQuestion(
+      id: json['id']?.toString(),
+      question: json['text']?.toString(),
+      imageAsset: json['image']?.toString(),
+      audioAsset: json['audio']?.toString(),
+      quizOptions: parsedOptions,
+    );
+  }
+
+  bool get hasDatabaseId => id != null && id!.isNotEmpty;
+
+  bool get hasDatabaseOptions => quizOptions.isNotEmpty;
+
+  bool get hasQuestionText =>
+      question != null && question!.trim().isNotEmpty;
+
+  bool get hasImage =>
+      imageAsset != null && imageAsset!.trim().isNotEmpty;
+
+  bool get hasAudio =>
+      audioAsset != null && audioAsset!.trim().isNotEmpty;
+
+  bool get hasOptionImages =>
+      optionImages != null && optionImages!.isNotEmpty;
+
+  bool get hasOptionAudios =>
+      optionAudios != null && optionAudios!.isNotEmpty;
+
+  int get optionCount {
+    if (quizOptions.isNotEmpty) {
+      return quizOptions.length;
+    }
+
+    if (options.isNotEmpty) {
+      return options.length;
+    }
+
+    return optionImages?.length ??
+        optionAudios?.length ??
+        0;
+  }
+
+  bool hasOptionTextAt(int index) {
+    if (quizOptions.isNotEmpty) {
+      return index >= 0 &&
+          index < quizOptions.length &&
+          quizOptions[index].text.trim().isNotEmpty;
+    }
+
+    return index >= 0 &&
+        index < options.length &&
+        options[index].trim().isNotEmpty;
+  }
+
+  bool hasOptionImageAt(int index) {
+    if (quizOptions.isNotEmpty) {
+      final image = quizOptions[index].image;
+
+      return index >= 0 &&
+          index < quizOptions.length &&
+          image != null &&
+          image.trim().isNotEmpty;
+    }
+
+    return hasOptionImages &&
+        index >= 0 &&
+        index < optionImages!.length &&
+        optionImages![index].trim().isNotEmpty;
+  }
+
+  bool hasOptionAudioAt(int index) {
+    if (quizOptions.isNotEmpty) {
+      final audio = quizOptions[index].audio;
+
+      return index >= 0 &&
+          index < quizOptions.length &&
+          audio != null &&
+          audio.trim().isNotEmpty;
+    }
+
+    return hasOptionAudios &&
+        index >= 0 &&
+        index < optionAudios!.length &&
+        optionAudios![index].trim().isNotEmpty;
+  }
+
+  String? optionIdAt(int index) {
+    if (quizOptions.isEmpty) {
+      return null;
+    }
+
+    if (index < 0 || index >= quizOptions.length) {
+      return null;
+    }
+
+    return quizOptions[index].id;
+  }
+
+  String displayOptionText(int index) {
+    if (quizOptions.isNotEmpty) {
+      if (index < 0 || index >= quizOptions.length) {
+        return '';
+      }
+
+      return _stripLeadingMarker(
+        quizOptions[index].text,
+      );
+    }
+
+    if (index < 0 || index >= options.length) {
+      return '';
+    }
+
+    return _stripLeadingMarker(
+      options[index],
+    );
+  }
+
+  bool hasMeaningfulTextAt(int index) {
+    return displayOptionText(index).isNotEmpty;
+  }
+
+  String? optionImageAt(int index) {
+    if (quizOptions.isNotEmpty) {
+      if (index < 0 || index >= quizOptions.length) {
+        return null;
+      }
+
+      return quizOptions[index].image;
+    }
+
+    if (!hasOptionImages ||
+        index < 0 ||
+        index >= optionImages!.length) {
+      return null;
+    }
+
+    return optionImages![index];
+  }
+
+  String? optionAudioAt(int index) {
+    if (quizOptions.isNotEmpty) {
+      if (index < 0 || index >= quizOptions.length) {
+        return null;
+      }
+
+      return quizOptions[index].audio;
+    }
+
+    if (!hasOptionAudios ||
+        index < 0 ||
+        index >= optionAudios!.length) {
+      return null;
+    }
+
+    return optionAudios![index];
+  }
+
   static final RegExp _leadingMarker = RegExp(
     r'^\s*(?:[①-⑳]|\(\d{1,2}\)|\d{1,2}[.):\-])\s*',
   );
 
-  bool get hasQuestionText =>
-    question != null && question!.trim().isNotEmpty;
-
-bool get hasImage =>
-    imageAsset != null && imageAsset!.trim().isNotEmpty;
-
-bool get hasOptionImages =>
-    optionImages != null &&
-    optionImages!.any(
-      (image) => image.trim().isNotEmpty,
-    );
-
-bool get hasAudio =>
-    audioAsset != null && audioAsset!.trim().isNotEmpty;
-
-bool get hasOptionAudios =>
-    optionAudios != null &&
-    optionAudios!.any(
-      (audio) => audio.trim().isNotEmpty,
-    );
-
-  int get optionCount => options.isNotEmpty
-      ? options.length
-      : (optionImages?.length ?? optionAudios?.length ?? 0);
-
-  bool hasOptionTextAt(int index) =>
-      index >= 0 && index < options.length && options[index].trim().isNotEmpty;
-
-  bool hasOptionImageAt(int index) =>
-      hasOptionImages &&
-          index >= 0 &&
-          index < optionImages!.length &&
-          optionImages![index].trim().isNotEmpty;
-
-  bool hasOptionAudioAt(int index) =>
-      hasOptionAudios &&
-          index >= 0 &&
-          index < optionAudios!.length &&
-          optionAudios![index].trim().isNotEmpty;
-
-  /// The option label with any author-embedded numbering (①, 1., (1), etc.)
-  /// stripped out, since the UI now renders the option number separately.
-  String displayOptionText(int index) {
-    if (index < 0 || index >= options.length) return '';
-    return options[index].replaceFirst(_leadingMarker, '').trim();
+  static String _stripLeadingMarker(String value) {
+    return value
+        .replaceFirst(_leadingMarker, '')
+        .trim();
   }
-
-  /// Whether this option has real text left over once embedded numbering is
-  /// stripped — false for placeholder entries like "① " used purely to keep
-  /// image/audio option lists the same length as `options`.
-  bool hasMeaningfulTextAt(int index) => displayOptionText(index).isNotEmpty;
 }
 
 class QuizSet {
@@ -130,6 +309,11 @@ class QuizSet {
   });
 
   int get totalQuestions => questions.length;
+
+  bool get isDatabaseQuiz {
+    return questions.isNotEmpty &&
+        questions.any((question) => question.hasDatabaseId);
+  }
 }
 
 class QuizCatalog {
@@ -499,175 +683,6 @@ class QuizCatalog {
           ],
           correctIndex: 0,
           audioAsset: null, // TODO: add assets/quiz/set1/q40.mp3
-        ),
-      ],
-    ),
-    QuizSet(
-      id: 'set2',
-      title: 'Set 2',
-      icon: Icons.quiz_outlined,
-      color: Color(0xFF2563EB),
-      questions: [
-        QuizQuestion(
-          question: 'Which company developed JavaScript?',
-          options: ['Microsoft', 'Netscape', 'Sun Microsystems', 'Apple'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'Which keyword declares a block-scoped variable in JS?',
-          options: ['var', 'let', 'function', 'const only'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'What does DOM stand for?',
-          options: [
-            'Document Object Model',
-            'Data Object Model',
-            'Document Oriented Model',
-            'Digital Object Model',
-          ],
-          correctIndex: 0,
-        ),
-        QuizQuestion(
-          question: 'Which method converts JSON text into an object?',
-          options: [
-            'JSON.stringify()',
-            'JSON.parse()',
-            'JSON.object()',
-            'JSON.convert()',
-          ],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'Which operator checks both value and type equality?',
-          options: ['==', '=', '===', '!=='],
-          correctIndex: 2,
-        ),
-      ],
-    ),
-    QuizSet(
-      id: 'set3',
-      title: 'Set 3',
-      icon: Icons.quiz_outlined,
-      color: Color(0xFF16A34A),
-      questions: [
-        QuizQuestion(
-          question: 'What is React primarily used for?',
-          options: [
-            'Styling pages',
-            'Building user interfaces',
-            'Database management',
-            'Server hosting',
-          ],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'What is JSX?',
-          options: [
-            'A CSS preprocessor',
-            'A JavaScript syntax extension',
-            'A database query language',
-            'A testing framework',
-          ],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question:
-          'Which hook is used to manage state in a function component?',
-          options: ['useEffect', 'useState', 'useRef', 'useMemo'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'What is used to pass data to a component from outside?',
-          options: ['setState', 'props', 'render', 'this.state'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'Which company maintains React?',
-          options: ['Google', 'Meta', 'Amazon', 'Microsoft'],
-          correctIndex: 1,
-        ),
-      ],
-    ),
-    QuizSet(
-      id: 'set4',
-      title: 'Set 4',
-      icon: Icons.quiz_outlined,
-      color: Color(0xFFF59E0B),
-      questions: [
-        QuizQuestion(
-          question: 'Who created the C++ language?',
-          options: [
-            'Dennis Ritchie',
-            'Bjarne Stroustrup',
-            'James Gosling',
-            'Guido van Rossum',
-          ],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'Which keyword is used to define a class in C++?',
-          options: ['struct', 'object', 'class', 'define'],
-          correctIndex: 2,
-        ),
-        QuizQuestion(
-          question: 'What is the default access specifier in a C++ class?',
-          options: ['public', 'protected', 'private', 'internal'],
-          correctIndex: 2,
-        ),
-        QuizQuestion(
-          question: 'Which operator is used for dynamic memory allocation?',
-          options: ['malloc', 'new', 'alloc', 'create'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'What does STL stand for?',
-          options: [
-            'Standard Template Library',
-            'System Type Library',
-            'Static Type List',
-            'Standard Type Language',
-          ],
-          correctIndex: 0,
-        ),
-      ],
-    ),
-    QuizSet(
-      id: 'set5',
-      title: 'Set 5',
-      icon: Icons.quiz_outlined,
-      color: Color(0xFF9333EA),
-      questions: [
-        QuizQuestion(
-          question: 'Who created Python?',
-          options: [
-            'Guido van Rossum',
-            'James Gosling',
-            'Linus Torvalds',
-            'Dennis Ritchie',
-          ],
-          correctIndex: 0,
-        ),
-        QuizQuestion(
-          question: 'Which of these is used to define a function in Python?',
-          options: ['func', 'def', 'function', 'lambda only'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question:
-          'What is the output type of the input() function by default?',
-          options: ['int', 'str', 'float', 'bool'],
-          correctIndex: 1,
-        ),
-        QuizQuestion(
-          question: 'Which data type is immutable in Python?',
-          options: ['list', 'dict', 'tuple', 'set'],
-          correctIndex: 2,
-        ),
-        QuizQuestion(
-          question: 'Which symbol is used for comments in Python?',
-          options: ['//', '#', '<!--', '/*'],
-          correctIndex: 1,
         ),
       ],
     ),
