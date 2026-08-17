@@ -51,14 +51,53 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   bool _isBundledAsset(String path) => path.startsWith('assets/');
 
   Widget _quizImage(
-    String path, {
-    required BoxFit fit,
-    required Widget Function(BuildContext, Object, StackTrace?) errorBuilder,
-  }) {
-    return _isBundledAsset(path)
-        ? Image.asset(path, fit: fit, errorBuilder: errorBuilder)
-        : Image.file(File(path), fit: fit, errorBuilder: errorBuilder);
+  String path, {
+  required BoxFit fit,
+  required Widget Function(
+    BuildContext,
+    Object,
+    StackTrace?,
+  ) errorBuilder,
+}) {
+  // Bundled Flutter asset
+  if (path.startsWith('assets/')) {
+    return Image.asset(
+      path,
+      fit: fit,
+      errorBuilder: errorBuilder,
+    );
   }
+
+  // Backend/Django URL
+  if (path.startsWith('http://') ||
+      path.startsWith('https://')) {
+    return Image.network(
+      path,
+      fit: fit,
+      errorBuilder: errorBuilder,
+      loadingBuilder: (
+        context,
+        child,
+        loadingProgress,
+      ) {
+        if (loadingProgress == null) {
+          return child;
+        }
+
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  // Local device file
+  return Image.file(
+    File(path),
+    fit: fit,
+    errorBuilder: errorBuilder,
+  );
+}
 
   @override
   Widget build(BuildContext context) {
