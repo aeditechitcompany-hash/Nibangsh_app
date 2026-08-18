@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
@@ -43,6 +44,19 @@ class McqHomeScreen extends StatelessWidget {
         }),
       ),
     );
+  }
+
+  // WHATSAPP LAUNCH
+  Future<void> _openWhatsApp() async {
+    const phone = '9779851001970'; // country code + number
+    const message = 'Hi, I would like to request MCQ access.';
+    final uri = Uri.parse(
+      'https://wa.me/$phone?text=${Uri.encodeComponent(message)}',
+    );
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch WhatsApp');
+    }
   }
 
   // CHECKING SCREEN
@@ -202,6 +216,24 @@ class McqHomeScreen extends StatelessWidget {
                                 ),
                               );
                             }),
+
+                            const SizedBox(height: 12),
+
+                            TextButton.icon(
+                              onPressed: _openWhatsApp,
+                              icon: const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                color: Color(0xFF25D366),
+                                size: 18,
+                              ),
+                              label: const Text(
+                                'Ask on WhatsApp: 9851001970',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF25D366),
+                                ),
+                              ),
+                            ),
 
                             const SizedBox(height: 16),
 
