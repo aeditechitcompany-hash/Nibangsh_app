@@ -105,34 +105,39 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideLayout = screenWidth >= _kWideLayoutBreakpoint;
 
-    final body = Container(
-      decoration: const BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
+    final body = SingleChildScrollView(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(28),
+            topRight: Radius.circular(28),
+          ),
         ),
-      ),
-      padding: const EdgeInsets.only(top: 22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildQuestionCard(controller, context, isWideLayout),
-          const SizedBox(height: 40),
-        ],
-      ),
-    );
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(controller, context),
-            isWideLayout ? body : ResponsiveWrapper(child: body),
+            _buildQuestionCard(controller, context, isWideLayout),
+            const SizedBox(height: 40),
           ],
         ),
+      ),
+    );
+
+    final content = isWideLayout
+        ? body
+        : ResponsiveWrapper(child: body);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          _buildHeader(controller, context),
+          Expanded(
+            child: content,
+          ),
+        ],
       ),
     );
   }
@@ -347,7 +352,9 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
       children: [
         Expanded(
           flex: 1,
-          child: _buildQuestionContent(question),
+          child: SingleChildScrollView(
+            child: _buildQuestionContent(question),
+          ),
         ),
         const SizedBox(width: 24),
         Expanded(
@@ -359,7 +366,13 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                 left: BorderSide(color: AppColors.borderGrey, width: 1),
               ),
             ),
-            child: _buildOptionsSection(controller, question, isWideLayout: true),
+            child: SingleChildScrollView(
+              child: _buildOptionsSection(
+                controller,
+                question,
+                isWideLayout: true,
+              ),
+            ),
           ),
         ),
       ],
@@ -473,7 +486,8 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           child: SizedBox(
             height: 46,
             child: ElevatedButton(
-              onPressed: controller.selectedForCurrent == null
+              onPressed: controller.selectedForCurrent == null ||
+                      controller.isSubmittingAnswer.value
                   ? null
                   : controller.goNextOrFinish,
               style: ElevatedButton.styleFrom(
@@ -615,6 +629,18 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                   left: 8,
                   child: _optionNumberBadge(index, selected: selected),
                 ),
+                if (question.hasOptionAudioAt(index))
+                  Positioned(
+                    left: 8,
+                    bottom: 8,
+                    child: AudioPlayButton(
+                      filePath: question.optionAudioAt(index)!,
+                      isAsset: _isBundledAsset(
+                        question.optionAudioAt(index)!,
+                      ),
+                      label: 'Listen ${index + 1}',
+                    ),
+                  ),
               ],
             ),
           ),
@@ -654,34 +680,50 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
                   _optionNumberBadge(index, selected: selected),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        height: 150,
-                        width: double.infinity,
-                        color: AppColors.background,
-                        padding: const EdgeInsets.all(8),
-                        child: imagePath == null
-                            ? const Center(
-                                child: Icon(
-                                  Icons.broken_image_outlined,
-                                  size: 28,
-                                  color: AppColors.textGrey,
-                                ),
-                              )
-                            : _quizImage(
-                                imagePath,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Center(
-                                  child: Icon(
-                                    Icons.broken_image_outlined,
-                                    size: 28,
-                                    color: AppColors.textGrey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            height: 150,
+                            width: double.infinity,
+                            color: AppColors.background,
+                            padding: const EdgeInsets.all(8),
+                            child: imagePath == null
+                                ? const Center(
+                                    child: Icon(
+                                      Icons.broken_image_outlined,
+                                      size: 28,
+                                      color: AppColors.textGrey,
+                                    ),
+                                  )
+                                : _quizImage(
+                                    imagePath,
+                                    fit: BoxFit.contain,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Center(
+                                      child: Icon(
+                                        Icons.broken_image_outlined,
+                                        size: 28,
+                                        color: AppColors.textGrey,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                      ),
+                          ),
+                        ),
+                        if (question.hasOptionAudioAt(index)) ...[
+                          const SizedBox(height: 8),
+                          AudioPlayButton(
+                            filePath: question.optionAudioAt(index)!,
+                            isAsset: _isBundledAsset(
+                              question.optionAudioAt(index)!,
+                            ),
+                            label: 'Listen ${index + 1}',
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
