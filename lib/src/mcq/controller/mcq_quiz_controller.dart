@@ -18,6 +18,7 @@ class McqQuizController extends GetxController {
   // QUIZ STATE
   final currentIndex = 0.obs;
   final selectedAnswers = <int, int>{}.obs;
+  final isSubmittingAnswer = false.obs;
   int? attemptId;
   final remainingSeconds = quizDurationSeconds.obs;
   Timer? _timer;
@@ -130,6 +131,8 @@ class McqQuizController extends GetxController {
 
   // ANSWER SELECTION
   Future<void> selectOption(int optionIndex) async {
+    if (isSubmittingAnswer.value) return;
+
     // Don't allow an answer before the backend attempt exists.
     if (_startingAttempt || attemptId == null) {
       Get.snackbar(
@@ -141,6 +144,7 @@ class McqQuizController extends GetxController {
     }
 
     selectedAnswers[currentIndex.value] = optionIndex;
+    isSubmittingAnswer.value = true;
 
     final question = currentQuestion;
 
@@ -148,6 +152,7 @@ class McqQuizController extends GetxController {
     final quizOptions = question.quizOptions;
     
     if (quizOptions.isEmpty || optionIndex >= quizOptions.length) {
+      isSubmittingAnswer.value = false;
       Get.snackbar(
         'Error',
         'Invalid option selected.',
@@ -159,6 +164,7 @@ class McqQuizController extends GetxController {
     final selectedOptionId = quizOptions[optionIndex].id;
 
     if (selectedOptionId == null) {
+      isSubmittingAnswer.value = false;
       Get.snackbar(
         'Error',
         'Option ID is missing from the backend.',
@@ -174,11 +180,14 @@ class McqQuizController extends GetxController {
         selectedOptionId: int.parse(selectedOptionId),
       );
     } catch (e) {
+      selectedAnswers.remove(currentIndex.value);
       Get.snackbar(
         'Error',
         'Could not save your answer',
         snackPosition: SnackPosition.BOTTOM,
       );
+    } finally {
+      isSubmittingAnswer.value = false;
     }
   }
 
@@ -190,6 +199,8 @@ class McqQuizController extends GetxController {
   }
 
   void goNextOrFinish() {
+    if (isSubmittingAnswer.value) return;
+
     if (isLastQuestion) {
       _finish();
     } else {
@@ -205,6 +216,15 @@ class McqQuizController extends GetxController {
 
   // SUBMIT EXAM
   void submitExam() {
+    if (isSubmittingAnswer.value) {
+      Get.snackbar(
+        'Please wait',
+        'Your last answer is still being saved.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     _finish();
   }
 
@@ -234,6 +254,8 @@ class McqQuizController extends GetxController {
     bool timeUp = false,
   }) async {
     if (_finished) return;
+
+    if (isSubmittingAnswer.value) return;
 
     if (attemptId == null) {
       Get.snackbar(
