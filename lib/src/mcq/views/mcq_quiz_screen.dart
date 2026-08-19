@@ -512,60 +512,84 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   }
 
   // ── Text / audio options ──
-  Widget _buildOptionsList(McqQuizController controller, QuizQuestion question) {
-    return Column(
-      children: List.generate(question.optionCount, (index) {
-        final selected = controller.selectedForCurrent == index;
-        final displayText = question.displayOptionText(index);
-        final hasAudioOption = question.hasOptionAudioAt(index);
+ // ── Text / audio options ──
+Widget _buildOptionsList(
+  McqQuizController controller,
+  QuizQuestion question,
+) {
+  return Column(
+    children: List.generate(question.optionCount, (index) {
+      final selected = controller.selectedForCurrent == index;
+      final displayText = question.displayOptionText(index);
+      final hasAudioOption = question.hasOptionAudioAt(index);
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: GestureDetector(
-            onTap: () => controller.selectOption(index),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-              decoration: BoxDecoration(
-                color: selected ? AppColors.primaryBlue : Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: selected ? AppColors.primaryBlue : AppColors.borderGrey,
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _optionNumberBadge(index, selected: selected, onColoredBackground: true),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: hasAudioOption
-                        ? AudioPlayButton(
-                            filePath: question.optionAudios![index],
-                            isAsset: _isBundledAsset(question.optionAudios![index]),
-                            label: displayText.isNotEmpty
-                                ? displayText
-                                : 'Listen ${index + 1}',
-                          )
-                        : Text(
-                            displayText,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'NotoSansKR',
-                              fontWeight: FontWeight.w500,
-                              color: selected ? Colors.white : AppColors.textDark,
-                            ),
-                          ),
-                  ),
-                ],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: GestureDetector(
+          onTap: () => controller.selectOption(index),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 13,
+            ),
+            decoration: BoxDecoration(
+              // ✅ Light blue instead of solid blue
+              color: selected
+                  ? AppColors.primaryBlue.withOpacity(0.08)
+                  : Colors.white,
+
+              borderRadius: BorderRadius.circular(12),
+
+              // ✅ Blue border shows selection clearly
+              border: Border.all(
+                color: selected
+                    ? AppColors.primaryBlue
+                    : AppColors.borderGrey,
+                width: selected ? 2 : 1,
               ),
             ),
-          ),
-        );
-      }),
-    );
-  }
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _optionNumberBadge(
+                  index,
+                  selected: selected,
+                ),
 
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: hasAudioOption
+                      ? AudioPlayButton(
+                          filePath: question.optionAudios![index],
+                          isAsset: _isBundledAsset(
+                            question.optionAudios![index],
+                          ),
+                          label: displayText.isNotEmpty
+                              ? displayText
+                              : 'Listen ${index + 1}',
+                        )
+                      : Text(
+                          displayText,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'NotoSansKR',
+                            fontWeight: FontWeight.w500,
+
+                            // ✅ Text stays dark even when selected
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }),
+  );
+}
   // ── Image options ──
   Widget _buildImageOptionsGrid(McqQuizController controller, QuizQuestion question) {
     return GridView.builder(
