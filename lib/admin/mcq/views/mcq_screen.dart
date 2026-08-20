@@ -1,13 +1,16 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/models/mcq_model.dart';
 import '../../../common/util/app_colors.dart';
-import '../../../common/util/app_route.dart';
 import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class AdminMcqScreen extends StatelessWidget {
-  const AdminMcqScreen({super.key});
+  final String setName;
+
+  const AdminMcqScreen({super.key, required this.setName});
 
   @override
   Widget build(BuildContext context) {
@@ -29,22 +32,28 @@ class AdminMcqScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(controller, context),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+            ResponsiveDashboardWrapper(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
                 ),
+                padding: const EdgeInsets.only(top: 20),
+                child: _buildQuestionList(controller, context),
               ),
-              padding: const EdgeInsets.only(top: 20),
-              child: _buildQuestionList(controller, context),
             ),
             const SizedBox(height: 100),
           ],
         ),
       ),
     );
+  }
+
+  List<McqQuestion> _questionsInSet(AdminMcqController controller) {
+    return controller.questions.where((q) => (q.setName ?? '') == setName).toList();
   }
 
   Widget _buildHeader(AdminMcqController controller, BuildContext context) {
@@ -84,39 +93,24 @@ class AdminMcqScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () => Get.toNamed(AppRoute.notifications),
-                child: Container(
-                  padding: const EdgeInsets.all(9),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.14),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.notifications_none_rounded,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 14),
-          const Text(
-            'MCQ Manager',
-            style: TextStyle(
+          Text(
+            setName,
+            style: const TextStyle(
               color: Colors.white,
-              fontSize: 21,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
           Obx(
             () => Text(
-              '${controller.questions.length} questions shared with students',
+              '${_questionsInSet(controller).length} questions in this set',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.75),
-                fontSize: 12.5,
+                fontSize: 14.5,
               ),
             ),
           ),
@@ -132,7 +126,7 @@ class AdminMcqScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
-        final questions = controller.questions;
+        final questions = _questionsInSet(controller);
         if (questions.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 60),
@@ -155,7 +149,7 @@ class AdminMcqScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   const Text(
                     'Tap "Add MCQ" to create one for students',
-                    style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 14),
                   ),
                 ],
               ),
@@ -200,7 +194,7 @@ class AdminMcqScreen extends StatelessWidget {
                   child: Text(
                     'Q${index + 1}. ${q.question}',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
                     ),
@@ -217,6 +211,19 @@ class AdminMcqScreen extends StatelessWidget {
                 ),
               ],
             ),
+            if (q.questionImagePath != null && q.questionImagePath!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  File(q.questionImagePath!),
+                  height: 90,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
+            ],
             if (q.hasAudio) ...[
               const SizedBox(height: 6),
               AudioPlayButton(filePath: q.audioFilePath!, label: 'Play clip'),
@@ -224,9 +231,16 @@ class AdminMcqScreen extends StatelessWidget {
             const SizedBox(height: 10),
             ...List.generate(q.options.length, (i) {
               final isCorrect = i == q.correctOptionIndex;
+              final optImage = (q.optionImagePaths != null && i < q.optionImagePaths!.length)
+                  ? q.optionImagePaths![i]
+                  : '';
+              final optAudio = (q.optionAudioPaths != null && i < q.optionAudioPaths!.length)
+                  ? q.optionAudioPaths![i]
+                  : '';
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
                       isCorrect
@@ -242,7 +256,7 @@ class AdminMcqScreen extends StatelessWidget {
                       child: Text(
                         q.options[i],
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           fontWeight: isCorrect
                               ? FontWeight.w600
                               : FontWeight.normal,
@@ -252,6 +266,24 @@ class AdminMcqScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (optImage.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.file(
+                          File(optImage),
+                          width: 28,
+                          height: 28,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
+                    if (optAudio.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      const Icon(Icons.audiotrack_rounded,
+                          size: 16, color: AppColors.primaryBlue),
+                    ],
                   ],
                 ),
               );
@@ -293,7 +325,7 @@ class AdminMcqScreen extends StatelessWidget {
     if (editQuestion != null) {
       controller.startEdit(editQuestion);
     } else {
-      controller.startAdd();
+      controller.startAdd(presetSetName: setName);
     }
 
     showModalBottomSheet(
@@ -302,6 +334,9 @@ class AdminMcqScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       builder: (sheetContext) {
         return Padding(
@@ -331,9 +366,9 @@ class AdminMcqScreen extends StatelessWidget {
                       () => Text(
                         controller.isEditing
                             ? 'Edit Question'
-                            : 'Add a Question',
+                            : 'Add a Question to $setName',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 17,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDark,
                         ),
@@ -353,9 +388,88 @@ class AdminMcqScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     const Text(
+                      'Question Image (optional)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Obx(
+                      () => InkWell(
+                        onTap: controller.isPicking.value ? null : controller.pickQuestionImage,
+                        borderRadius: BorderRadius.circular(14),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.background,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppColors.borderGrey),
+                          ),
+                          child: Text(
+                            controller.hasPickedQuestionImage
+                                ? controller.questionImageName.value
+                                : 'Choose question image',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Obx(() {
+                      if (!controller.hasPickedQuestionImage) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                File(controller.questionImagePath.value),
+                                height: 100,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  height: 100,
+                                  color: AppColors.background,
+                                  alignment: Alignment.center,
+                                  child: const Text('Could not load image'),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: GestureDetector(
+                                onTap: controller.clearPickedQuestionImage,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close_rounded,
+                                      color: Colors.white, size: 14),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                    const Text(
                       'Options (tap the circle to mark correct answer)',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textGrey,
                       ),
@@ -366,46 +480,137 @@ class AdminMcqScreen extends StatelessWidget {
                         children: List.generate(4, (i) {
                           final selected =
                               controller.correctOptionIndex.value == i;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Row(
-                              children: [
-                                InkWell(
-                                  onTap: () =>
-                                      controller.correctOptionIndex.value = i,
-                                  child: Icon(
-                                    selected
-                                        ? Icons.check_circle_rounded
-                                        : Icons.circle_outlined,
-                                    color: selected
-                                        ? const Color(0xFF16A34A)
-                                        : AppColors.textGrey,
-                                    size: 22,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: TextField(
-                                    controller: controller.optionControllers[i],
-                                    decoration: InputDecoration(
-                                      labelText: 'Option ${i + 1}',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () =>
+                                          controller.correctOptionIndex.value = i,
+                                      child: Icon(
+                                        selected
+                                            ? Icons.check_circle_rounded
+                                            : Icons.circle_outlined,
+                                        color: selected
+                                            ? const Color(0xFF16A34A)
+                                            : AppColors.textGrey,
+                                        size: 22,
                                       ),
                                     ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: controller.optionControllers[i],
+                                        decoration: InputDecoration(
+                                          labelText: 'Option ${i + 1}',
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      children: [
+                                        IconButton(
+                                          onPressed: controller.isPicking.value
+                                              ? null
+                                              : () => controller.pickOptionImage(i),
+                                          icon: const Icon(
+                                            Icons.image_outlined,
+                                            size: 22,
+                                          ),
+                                          tooltip: 'Pick option image',
+                                        ),
+                                        IconButton(
+                                          onPressed: controller.isPicking.value
+                                              ? null
+                                              : () => controller.pickOptionAudio(i),
+                                          icon: const Icon(
+                                            Icons.audiotrack_outlined,
+                                            size: 22,
+                                          ),
+                                          tooltip: 'Pick option audio',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (controller.optionImagePaths[i].isNotEmpty ||
+                                  controller.optionAudioPaths[i].isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 42, bottom: 10),
+                                  child: Row(
+                                    children: [
+                                      if (controller.optionImagePaths[i].isNotEmpty) ...[
+                                        Stack(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Image.file(
+                                                File(controller.optionImagePaths[i]),
+                                                width: 48,
+                                                height: 48,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) =>
+                                                    const SizedBox.shrink(),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: -6,
+                                              right: -6,
+                                              child: GestureDetector(
+                                                onTap: () => controller.clearOptionImage(i),
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(3),
+                                                  decoration: const BoxDecoration(
+                                                    color: Colors.black54,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(Icons.close_rounded,
+                                                      color: Colors.white, size: 11),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 10),
+                                      ],
+                                      if (controller.optionAudioPaths[i].isNotEmpty)
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: AudioPlayButton(
+                                                  filePath: controller.optionAudioPaths[i],
+                                                  label: controller.optionAudioNames[i],
+                                                ),
+                                              ),
+                                              IconButton(
+                                                onPressed: () => controller.clearOptionAudio(i),
+                                                icon: const Icon(Icons.close_rounded, size: 16),
+                                                tooltip: 'Remove audio',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                            ],
                           );
                         }),
                       ),
                     ),
                     const SizedBox(height: 6),
                     const Text(
-                      'Audio (optional)',
+                      'Question Audio (optional)',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textGrey,
                       ),
@@ -449,12 +654,12 @@ class AdminMcqScreen extends StatelessWidget {
                                   controller.hasPickedAudio
                                       ? controller.pickedAudioName.value
                                       : controller.isPicking.value
-                                      ? 'Opening file picker...'
-                                      : controller.isEditing
-                                      ? 'Keep current clip (tap to replace)'
-                                      : 'Choose an MP3 file',
+                                          ? 'Opening file picker...'
+                                          : controller.isEditing
+                                              ? 'Keep current clip (tap to replace)'
+                                              : 'Choose an MP3 file',
                                   style: const TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.textDark,
                                   ),
@@ -475,6 +680,16 @@ class AdminMcqScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Obx(() {
+                      if (!controller.hasPickedAudio) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: AudioPlayButton(
+                          filePath: controller.pickedAudioPath.value,
+                          label: 'Preview clip',
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
@@ -493,7 +708,7 @@ class AdminMcqScreen extends StatelessWidget {
                           () => Text(
                             controller.isEditing ? 'Save Changes' : 'Save MCQ',
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

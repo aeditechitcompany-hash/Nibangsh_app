@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/api_services/auth_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -101,71 +102,87 @@ class SignupController extends GetxController {
   }
 
   String? validateAddress(String? value) {
-    if (value == null || value.isEmpty) return 'Address is required';
+    if (value == null || value.trim().isEmpty) return 'Street address is required';
     return null;
   }
 
   String? validateDistrict(String? value) {
     if (selectedDistrict.value.isEmpty) return 'Please select a district';
+    if (!districts.contains(selectedDistrict.value)) {
+      return 'Invalid district selected';
+    }
     return null;
   }
 
   String? validateProvince(String? value) {
     if (selectedProvince.value.isEmpty) return 'Please select a province';
+    if (!provinces.contains(selectedProvince.value)) {
+      return 'Invalid province selected';
+    }
     return null;
   }
 
   Future<void> signup() async {
     if (!formKey.currentState!.validate()) return;
-    if (selectedDistrict.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a district',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-      );
-      return;
-    }
-    if (selectedProvince.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a province',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
-      );
+    if (validateDistrict(null) != null || validateProvince(null) != null) {
       return;
     }
 
     isLoading.value = true;
-    try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 2));
 
-      // Save the name locally so the home screen can greet the user by name
-      // once they log in (replaces the hardcoded "Student" placeholder).
-      await StorageService.saveUserInfo(
+    try {
+      final authService = AuthService();
+
+      // Register + immediately log in so JWT tokens and user.id are available
+      // before AcademicDetailsScreen calls the protected API.
+      final auth = await authService.register(
+        fullName: fullNameController.text.trim(),
         email: emailController.text.trim(),
-        name: fullNameController.text.trim(),
+        phone: phoneController.text.trim(),
+        password: passwordController.text,
+        address: addressController.text.trim(),
+        district: AppConstants.districtValues[selectedDistrict.value] ??
+            selectedDistrict.value.toLowerCase(),
+        province: AppConstants.provinceValues[selectedProvince.value] ??
+            selectedProvince.value.toLowerCase(),
       );
+
+      // Never inherit academic details from another account on this device.
+      await StorageService.clearAcademicDetails();
+
+      await StorageService.saveUserInfo(
+        id: auth.user.id,
+        email: auth.user.email,
+        name: auth.user.fullName.trim(),
+        phone: auth.user.phoneNumber,
+        role: auth.user.role,
+      );
+
       await StorageService.saveUserPassword(passwordController.text);
 
       Get.snackbar(
-        'Success!',
-        'Account created successfully. Please log in.',
+        "Success",
+        "Account created successfully.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: Colors.green,
         colorText: Colors.white,
       );
 
-      Get.offNamed(AppRoute.login);
+      // First-time student flow:
+      // signup -> academic details -> home
+      Get.offAllNamed(
+        AppRoute.academicDetails,
+        arguments: {'email': auth.user.email},
+      );
     } catch (e) {
+      print("REGISTER ERROR");
+      print(e);
+
       Get.snackbar(
-        'Signup Failed',
-        e.toString(),
+        "Signup Failed",
+        e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
     } finally {

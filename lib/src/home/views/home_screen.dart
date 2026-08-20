@@ -7,6 +7,7 @@ import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../../main_navigation/controller/main_navigation_controller.dart';
 import '../controller/home_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,25 +26,27 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(controller),
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
+              ResponsiveWrapper(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
                   ),
-                ),
-                padding: const EdgeInsets.only(top: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildQuickActions(),
-                    const SizedBox(height: 24),
-                    _buildProfileCard(controller),
-                    const SizedBox(height: 26),
-                    _buildStepsSection(controller, context),
-                    const SizedBox(height: 100),
-                  ],
+                  padding: const EdgeInsets.only(top: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildQuickActions(),
+                      const SizedBox(height: 24),
+                      _buildProfileCard(controller),
+                      const SizedBox(height: 26),
+                      _buildStepsSection(controller, context),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -60,10 +63,7 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.navyDark,
-            AppColors.navyLight,
-          ],
+          colors: [AppColors.navyDark, AppColors.navyLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 17,
                   ),
                 ),
               ),
@@ -104,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                       '${controller.greeting},',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                       ),
                     ),
                     Obx(
@@ -112,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                         '${controller.userName} 👋',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 17,
+                          fontSize: 19.5,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -146,7 +146,10 @@ class HomeScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.primaryRed,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.navyDark, width: 1.5),
+                          border: Border.all(
+                            color: AppColors.navyDark,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -177,7 +180,7 @@ class HomeScreen extends StatelessWidget {
                         'Application Progress',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.85),
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                         ),
                       ),
                       Text(
@@ -185,7 +188,7 @@ class HomeScreen extends StatelessWidget {
                         style: const TextStyle(
                           color: Colors.amber,
                           fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                          fontSize: 15,
                         ),
                       ),
                     ],
@@ -232,14 +235,14 @@ class HomeScreen extends StatelessWidget {
                             : '$flag $country',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                       Text(
                         'GPA: ${controller.gpa.value.isEmpty ? '--' : controller.gpa.value}',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -266,7 +269,6 @@ class HomeScreen extends StatelessWidget {
         'title': 'Apply',
         'icon': Icons.description_outlined,
         'color': AppColors.primaryRed,
-        'targetIndex': 2,
       },
       {
         'title': 'Visa',
@@ -288,58 +290,119 @@ class HomeScreen extends StatelessWidget {
           const Text(
             'Quick Actions',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 18.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
           ),
           const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: actions.map((action) {
-              final color = action['color'] as Color;
-              final targetIndex = action['targetIndex'] as int?;
-              return GestureDetector(
-                onTap: targetIndex == null
-                    ? null
-                    : () {
-                        if (Get.isRegistered<MainNavigationController>()) {
-                          Get.find<MainNavigationController>().setIndex(
-                            targetIndex,
-                          );
-                        }
-                      },
-                child: Column(
-                  children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Icon(
-                        action['icon'] as IconData,
-                        color: color,
-                        size: 24,
-                      ),
+          Builder(
+            builder: (context) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: actions.map((action) {
+                  final color = action['color'] as Color;
+                  final title = action['title'] as String;
+                  final targetIndex = action['targetIndex'] as int?;
+
+                  return GestureDetector(
+                    onTap: () =>
+                        _handleQuickAction(context, title, targetIndex),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 58,
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Icon(
+                            action['icon'] as IconData,
+                            color: color,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      action['title'] as String,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                }).toList(),
               );
-            }).toList(),
+            },
           ),
         ],
       ),
+    );
+  }
+
+  void _handleQuickAction(
+    BuildContext context,
+    String title,
+    int? targetIndex,
+  ) {
+    switch (title) {
+      case 'Countries':
+        if (targetIndex != null &&
+            Get.isRegistered<MainNavigationController>()) {
+          Get.find<MainNavigationController>().setIndex(targetIndex);
+        }
+        break;
+      case 'Apply':
+        Get.toNamed(AppRoute.docs);
+        break;
+      case 'Visa':
+        _showStatusDialog(context, 'Visa', 'Not started');
+        break;
+      case 'Flight':
+        _showStatusDialog(context, 'Flight', 'Not booked');
+        break;
+    }
+  }
+
+  void _showStatusDialog(BuildContext context, String label, String status) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          ),
+          content: Text(
+            '$status',
+            style: const TextStyle(color: AppColors.textGrey, fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryBlue,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -371,7 +434,7 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'My Profile',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -392,7 +455,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         'Edit',
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryBlue,
                         ),
@@ -474,13 +537,13 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 10.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
           ),
           const SizedBox(height: 3),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 13.5,
+              fontSize: 15.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -564,7 +627,7 @@ class HomeScreen extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 25.5,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -572,7 +635,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 11.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
           ),
         ],
       ),
@@ -596,7 +659,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 14.5,
+                fontSize: 16.5,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -606,7 +669,7 @@ class HomeScreen extends StatelessWidget {
         Text(
           doneLabel,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: doneColor,
           ),
@@ -679,7 +742,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'Step ${step.id}',
                     style: const TextStyle(
-                      fontSize: 10.5,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textGrey,
                     ),
@@ -688,7 +751,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     step.title,
                     style: const TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 15.5,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
                     ),
@@ -713,7 +776,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     pillLabel,
                     style: TextStyle(
-                      fontSize: 10.5,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),
@@ -728,10 +791,10 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _handleStepTap(
-      HomeController controller,
-      ApplicationStepModel step,
-      BuildContext context,
-      ) {
+    HomeController controller,
+    ApplicationStepModel step,
+    BuildContext context,
+  ) {
     if (step.id == 2) {
       _showLanguageTestSheet(controller, context);
       return;
@@ -758,13 +821,17 @@ class HomeScreen extends StatelessWidget {
   ) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -784,7 +851,7 @@ class HomeScreen extends StatelessWidget {
                 Text(
                   'Upload $actionLabel',
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -845,7 +912,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textDark,
               ),
@@ -859,13 +926,17 @@ class HomeScreen extends StatelessWidget {
   void _showLanguageTestSheet(HomeController controller, BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (_) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -874,7 +945,7 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'Select Language Test',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),

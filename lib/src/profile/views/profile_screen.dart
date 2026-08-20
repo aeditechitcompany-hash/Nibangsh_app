@@ -5,6 +5,7 @@ import '../../../common/util/academic_constants.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/profile_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -18,23 +19,25 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(controller, context),
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
+          ResponsiveWrapper(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
               ),
-            ),
-            padding: const EdgeInsets.only(top: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildStudentInfoCard(controller),
-                const SizedBox(height: 20),
-                _buildLinksCard(controller),
-                const SizedBox(height: 100),
-              ],
+              padding: const EdgeInsets.only(top: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildStudentInfoCard(controller),
+                  const SizedBox(height: 20),
+                  _buildLinksCard(controller),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
           ),
         ],
@@ -69,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
                 'My Profile',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -106,24 +109,24 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Obx(
-                        () => controller.profileImage.value != null
+                            () => controller.profileImage.value != null
                             ? ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.file(
-                                  controller.profileImage.value!,
-                                  width: 78,
-                                  height: 78,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.file(
+                            controller.profileImage.value!,
+                            width: 78,
+                            height: 78,
+                            fit: BoxFit.cover,
+                          ),
+                        )
                             : Text(
-                                controller.initials,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          controller.initials,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     Positioned(
@@ -149,24 +152,24 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Obx(
-                  () => Text(
+                      () => Text(
                     controller.userName.value,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16.5,
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 const SizedBox(height: 3),
                 Obx(
-                  () => Text(
+                      () => Text(
                     controller.userEmail.value.isEmpty
                         ? 'No email on file yet'
                         : controller.userEmail.value,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -181,13 +184,17 @@ class ProfileScreen extends StatelessWidget {
   void _showPhotoOptions(ProfileController controller, BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -207,7 +214,7 @@ class ProfileScreen extends StatelessWidget {
                 const Text(
                   'Change Profile Photo',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -268,7 +275,7 @@ class ProfileScreen extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textDark,
               ),
@@ -335,14 +342,14 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 'Student Information',
                 style: TextStyle(
-                  fontSize: 14.5,
+                  fontSize: 16.5,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textDark,
                 ),
               ),
             ),
             Obx(
-              () => Column(
+                  () => Column(
                 children: [
                   _infoRow(
                     'GPA',
@@ -360,13 +367,18 @@ class ProfileScreen extends StatelessWidget {
                         ? '--'
                         : controller.degree.value,
                   ),
-                  _infoRow('Phone Number', '+977 9810203040'),
+                  _infoRow(
+                    'Phone Number',
+                    controller.userPhone.value.isEmpty
+                        ? '--'
+                        : controller.userPhone.value,
+                  ),
                   _infoRow(
                     'Target Country',
                     controller.country.value.isEmpty
                         ? '--'
                         : '${AcademicConstants.countryFlags[controller.country.value] ?? ''} ${controller.country.value}'
-                              .trim(),
+                        .trim(),
                     isLast: true,
                   ),
                 ],
@@ -385,22 +397,22 @@ class ProfileScreen extends StatelessWidget {
         border: isLast
             ? null
             : const Border(
-                bottom: BorderSide(color: AppColors.borderGrey, width: 1),
-              ),
+          bottom: BorderSide(color: AppColors.borderGrey, width: 1),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 13, color: AppColors.primaryBlue),
+            style: const TextStyle(fontSize: 15, color: AppColors.primaryBlue),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -432,7 +444,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             Obx(
-              () => _linkRow(
+                  () => _linkRow(
                 icon: Icons.notifications_none_rounded,
                 iconColor: AppColors.primaryBlue,
                 label: 'Notifications',
@@ -475,7 +487,7 @@ class ProfileScreen extends StatelessWidget {
         '$count',
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 11,
+          fontSize: 12.5,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -497,8 +509,8 @@ class ProfileScreen extends StatelessWidget {
         bottom: isLast ? const Radius.circular(18) : Radius.zero,
       ),
       onTap:
-          onTap ??
-          () => Get.snackbar(
+      onTap ??
+              () => Get.snackbar(
             label,
             '$label isn\'t wired up yet.',
             snackPosition: SnackPosition.BOTTOM,
@@ -525,7 +537,7 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 15.5,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textDark,
                 ),

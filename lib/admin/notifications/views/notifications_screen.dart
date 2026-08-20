@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../overview/controller/overview_controller.dart';
 import '../controller/notifications_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -18,26 +19,28 @@ class NotificationsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(controller),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-              child: Obx(() {
-                if (controller.activities.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 60),
-                    child: Center(
-                      child: Text(
-                        'No recent activity',
-                        style: TextStyle(color: AppColors.textGrey),
+            ResponsiveDashboardWrapper(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                child: Obx(() {
+                  if (controller.activities.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 60),
+                      child: Center(
+                        child: Text(
+                          'No recent activity',
+                          style: TextStyle(color: AppColors.textGrey),
+                        ),
                       ),
-                    ),
+                    );
+                  }
+                  return Column(
+                    children: controller.activities
+                        .map((activity) => _activityTile(activity))
+                        .toList(),
                   );
-                }
-                return Column(
-                  children: controller.activities
-                      .map((activity) => _activityTile(activity))
-                      .toList(),
-                );
-              }),
+                }),
+              ),
             ),
           ],
         ),
@@ -91,7 +94,7 @@ class NotificationsScreen extends StatelessWidget {
                       'Notifications',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 19,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -101,7 +104,7 @@ class NotificationsScreen extends StatelessWidget {
                         '${controller.unreadCount} recent activities',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.75),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -160,7 +163,7 @@ class NotificationsScreen extends StatelessWidget {
                 Text(
                   activity.name,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -168,14 +171,14 @@ class NotificationsScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   activity.action,
-                  style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
                 ),
               ],
             ),
           ),
           Text(
             activity.time,
-            style: const TextStyle(fontSize: 10.5, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
           ),
         ],
       ),

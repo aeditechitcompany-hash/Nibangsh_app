@@ -31,34 +31,81 @@ class AudioPlayButton extends StatefulWidget {
 }
 
 class _AudioPlayButtonState extends State<AudioPlayButton> {
+  static _AudioPlayButtonState? _activeButton;
+
   final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _player.onPlayerComplete.listen((_) {
-      if (mounted) setState(() => _isPlaying = false);
+      _resetToIdle();
     });
+  }
+
+  void _resetToIdle() {
+    if (_activeButton == this) {
+      _activeButton = null;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _isPlaying = false;
+      });
+    }
+  }
+
+  Future<void> _stopForNextAudio() async {
+    await _player.stop();
+    _resetToIdle();
   }
 
   Future<void> _toggle() async {
     try {
       if (_isPlaying) {
         await _player.pause();
-        setState(() => _isPlaying = false);
+        _resetToIdle();
       } else {
+        final previousButton = _activeButton;
+        if (previousButton != null && previousButton != this) {
+          await previousButton._stopForNextAudio();
+        }
+
+        _activeButton = this;
+        if (mounted) setState(() => _isLoading = true);
+        final path = widget.filePath;
         final source = widget.isAsset
-            // AssetSource expects the path *without* the leading 'assets/'
-            // segment, since audioplayers looks it up relative to that
-            // folder already (matches how Flutter's rootBundle resolves it).
-            ? AssetSource(_stripAssetsPrefix(widget.filePath))
-            : DeviceFileSource(widget.filePath);
+            // AssetSource expects the path without the leading 'assets/'
+            // segment.
+            ? AssetSource(_stripAssetsPrefix(path))
+            : path.startsWith('http://') || path.startsWith('https://')
+                ? UrlSource(path)
+                : DeviceFileSource(path);
         await _player.play(source);
-        setState(() => _isPlaying = true);
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _isPlaying = true;
+          });
+        }
       }
     } catch (e) {
       debugPrint('Audio playback failed: $e');
+      if (_activeButton == this) {
+        _activeButton = null;
+      }
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isPlaying = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Audio could not be played.')),
+        );
+      }
     }
   }
 
@@ -68,6 +115,9 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
 
   @override
   void dispose() {
+    if (_activeButton == this) {
+      _activeButton = null;
+    }
     _player.dispose();
     super.dispose();
   }
@@ -87,19 +137,27 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              _isPlaying
+              _isLoading
+                  ? Icons.hourglass_top_rounded
+                  : _isPlaying
                   ? Icons.pause_circle_filled_rounded
                   : Icons.play_circle_fill_rounded,
               color: AppColors.primaryBlue,
               size: 18,
             ),
             const SizedBox(width: 6),
-            Text(
-              _isPlaying ? 'Playing...' : widget.label,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryBlue,
+            Flexible(
+              child: Text(
+                _isLoading
+                    ? 'Loading...'
+                    : _isPlaying
+                        ? 'Playing...'
+                        : widget.label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryBlue,
+                ),
               ),
             ),
           ],

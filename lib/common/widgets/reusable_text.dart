@@ -13,7 +13,7 @@ class ReusableText extends StatelessWidget {
   const ReusableText({
     super.key,
     required this.text,
-    this.fontSize = 14,
+    this.fontSize = 16,
     this.fontWeight = FontWeight.normal,
     this.color = AppColors.textDark,
     this.textAlign = TextAlign.start,

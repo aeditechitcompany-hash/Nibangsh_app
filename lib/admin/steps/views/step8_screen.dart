@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step8_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step8Screen extends StatelessWidget {
   const Step8Screen({super.key});
@@ -24,30 +25,32 @@ class Step8Screen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildSummaryCard(student),
-                  const SizedBox(height: 20),
-                  _sectionLabel('COURSE COMMENCEMENT DATE'),
-                  const SizedBox(height: 8),
-                  _buildDateField(context, controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('SCHOLARSHIP STATUS'),
-                  const SizedBox(height: 8),
-                  _buildScholarshipRow(controller),
-                  const SizedBox(height: 20),
-                  _sectionLabel('ADMIN NOTES'),
-                  const SizedBox(height: 8),
-                  _buildNotesField(controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                  const SizedBox(height: 40),
-                ],
+            ResponsiveDashboardWrapper(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildSummaryCard(student),
+                    const SizedBox(height: 20),
+                    _sectionLabel('COURSE COMMENCEMENT DATE'),
+                    const SizedBox(height: 8),
+                    _buildDateField(context, controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('SCHOLARSHIP STATUS'),
+                    const SizedBox(height: 8),
+                    _buildScholarshipRow(controller),
+                    const SizedBox(height: 20),
+                    _sectionLabel('ADMIN NOTES'),
+                    const SizedBox(height: 8),
+                    _buildNotesField(controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ],
@@ -108,7 +111,7 @@ class Step8Screen extends StatelessWidget {
                   'Step 8 of 10 · Admin Approval',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 11.5,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -140,14 +143,14 @@ class Step8Screen extends StatelessWidget {
                     'Final Selection',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 19,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 2),
                   Text(
                     'Confirm Final Selection',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -181,7 +184,7 @@ class Step8Screen extends StatelessWidget {
             child: Text(
               student.initials,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryBlue,
               ),
@@ -195,7 +198,7 @@ class Step8Screen extends StatelessWidget {
                 Text(
                   student.name,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -204,7 +207,7 @@ class Step8Screen extends StatelessWidget {
                 Text(
                   '$flag ${student.countryName} • ${student.university}',
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -220,7 +223,7 @@ class Step8Screen extends StatelessWidget {
             child: const Text(
               'In Review',
               style: TextStyle(
-                fontSize: 10.5,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryBlue,
               ),
@@ -252,7 +255,7 @@ class Step8Screen extends StatelessWidget {
             'Final Selection Summary',
             style: TextStyle(
               color: Colors.white70,
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -261,7 +264,7 @@ class Step8Screen extends StatelessWidget {
             student.name,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 23,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -270,13 +273,13 @@ class Step8Screen extends StatelessWidget {
             student.course,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 13.5,
+              fontSize: 15.5,
               fontWeight: FontWeight.w600,
             ),
           ),
           Text(
             '${student.university} • $flag ${student.countryName}',
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 14),
           Row(
@@ -303,7 +306,7 @@ class Step8Screen extends StatelessWidget {
       text,
       style: const TextStyle(
         color: Colors.white,
-        fontSize: 11.5,
+        fontSize: 13,
         fontWeight: FontWeight.bold,
       ),
     ),
@@ -312,7 +315,7 @@ class Step8Screen extends StatelessWidget {
   Widget _sectionLabel(String text) => Text(
     text,
     style: const TextStyle(
-      fontSize: 11.5,
+      fontSize: 13,
       fontWeight: FontWeight.bold,
       color: AppColors.textGrey,
       letterSpacing: 0.4,
@@ -343,7 +346,7 @@ class Step8Screen extends StatelessWidget {
               Text(
                 hasDate ? controller.formattedDate : 'mm/dd/yyyy',
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 15.5,
                   color: hasDate ? AppColors.textDark : AppColors.textGrey,
                   fontWeight: hasDate ? FontWeight.w600 : FontWeight.normal,
                 ),
@@ -358,7 +361,7 @@ class Step8Screen extends StatelessWidget {
   // ── Scholarship status toggle ──
   Widget _buildScholarshipRow(Step8Controller controller) {
     return Obx(
-      () => Row(
+          () => Row(
         children: Step8Controller.scholarshipOptions.map((option) {
           final selected = controller.scholarshipStatus.value == option;
           return Expanded(
@@ -385,7 +388,7 @@ class Step8Screen extends StatelessWidget {
                     option,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: selected ? stepColor : AppColors.textGrey,
                     ),
@@ -410,10 +413,10 @@ class Step8Screen extends StatelessWidget {
       child: TextField(
         controller: controller.notesController,
         maxLines: 3,
-        style: const TextStyle(fontSize: 13, color: AppColors.textDark),
+        style: const TextStyle(fontSize: 15, color: AppColors.textDark),
         decoration: const InputDecoration(
           hintText: 'Final remarks for the student record...',
-          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 13),
+          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 15),
           contentPadding: EdgeInsets.all(14),
           border: InputBorder.none,
         ),
@@ -444,7 +447,7 @@ class Step8Screen extends StatelessWidget {
             '🎓 Confirm Final Selection & Approve Student',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: complete ? Colors.white : AppColors.textGrey,
             ),

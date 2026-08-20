@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/util/app_colors.dart';
 import '../controller/forgot_password_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -19,7 +20,6 @@ class ForgotPasswordScreen extends StatelessWidget {
             // Header with gradient
             Container(
               width: double.infinity,
-              height: size.height * 0.28,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.navyDark, AppColors.navyLight],
@@ -33,6 +33,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               child: SafeArea(
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Positioned(
                       left: 4,
@@ -46,49 +47,59 @@ class ForgotPasswordScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 72,
-                            height: 72,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.lock_reset_rounded,
-                              color: AppColors.primaryBlue,
-                              size: 36,
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: context.responsive(
+                            mobile: 36.0,
+                            tablet: 44.0,
+                            laptop: 52.0,
                           ),
-                          const SizedBox(height: 14),
-                          const Text(
-                            'Forgot Password',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 72,
+                              height: 72,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.lock_reset_rounded,
+                                color: AppColors.primaryBlue,
+                                size: 36,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'We\'ll help you reset it',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.85),
-                              fontSize: 13,
+                            const SizedBox(height: 14),
+                            const Text(
+                              'Forgot Password',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 25.5,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'We\'ll help you reset it',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.85),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -99,12 +110,14 @@ class ForgotPasswordScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Body
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Obx(
-                    () => controller.isEmailSent.value
-                    ? _buildSuccessState(controller)
-                    : _buildFormState(controller),
+            ResponsiveWrapper(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Obx(
+                      () => controller.isEmailSent.value
+                      ? _buildSuccessState(controller)
+                      : _buildFormState(controller),
+                ),
               ),
             ),
           ],
@@ -122,7 +135,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           const Text(
             'Reset your password',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 25.5,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -131,7 +144,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           const Text(
             'Enter the email associated with your account and '
                 'we\'ll send you a link to reset your password.',
-            style: TextStyle(fontSize: 14, color: AppColors.textGrey),
+            style: TextStyle(fontSize: 16, color: AppColors.textGrey),
           ),
           const SizedBox(height: 28),
 
@@ -141,12 +154,12 @@ class ForgotPasswordScreen extends StatelessWidget {
             controller: controller.emailController,
             keyboardType: TextInputType.emailAddress,
             validator: controller.validateEmail,
-            style: const TextStyle(fontSize: 14, color: AppColors.textDark),
+            style: const TextStyle(fontSize: 16, color: AppColors.textDark),
             decoration: InputDecoration(
               hintText: 'Enter your email',
               hintStyle: const TextStyle(
                 color: AppColors.textGrey,
-                fontSize: 14,
+                fontSize: 16,
               ),
               prefixIcon: const Icon(
                 Icons.email_outlined,
@@ -220,7 +233,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     : const Text(
                   'Send Reset Link',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18.5,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                   ),
@@ -236,7 +249,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             children: [
               const Text(
                 'Remember your password? ',
-                style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                style: TextStyle(color: AppColors.textGrey, fontSize: 16),
               ),
               GestureDetector(
                 onTap: () => Get.back(),
@@ -245,7 +258,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                   style: TextStyle(
                     color: AppColors.primaryBlue,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -279,7 +292,7 @@ class ForgotPasswordScreen extends StatelessWidget {
         const Text(
           'Check your email',
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 25.5,
             fontWeight: FontWeight.bold,
             color: AppColors.textDark,
           ),
@@ -288,7 +301,7 @@ class ForgotPasswordScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'We\'ve sent a password reset link to\n${controller.emailController.text.trim()}',
-          style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
+          style: const TextStyle(fontSize: 16, color: AppColors.textGrey),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
@@ -309,7 +322,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             child: const Text(
               'Back to Sign In',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18.5,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
               ),
@@ -326,7 +339,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               style: const TextStyle(
                 color: AppColors.primaryBlue,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
+                fontSize: 16,
               ),
             ),
           ),
@@ -340,7 +353,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: AppColors.textDark,
       ),

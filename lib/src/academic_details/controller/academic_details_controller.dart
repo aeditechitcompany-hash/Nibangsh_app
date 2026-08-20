@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/api_services/academic_details_service.dart';
+import '../../../common/services/storage.dart';
 import '../../../common/util/app_route.dart';
+import '../../home/controller/home_controller.dart';
+import '../../profile/controller/profile_controller.dart';
 
 class AcademicDetailsController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -13,6 +17,9 @@ class AcademicDetailsController extends GetxController {
 
   final isLoading = false.obs;
   final showErrors = false.obs;
+
+  final AcademicDetailsService _academicDetailsService =
+      AcademicDetailsService();
 
   bool isEditMode = false;
   String _email = '';
@@ -58,21 +65,79 @@ class AcademicDetailsController extends GetxController {
     }
 
     isLoading.value = true;
-    try {
-      await Future.delayed(const Duration(milliseconds: 600));
+    final gpa = gpaController.text.trim();
 
+    try {
+      final userId = await StorageService.getUserId();
+      if (userId == null || userId.isEmpty) {
+        // Shouldn't normally happen — this screen is only reachable after
+        // login, which is what saves the user id.
+        throw Exception('Not logged in — please log in again.');
+      }
+
+      // Save to the backend first; only persist locally / navigate on success.
+      await _academicDetailsService.submitAcademicDetails(
+        userId: userId,
+        country: selectedCountry.value,
+        gpa: gpa,
+        passoutYear: selectedPassoutYear.value,
+        degree: selectedDegree.value,
+      );
+
+      // Persist so Home (and Profile) can read these back later,
+      // regardless of how the user navigates there.
+      await StorageService.saveAcademicDetails(
+        country: selectedCountry.value,
+        gpa: gpa,
+        passoutYear: selectedPassoutYear.value,
+        degree: selectedDegree.value,
+      );
+
+      if (Get.isRegistered<HomeController>()) {
+        final homeController = Get.find<HomeController>();
+        homeController.country.value = selectedCountry.value;
+        homeController.gpa.value = gpa;
+        homeController.passoutYear.value = selectedPassoutYear.value;
+        homeController.degree.value = selectedDegree.value;
+      }
+
+      if (Get.isRegistered<ProfileController>()) {
+        final profileController = Get.find<ProfileController>();
+        profileController.country.value = selectedCountry.value;
+        profileController.gpa.value = gpa;
+        profileController.passoutYear.value = selectedPassoutYear.value;
+        profileController.degree.value = selectedDegree.value;
+      }
+    } catch (e) {
+      print('SUBMIT ACADEMIC DETAILS ERROR:');
+      print(e);
+
+      Get.snackbar(
+        'Could not save your details',
+        e.toString().replaceAll('Exception: ', ''),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      isLoading.value = false;
+      return;
+    } finally {
+      isLoading.value = false;
+    }
+
+    if (isEditMode) {
+      Get.back();
+    } else {
       Get.offAllNamed(
         AppRoute.home,
         arguments: {
           'email': _email,
           'country': selectedCountry.value,
-          'gpa': gpaController.text.trim(),
+          'gpa': gpa,
           'passoutYear': selectedPassoutYear.value,
           'degree': selectedDegree.value,
         },
       );
-    } finally {
-      isLoading.value = false;
     }
   }
 

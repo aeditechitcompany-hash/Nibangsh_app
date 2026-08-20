@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:nibangsh_consultancy/admin/approvals/views/approvals_screen.dart';
 import 'package:nibangsh_consultancy/src/academic_details/views/academic_details_screen.dart';
 import 'package:nibangsh_consultancy/admin/books/views/books_screen.dart';
-import 'package:nibangsh_consultancy/admin/mcq/views/mcq_screen.dart';
 import 'package:nibangsh_consultancy/admin/nav/admin_navigation.dart';
 import 'package:nibangsh_consultancy/admin/notifications/views/notifications_screen.dart';
 import 'package:nibangsh_consultancy/admin/settings/views/settings_screen.dart';
@@ -13,6 +12,7 @@ import 'package:nibangsh_consultancy/src/countries/views/countries_screen.dart';
 import 'package:nibangsh_consultancy/src/courses/views/courses_screen.dart';
 import 'package:nibangsh_consultancy/src/docs/views/docs_screen.dart';
 import 'package:nibangsh_consultancy/src/books/views/student_books_screen.dart';
+import 'package:nibangsh_consultancy/src/mcq/views/mcq_instructions_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_quiz_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
 import 'package:nibangsh_consultancy/src/notifications/views/notifications_screen.dart';
@@ -27,6 +27,7 @@ import 'src/profile/views/faq_help_screen.dart';
 import 'src/main_navigation/views/main_navigation_screen.dart';
 import 'src/onboarding/views/onboarding_screen.dart';
 import 'src/profile/views/profile_screen.dart';
+import 'package:nibangsh_consultancy/admin/mcq/views/admin_mcq_sets_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,8 +101,9 @@ class MyApp extends StatelessWidget {
           page: () => const StudentBooksScreen(),
         ),
         GetPage(name: AppRoute.mcqQuiz, page: () => const McqQuizScreen()),
+        GetPage(name: AppRoute.mcqInstructions, page: () => const McqInstructionsScreen()),
         GetPage(name: AppRoute.mcqResult, page: () => const McqResultScreen()),
-        GetPage(name: AppRoute.adminMcq, page: () => const AdminMcqScreen()),
+        GetPage(name: AppRoute.adminMcq, page: () => const AdminMcqSetsScreen()),
         GetPage(
           name: AppRoute.universities,
           page: () => const UniversitiesScreen(),

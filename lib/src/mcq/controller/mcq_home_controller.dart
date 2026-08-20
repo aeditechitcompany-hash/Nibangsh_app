@@ -1,36 +1,369 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../common/models/quiz_models.dart';
+import '../../../common/models/mcq_model.dart';
+import '../../../common/services/mcq_repository.dart';
+import '../../../common/api_services/api_service.dart';
+import '../../../common/api_services/api_constants.dart';
+import '../../../common/util/app_colors.dart';
 
 class McqHomeController extends GetxController {
-  final searchController = TextEditingController();
+  final searchController =
+      TextEditingController();
+
   final searchQuery = ''.obs;
 
-  final bestScores = <String, int>{}.obs;
+  final bestScores =
+      <String, int>{}.obs;
+
+  final ApiService _apiService =
+      const ApiService();
+
+  final McqRepository _repository =
+      McqRepository.to;
+
+  final RxBool mcqAccess = false.obs;
+
+  final RxBool isCheckingAccess = true.obs;
+
+  final RxBool isRefreshingAccess = false.obs;
+
+  final RxBool isLoadingSets = false.obs;
+
+  final RxString loadError = ''.obs;
+
+  Timer? _accessPollingTimer;
 
   @override
   void onInit() {
     super.onInit();
+
     searchController.addListener(() {
-      searchQuery.value = searchController.text.trim();
+      searchQuery.value =
+          searchController.text.trim();
     });
+
+    checkMcqAccess(
+      showLoading: true,
+    );
+
+    _startAccessPolling();
+  }
+
+  void _startAccessPolling() {
+    _accessPollingTimer?.cancel();
+
+    _accessPollingTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) async {
+        await checkMcqAccess(
+          showLoading: false,
+        );
+      },
+    );
+  }
+
+  Future<void> checkMcqAccess({
+    bool showLoading = false,
+  }) async {
+    try {
+      if (showLoading) {
+        isCheckingAccess.value = true;
+      }
+
+      final response =
+          await _apiService.get(
+        url: ApiConstants.myMcqAccess,
+      );
+
+      final access =
+          response is Map &&
+          response['mcq_access'] == true;
+
+      mcqAccess.value = access;
+
+      if (access) {
+        await loadBackendQuestionSets();
+      } else {
+        _repository.questions.clear();
+      }
+    } catch (e) {
+      debugPrint(
+        'MCQ ACCESS ERROR: $e',
+      );
+
+      mcqAccess.value = false;
+    } finally {
+      if (showLoading) {
+        isCheckingAccess.value = false;
+      }
+    }
+  }
+
+  Future<void> refreshAccess() async {
+    if (isRefreshingAccess.value) {
+      return;
+    }
+
+    isRefreshingAccess.value = true;
+
+    try {
+      await checkMcqAccess(
+        showLoading: false,
+      );
+    } finally {
+      isRefreshingAccess.value = false;
+    }
+  }
+
+  /// Fetch every active question set from Django
+  /// and then fetch its student-safe questions.
+  Future<void> loadBackendQuestionSets() async {
+    try {
+      isLoadingSets.value = true;
+      loadError.value = '';
+
+      final sets =
+          await _repository.fetchQuestionSets();
+
+      final backendQuestions =
+          <McqQuestion>[];
+
+      for (final set in sets) {
+        final setId =
+            set['id']?.toString();
+
+        if (setId == null ||
+            setId.isEmpty) {
+          continue;
+        }
+
+        final fullSet =
+            await _repository.fetchQuestionSet(
+          setId,
+        );
+
+        if (fullSet == null) {
+          continue;
+        }
+
+        backendQuestions.addAll(
+          _repository.questionsFromBackend(
+            fullSet,
+          ),
+        );
+      }
+
+      _repository.setQuestions(
+        backendQuestions,
+      );
+
+      debugPrint(
+        'Loaded ${backendQuestions.length} '
+        'MCQ questions from Django.',
+      );
+    } catch (e) {
+      loadError.value = e.toString();
+
+      debugPrint(
+        'MCQ SET LOAD ERROR: $e',
+      );
+    } finally {
+      isLoadingSets.value = false;
+    }
+  }
+
+  List<QuizSet> get allSets {
+    if (!mcqAccess.value) {
+      return [];
+    }
+
+    // Group by actual question_set_id (UUID) from backend
+    final grouped =
+        <String, List<McqQuestion>>{};
+
+    for (final q
+        in _repository.questions) {
+      final questionSetId =
+          (q.questionSetId ?? '').trim();
+
+      if (questionSetId.isEmpty) {
+        continue;
+      }
+
+      grouped
+          .putIfAbsent(
+            questionSetId,
+            () => [],
+          )
+          .add(q);
+    }
+
+    final backendSets =
+        grouped.entries
+            .map(
+              (entry) => _toQuizSet(
+                entry.value[0].setName ?? 'Quiz',
+                entry.key,
+                entry.value,
+              ),
+            )
+            .toList();
+
+    // Keep your bundled/static sets too.
+    return [
+      ...QuizCatalog.sets,
+      ...backendSets,
+    ];
   }
 
   List<QuizSet> get filteredSets {
-    if (searchQuery.value.isEmpty) return QuizCatalog.sets;
-    final q = searchQuery.value.toLowerCase();
-    return QuizCatalog.sets.where((s) => s.title.toLowerCase().contains(q)).toList();
+    final sets = allSets;
+
+    if (searchQuery.value.isEmpty) {
+      return sets;
+    }
+
+    final query =
+        searchQuery.value.toLowerCase();
+
+    return sets.where(
+      (set) => set.title
+          .toLowerCase()
+          .contains(query),
+    ).toList();
   }
 
-  // Called by the quiz screen when a set is completed.
-  void recordScore(String setId, int score) {
-    final best = bestScores[setId];
-    if (best == null || score > best) {
+  static const List<Color>
+      _adminSetPalette = [
+    AppColors.primaryBlue,
+    Color(0xFF16A34A),
+    Color(0xFF9333EA),
+    Color(0xFFF59E0B),
+    Color(0xFFDC2626),
+  ];
+
+  QuizSet _toQuizSet(
+    String setName,
+    String questionSetId,
+    List<McqQuestion> questions,
+  ) {
+    final ordered = [...questions]
+      ..sort(
+        (a, b) =>
+            a.createdAt.compareTo(
+          b.createdAt,
+        ),
+      );
+
+    final color =
+        _adminSetPalette[
+          questionSetId.hashCode.abs() %
+              _adminSetPalette.length
+        ];
+
+    return QuizSet(
+      id: questionSetId,
+      title: setName,
+      icon: Icons.quiz_outlined,
+      color: color,
+      questions: ordered
+          .map(_toQuizQuestion)
+          .toList(),
+    );
+  }
+
+  QuizQuestion _toQuizQuestion(
+    McqQuestion q,
+  ) {
+    // Build QuizOption objects from backend option IDs.
+    final quizOpts = <QuizOption>[];
+    final optionIds = q.optionIds ?? [];
+    
+    for (int i = 0; i < q.options.length; i++) {
+      quizOpts.add(
+        QuizOption(
+          id: i < optionIds.length ? optionIds[i] : null,
+          text: q.options[i],
+          image: i < (q.optionImagePaths?.length ?? 0)
+              ? q.optionImagePaths![i]
+              : null,
+          audio: i < (q.optionAudioPaths?.length ?? 0)
+              ? q.optionAudioPaths![i]
+              : null,
+          order: i,
+        ),
+      );
+    }
+
+    return QuizQuestion(
+      id: q.id,
+      question:
+          q.question.trim().isEmpty
+              ? null
+              : q.question,
+      options: q.options,
+
+      // Backend questions don't expose
+      // correct answers to students.
+      correctIndex:
+          q.correctOptionIndex ?? -1,
+
+      imageAsset:
+          q.questionImagePath,
+
+      optionImages:
+          q.optionImagePaths,
+
+      audioAsset:
+          q.audioFilePath,
+
+      optionAudios:
+          q.optionAudioPaths,
+      
+      quizOptions: quizOpts,
+    );
+  }
+
+  void recordScore(
+    String setId,
+    int score,
+  ) {
+    final best =
+        bestScores[setId];
+
+    if (best == null ||
+        score > best) {
       bestScores[setId] = score;
     }
   }
 
-  int? bestScoreFor(String setId) => bestScores[setId];
+  int? bestScoreFor(
+    String setId,
+  ) {
+    return bestScores[setId];
+  }
 
-  QuizSet get firstSet => QuizCatalog.sets.first;
+  QuizSet? get firstSet {
+    final sets = allSets;
+
+    if (sets.isEmpty) {
+      return null;
+    }
+
+    return sets.first;
+  }
+
+  @override
+  void onClose() {
+    _accessPollingTimer?.cancel();
+    _accessPollingTimer = null;
+
+    searchController.dispose();
+
+    super.onClose();
+  }
 }

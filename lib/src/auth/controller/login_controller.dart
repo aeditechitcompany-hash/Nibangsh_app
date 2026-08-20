@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../common/api_services/auth_service.dart';
+import '../../../common/api_services/academic_details_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -9,13 +11,11 @@ import '../../../common/util/app_route.dart';
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   final RxBool isLoading = false.obs;
   final RxBool isPasswordVisible = false.obs;
   final formKey = GlobalKey<FormState>();
-
-  static const String _adminEmail = 'admin@nibangsh.com';
-  static const String _adminPassword = 'Admin#123';
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -45,51 +45,85 @@ class LoginController extends GetxController {
     return null;
   }
 
+  final AcademicDetailsService _academicDetailsService =
+      AcademicDetailsService();
+
+  /// The database is the source of truth.
+  /// Existing education -> Home.
+  /// No education -> Academic Details.
+  Future<void> _navigateAfterLogin(String email) async {
+    final hasAcademicDetails =
+        await _academicDetailsService.hasAcademicDetails();
+
+    if (hasAcademicDetails) {
+      Get.offAllNamed(AppRoute.home);
+    } else {
+      Get.offAllNamed(
+        AppRoute.academicDetails,
+        arguments: {'email': email},
+      );
+    }
+  }
+
   // Email & password login
   Future<void> login() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-
     if (!formKey.currentState!.validate()) return;
+
     isLoading.value = true;
 
-    if (email.toLowerCase() == _adminEmail && password == _adminPassword) {
-      isLoading.value = true;
-      try {
-        await Future.delayed(const Duration(seconds: 2));
-        Get.offAllNamed(AppRoute.adminDashboard);
-      } finally {
-        isLoading.value = false;
-      }
-      return;
-    }
-
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      final email = emailController.text.trim();
+      final password = passwordController.text;
 
-      // Keep the name saved at signup if this is the same account; otherwise
-      // (e.g. no local signup record yet) fall back to a readable name
-      // derived from the email so the home screen never just says "Student".
-      final storedEmail = await StorageService.getUserEmail();
-      final storedName = await StorageService.getUserName();
-      final isSameAccount =
-          storedEmail != null &&
-          storedEmail.toLowerCase() == email.toLowerCase();
-      final resolvedName =
-          (isSameAccount && (storedName?.trim().isNotEmpty ?? false))
-          ? storedName!.trim()
-          : (email.split('@').first.isEmpty
-                ? 'Student'
-                : email.split('@').first);
-      await StorageService.saveUserInfo(email: email, name: resolvedName);
+      // Login through Django API for ALL accounts,
+      // including admin accounts.
+      final auth = await _authService.login(
+        email: email,
+        password: password,
+      );
 
-      // if (AppStorage.isProfileComplete) {
-      //   Get.offAllNamed(AppRoute.home);
-      // } else {
-      Get.offAllNamed(AppRoute.academicDetails, arguments: {'email': email});
-      // }
+      print("========== LOGGED IN USER ==========");
+      print("Email: ${auth.user.email}");
+      print("Role: ${auth.user.role}");
+      print("====================================");
+
+      // Save user information locally
+      await StorageService.saveUserInfo(
+        id: auth.user.id,
+        email: auth.user.email,
+        name: auth.user.fullName,
+        phone: auth.user.phoneNumber,
+        role: auth.user.role,
+      );
+
+      await StorageService.saveUserPassword(password);
+
+      // Admin → Admin Dashboard
+      if (auth.user.role.toLowerCase() == 'admin') {
+        Get.offAllNamed(AppRoute.adminDashboard);
+        return;
+      }
+
+      // Counselor → Counselor area
+      if (auth.user.role.toLowerCase() == 'counselor') {
+        // Change this route if your project has a counselor route.
+        Get.offAllNamed(AppRoute.home);
+        return;
+      }
+
+      // Student → database-backed academic-details check.
+      await _navigateAfterLogin(auth.user.email);
     } catch (e) {
-      _showError('Login Failed', e.toString());
+      print("LOGIN ERROR:");
+      print(e);
+
+      Get.snackbar(
+        "Login Failed",
+        e.toString().replaceAll("Exception: ", ""),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -108,7 +142,7 @@ class LoginController extends GetxController {
               ? account.displayName!.trim()
               : account.email.split('@').first,
         );
-        Get.offAllNamed(AppRoute.home);
+        await _navigateAfterLogin(account.email);
       }
     } catch (e) {
       _showError('Google Sign-In Failed', e.toString());
@@ -124,11 +158,12 @@ class LoginController extends GetxController {
       final LoginResult result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) {
         final userData = await FacebookAuth.instance.getUserData();
+        final email = userData['email']?.toString() ?? '';
         await StorageService.saveUserInfo(
-          email: userData['email']?.toString() ?? '',
+          email: email,
           name: userData['name']?.toString() ?? 'Student',
         );
-        Get.offAllNamed(AppRoute.home);
+        await _navigateAfterLogin(email);
       }
     } catch (e) {
       _showError('Facebook Sign-In Failed', e.toString());

@@ -4,6 +4,7 @@ import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
 import '../../model/students_record.dart';
 import '../controller/step10_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class Step10Screen extends StatelessWidget {
   const Step10Screen({super.key});
@@ -24,56 +25,58 @@ class Step10Screen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStudentCard(student),
-                  const SizedBox(height: 16),
-                  _buildFinalStepBanner(student),
-                  const SizedBox(height: 20),
-                  _sectionLabel('FLIGHT NUMBER'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.flightNumberController,
-                    Icons.confirmation_number_outlined,
-                    'e.g. QF 025',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('AIRLINE'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.airlineController,
-                    Icons.airlines_outlined,
-                    'e.g. Qantas Airways',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('DEPARTURE AIRPORT'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.departureAirportController,
-                    Icons.flight_takeoff,
-                    'e.g. DEL — Indira Gandhi',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('ARRIVAL AIRPORT'),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    controller.arrivalAirportController,
-                    Icons.flight_land,
-                    'e.g. MEL — Melbourne',
-                  ),
-                  const SizedBox(height: 20),
-                  _sectionLabel('DEPARTURE DATE & TIME'),
-                  const SizedBox(height: 8),
-                  _buildDateTimeField(context, controller),
-                  const SizedBox(height: 20),
-                  _buildUploadBox(controller),
-                  const SizedBox(height: 24),
-                  _buildSubmitButton(controller),
-                  const SizedBox(height: 40),
-                ],
+            ResponsiveDashboardWrapper(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStudentCard(student),
+                    const SizedBox(height: 16),
+                    _buildFinalStepBanner(student),
+                    const SizedBox(height: 20),
+                    _sectionLabel('FLIGHT NUMBER'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.flightNumberController,
+                      Icons.confirmation_number_outlined,
+                      'e.g. QF 025',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('AIRLINE'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.airlineController,
+                      Icons.airlines_outlined,
+                      'e.g. Qantas Airways',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('DEPARTURE AIRPORT'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.departureAirportController,
+                      Icons.flight_takeoff,
+                      'e.g. DEL — Indira Gandhi',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('ARRIVAL AIRPORT'),
+                    const SizedBox(height: 8),
+                    _buildTextField(
+                      controller.arrivalAirportController,
+                      Icons.flight_land,
+                      'e.g. MEL — Melbourne',
+                    ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('DEPARTURE DATE & TIME'),
+                    const SizedBox(height: 8),
+                    _buildDateTimeField(context, controller),
+                    const SizedBox(height: 20),
+                    _buildUploadBox(controller),
+                    const SizedBox(height: 24),
+                    _buildSubmitButton(controller),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ],
@@ -134,7 +137,7 @@ class Step10Screen extends StatelessWidget {
                   'Step 10 of 10 · Admin Approval',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 11.5,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -166,14 +169,14 @@ class Step10Screen extends StatelessWidget {
                     'Flight Ticket',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 19,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 2),
                   Text(
                     'Record Flight Booking',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -207,7 +210,7 @@ class Step10Screen extends StatelessWidget {
             child: Text(
               student.initials,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryBlue,
               ),
@@ -221,7 +224,7 @@ class Step10Screen extends StatelessWidget {
                 Text(
                   student.name,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -230,7 +233,7 @@ class Step10Screen extends StatelessWidget {
                 Text(
                   '$flag ${student.countryName} • ${student.university}',
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -246,7 +249,7 @@ class Step10Screen extends StatelessWidget {
             child: Text(
               student.status.label,
               style: TextStyle(
-                fontSize: 10.5,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: student.status.color,
               ),
@@ -284,7 +287,7 @@ class Step10Screen extends StatelessWidget {
             'Final Step — Flight Booking',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 15.5,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -293,7 +296,7 @@ class Step10Screen extends StatelessWidget {
             'Record the flight details to complete $firstName\'s journey.',
             style: const TextStyle(
               color: Colors.white70,
-              fontSize: 12.5,
+              fontSize: 14.5,
               height: 1.4,
             ),
           ),
@@ -305,7 +308,7 @@ class Step10Screen extends StatelessWidget {
   Widget _sectionLabel(String text) => Text(
     text,
     style: const TextStyle(
-      fontSize: 11.5,
+      fontSize: 13,
       fontWeight: FontWeight.bold,
       color: AppColors.textGrey,
       letterSpacing: 0.4,
@@ -314,10 +317,10 @@ class Step10Screen extends StatelessWidget {
 
   // ── Generic text field ──
   Widget _buildTextField(
-    TextEditingController textController,
-    IconData icon,
-    String hint,
-  ) {
+      TextEditingController textController,
+      IconData icon,
+      String hint,
+      ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -327,7 +330,7 @@ class Step10Screen extends StatelessWidget {
       child: TextField(
         controller: textController,
         style: const TextStyle(
-          fontSize: 13.5,
+          fontSize: 15.5,
           fontWeight: FontWeight.w600,
           color: AppColors.textDark,
         ),
@@ -335,7 +338,7 @@ class Step10Screen extends StatelessWidget {
           hintText: hint,
           hintStyle: const TextStyle(
             color: AppColors.textGrey,
-            fontSize: 13.5,
+            fontSize: 15.5,
             fontWeight: FontWeight.normal,
           ),
           prefixIcon: Icon(icon, size: 18, color: AppColors.textGrey),
@@ -348,9 +351,9 @@ class Step10Screen extends StatelessWidget {
 
   // ── Departure date & time field ──
   Widget _buildDateTimeField(
-    BuildContext context,
-    Step10Controller controller,
-  ) {
+      BuildContext context,
+      Step10Controller controller,
+      ) {
     return Obx(() {
       final hasDateTime = controller.departureDateTime.value != null;
       return GestureDetector(
@@ -375,7 +378,7 @@ class Step10Screen extends StatelessWidget {
                     ? controller.formattedDateTime
                     : 'mm/dd/yyyy --:-- --',
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 15.5,
                   color: hasDateTime ? AppColors.textDark : AppColors.textGrey,
                   fontWeight: hasDateTime ? FontWeight.w600 : FontWeight.normal,
                 ),
@@ -411,7 +414,7 @@ class Step10Screen extends StatelessWidget {
               child: Text(
                 fileName ?? 'Upload Ticket / Itinerary',
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.w600,
                   color: fileName != null ? AppColors.textDark : stepColor,
                 ),
@@ -435,7 +438,7 @@ class Step10Screen extends StatelessWidget {
               ),
               child: const Text(
                 'Browse',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -468,7 +471,7 @@ class Step10Screen extends StatelessWidget {
             '✈️  Confirm Booking — Complete All 10 Steps!',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: complete ? Colors.white : AppColors.textGrey,
             ),

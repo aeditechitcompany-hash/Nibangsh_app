@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nibangsh_consultancy/const/resources.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class OnboardingData {
   final String title;
@@ -27,7 +28,7 @@ final List<OnboardingData> onboardingPages = [
     title: 'About Us',
     subtitle: 'Trusted Consultancy',
     description:
-        'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
+    'We are Nepal\'s most trusted educational consultancy, guiding students to their dream universities around the world with expert counseling and support.',
     image: AppResources.onboarding1,
     icon: Icons.verified_rounded,
     gradientColors: [AppColors.darkBlue, AppColors.navyLight],
@@ -36,7 +37,7 @@ final List<OnboardingData> onboardingPages = [
     title: 'Explore Countries',
     subtitle: 'Countries',
     description:
-        'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
+    'Discover top study destinations including the USA, UK, Australia, Canada, Japan, and more. We help you choose the right country and university for your future.',
     image: AppResources.onboarding2,
     icon: Icons.public_rounded,
     gradientColors: [AppColors.navyLight, AppColors.darkBlue],
@@ -45,7 +46,7 @@ final List<OnboardingData> onboardingPages = [
     title: 'Join Nibangsh',
     subtitle: 'Join to Nibangsh',
     description:
-        'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
+    'Become part of the Nibangsh family. Create your account today and take the first step toward your global education journey with us by your side.',
     image: AppResources.logoPath,
     icon: Icons.group_rounded,
     gradientColors: [AppColors.darkBlue, AppColors.navyLight],
@@ -89,6 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: AppColors.darkBlue,
       body: Stack(
         children: [
           // PageView
@@ -98,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemBuilder: (context, index) {
               final page = onboardingPages[index];
-              return _buildPage(page, size);
+              return _buildPage(page, size, context);
             },
           ),
 
@@ -114,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     'Skip',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -129,15 +131,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(28, 24, 28, 50),
+              padding: EdgeInsets.fromLTRB(
+                28,
+                size.height < 640 ? 12 : 24,
+                28,
+                size.height < 640 ? 20 : 50,
+              ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Dot indicators
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       onboardingPages.length,
-                      (index) => AnimatedContainer(
+                          (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 8,
@@ -151,12 +159,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: size.height < 640 ? 14 : 28),
 
                   // Next / Get Started button
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: size.height < 640 ? 46 : 54,
                     child: ElevatedButton(
                       onPressed: _nextPage,
                       style: ElevatedButton.styleFrom(
@@ -173,7 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ? 'Get Started'
                             : 'Next',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 18.5,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         ),
@@ -191,7 +199,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         'Already have an account? ',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.8),
-                          fontSize: 14,
+                          fontSize: 16,
                         ),
                       ),
                       GestureDetector(
@@ -201,7 +209,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: 16,
                             decorationColor: Colors.white,
                           ),
                         ),
@@ -217,7 +225,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage(OnboardingData page, Size size) {
+  Widget _buildPage(OnboardingData page, Size size, BuildContext context) {
+    final isShort = size.height < 640;
+    final imageSize = context.responsive(
+      mobile: isShort ? 96.0 : 160.0,
+      tablet: 190.0,
+      laptop: 210.0,
+      desktop: 220.0,
+    );
+    final subtitleSize = context.responsive(
+      mobile: isShort ? 22.0 : 30.0,
+      tablet: 32.0,
+      laptop: 34.0,
+    );
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -229,92 +250,65 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
+          child: SingleChildScrollView(
+            // Reserve space so content never sits under the bottom controls
+            padding: EdgeInsets.only(bottom: isShort ? 150 : 210),
+            child: Column(
+              children: [
+                SizedBox(height: isShort ? 20 : 60),
 
-              // Big image in circle
-              Container(
-                width: 160,
-                height: 160,
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.15),
-                  shape: BoxShape.circle,
-                  // border: Border.all(
-                  //   color: Colors.white.withOpacity(0.3),
-                  //   width: 2,
-                  // ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.16),
-                      blurRadius: 28,
-                      offset: const Offset(0, 14),
+                // Big image in circle
+                Container(
+                  width: imageSize,
+                  height: imageSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.16),
+                        blurRadius: 28,
+                        offset: const Offset(0, 14),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      page.image,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(page.icon, color: Colors.white, size: 76),
                     ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    page.image,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Icon(page.icon, color: Colors.white, size: 76),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 48),
+                SizedBox(height: isShort ? 24 : 48),
 
-              // Slide number badge
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.4)),
-                ),
-                child: Text(
-                  page.title,
-                  style: const TextStyle(
+                // Subtitle
+                Text(
+                  page.subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
+                    fontSize: subtitleSize,
+                    fontWeight: FontWeight.bold,
+                    height: 1.2,
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Subtitle
-              Text(
-                page.subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
+                // Description
+                Text(
+                  page.description,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 16.5,
+                    height: 1.6,
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Description
-              Text(
-                page.description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
-                  fontSize: 14.5,
-                  height: 1.6,
-                ),
-              ),
-
-              const Spacer(),
-            ],
+              ],
+            ),
           ),
         ),
       ),

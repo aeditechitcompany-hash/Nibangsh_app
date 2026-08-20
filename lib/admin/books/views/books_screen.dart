@@ -5,6 +5,8 @@ import '../../../common/models/book_resource.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/books_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BooksScreen extends StatelessWidget {
   const BooksScreen({super.key});
@@ -29,16 +31,18 @@ class BooksScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(controller, context),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+            ResponsiveDashboardWrapper(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
                 ),
+                padding: const EdgeInsets.only(top: 20),
+                child: _buildBookList(controller, context),
               ),
-              padding: const EdgeInsets.only(top: 20),
-              child: _buildBookList(controller, context),
             ),
             const SizedBox(height: 100),
           ],
@@ -76,7 +80,7 @@ class BooksScreen extends StatelessWidget {
                     'Books & Resources',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 21,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -86,7 +90,7 @@ class BooksScreen extends StatelessWidget {
                       '${controller.books.length} PDFs shared with students',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.75),
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                       ),
                     ),
                   ),
@@ -142,7 +146,7 @@ class BooksScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   const Text(
                     'Tap "Upload PDF" to add one for students',
-                    style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 14),
                   ),
                 ],
               ),
@@ -196,7 +200,7 @@ class BooksScreen extends StatelessWidget {
                 Text(
                   book.title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -206,7 +210,7 @@ class BooksScreen extends StatelessWidget {
                   Text(
                     book.description,
                     style: const TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 13,
                       color: AppColors.textGrey,
                     ),
                     maxLines: 2,
@@ -219,7 +223,7 @@ class BooksScreen extends StatelessWidget {
                       ? book.fileName
                       : '${book.fileName} • ${book.fileSizeLabel}',
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -229,7 +233,7 @@ class BooksScreen extends StatelessWidget {
           Column(
             children: [
               IconButton(
-                onPressed: () => OpenFile.open(book.filePath),
+                onPressed: () => _openBook(book),
                 icon: const Icon(
                   Icons.visibility_outlined,
                   color: AppColors.primaryBlue,
@@ -262,7 +266,44 @@ class BooksScreen extends StatelessWidget {
       ),
     );
   }
+Future<void> _openBook(BookResource book) async {
+  if (book.pdfUrl.trim().isEmpty) {
+    Get.snackbar(
+      'PDF unavailable',
+      'This book does not have a PDF file.',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+    );
+    return;
+  }
 
+  try {
+    final uri = Uri.parse(book.pdfUrl);
+
+    final opened = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!opened) {
+      Get.snackbar(
+        'Unable to open PDF',
+        'Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+    }
+  } catch (e) {
+    debugPrint('OPEN BOOK ERROR: $e');
+
+    Get.snackbar(
+      'Error',
+      'Could not open this PDF.',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+    );
+  }
+}
   void _confirmDelete(AdminBooksController controller, BookResource book) {
     Get.dialog(
       AlertDialog(
@@ -304,13 +345,16 @@ class BooksScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
           child: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -333,7 +377,7 @@ class BooksScreen extends StatelessWidget {
                           ? 'Edit Book'
                           : 'Upload a Book (PDF)',
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -405,7 +449,7 @@ class BooksScreen extends StatelessWidget {
                                     ? 'Keep current PDF (tap to replace)'
                                     : 'Choose a PDF file',
                                 style: const TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textDark,
                                 ),
@@ -437,7 +481,7 @@ class BooksScreen extends StatelessWidget {
                               ? 'Save Changes'
                               : 'Upload & Share',
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

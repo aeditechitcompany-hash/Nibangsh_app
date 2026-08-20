@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/util/app_colors.dart';
 import '../controller/notifications_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class StudentNotificationsScreen extends StatelessWidget {
   const StudentNotificationsScreen({super.key});
@@ -11,36 +12,38 @@ class StudentNotificationsScreen extends StatelessWidget {
     final controller = Get.put(NotificationsController());
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(controller),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-              child: Obx(() {
-                if (controller.notifications.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 60),
-                    child: Center(
-                      child: Text(
-                        'No notifications yet',
-                        style: TextStyle(color: AppColors.textGrey),
-                      ),
-                    ),
-                  );
-                }
-                return Column(
-                  children: controller.notifications
-                      .map((notification) => _notificationTile(notification))
-                      .toList(),
-                );
-              }),
-            ),
-          ],
+        backgroundColor: AppColors.background,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(controller),
+              ResponsiveWrapper(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                  child: Obx(() {
+                    if (controller.notifications.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 60),
+                        child: Center(
+                          child: Text(
+                            'No notifications yet',
+                            style: TextStyle(color: AppColors.textGrey),
+                          ),
+                        ),
+                      );
+                    }
+                    return Column(
+                      children: controller.notifications
+                          .map((notification) => _notificationTile(notification))
+                          .toList(),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -93,17 +96,17 @@ class StudentNotificationsScreen extends StatelessWidget {
                       'Notifications',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 19,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Obx(
-                      () => Text(
+                          () => Text(
                         '${controller.unreadCount} updates',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.75),
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ),
@@ -163,7 +166,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                 Text(
                   notification.title,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -172,7 +175,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                 Text(
                   notification.message,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: AppColors.textGrey,
                   ),
                 ),
@@ -180,7 +183,7 @@ class StudentNotificationsScreen extends StatelessWidget {
                 Text(
                   notification.time,
                   style: const TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 12,
                     color: AppColors.textGrey,
                   ),
                 ),

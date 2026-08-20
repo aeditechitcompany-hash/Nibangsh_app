@@ -7,6 +7,7 @@ import '../../../common/models/required_document.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/docs_controller.dart';
+import 'package:nibangsh_consultancy/common/util/responsive.dart';
 
 class DocsScreen extends StatelessWidget {
   const DocsScreen({super.key});
@@ -15,43 +16,41 @@ class DocsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(DocsController());
 
-    // Wrapped in a Scaffold so this screen has a proper Material ancestor
-    // when it's pushed as its own route (e.g. from Step 3 on Home). Without
-    // it, Text widgets fall back to Flutter's "no DefaultTextStyle found"
-    // error style, which renders as a yellow/red underline under the text.
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+        backgroundColor: AppColors.background,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              ResponsiveWrapper(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildStatsRow(controller),
+                      const SizedBox(height: 24),
+                      _buildUploadedFilesSection(controller, context),
+                      const SizedBox(height: 24),
+                      _buildRequiredDocumentsSection(controller, context),
+                      const SizedBox(height: 22),
+                      _buildDragAndDropZone(controller, context),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               ),
-              padding: const EdgeInsets.only(top: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStatsRow(controller),
-                  const SizedBox(height: 24),
-                  _buildUploadedFilesSection(controller, context),
-                  const SizedBox(height: 24),
-                  _buildRequiredDocumentsSection(controller, context),
-                  const SizedBox(height: 22),
-                  _buildDragAndDropZone(controller, context),
-                  const SizedBox(height: 100),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -85,7 +84,7 @@ class DocsScreen extends StatelessWidget {
                       'Documents',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -94,7 +93,7 @@ class DocsScreen extends StatelessWidget {
                       'Upload & manage your files',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.85),
-                        fontSize: 12.5,
+                        fontSize: 14.5,
                       ),
                     ),
                   ],
@@ -195,7 +194,7 @@ class DocsScreen extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 23,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -203,7 +202,7 @@ class DocsScreen extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textGrey),
+            style: const TextStyle(fontSize: 12.5, color: AppColors.textGrey),
           ),
         ],
       ),
@@ -226,7 +225,7 @@ class DocsScreen extends StatelessWidget {
             const Text(
               'Uploaded Files',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -283,7 +282,7 @@ class DocsScreen extends StatelessWidget {
                 Text(
                   doc.fileName,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -291,7 +290,7 @@ class DocsScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 const Text(
                   'Photo • Verified',
-                  style: TextStyle(fontSize: 11, color: AppColors.textGrey),
+                  style: TextStyle(fontSize: 12.5, color: AppColors.textGrey),
                 ),
               ],
             ),
@@ -352,7 +351,7 @@ class DocsScreen extends StatelessWidget {
           const Text(
             'Required Documents',
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: AppColors.textDark,
             ),
@@ -405,7 +404,7 @@ class DocsScreen extends StatelessWidget {
                 Text(
                   doc.title,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -424,7 +423,7 @@ class DocsScreen extends StatelessWidget {
                     Text(
                       doc.uploaded ? 'Uploaded & verified' : 'Not uploaded yet',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                         color: doc.uploaded
                             ? const Color(0xFF16A34A)
@@ -440,7 +439,7 @@ class DocsScreen extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => _showUploadOptions(controller, doc, context),
               icon: const Icon(Icons.upload_rounded, size: 15),
-              label: const Text('Upload', style: TextStyle(fontSize: 12)),
+              label: const Text('Upload', style: TextStyle(fontSize: 14)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: Colors.white,
@@ -466,13 +465,17 @@ class DocsScreen extends StatelessWidget {
       ) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -492,7 +495,7 @@ class DocsScreen extends StatelessWidget {
                 Text(
                   'Upload ${doc.title}',
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -553,7 +556,7 @@ class DocsScreen extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 13.5,
+                fontSize: 15.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textDark,
               ),
@@ -580,13 +583,17 @@ class DocsScreen extends StatelessWidget {
   void _showBrowseOptions(DocsController controller, BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
       builder: (sheetContext) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -606,7 +613,7 @@ class DocsScreen extends StatelessWidget {
                 const Text(
                   'Upload a Document',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
@@ -671,7 +678,7 @@ class DottedBorderBox extends StatelessWidget {
             const Text(
               'Drag & drop or browse',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
               ),
@@ -679,7 +686,7 @@ class DottedBorderBox extends StatelessWidget {
             const SizedBox(height: 4),
             const Text(
               'PDF, JPG, PNG supported • Max 10MB',
-              style: TextStyle(fontSize: 11, color: AppColors.textGrey),
+              style: TextStyle(fontSize: 12.5, color: AppColors.textGrey),
             ),
             const SizedBox(height: 18),
             SizedBox(
@@ -697,7 +704,7 @@ class DottedBorderBox extends StatelessWidget {
                 ),
                 child: const Text(
                   'Browse Files',
-                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
