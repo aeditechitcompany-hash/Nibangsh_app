@@ -6,6 +6,7 @@ import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 import '../controller/books_controller.dart';
 import 'package:nibangsh_consultancy/common/util/responsive.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BooksScreen extends StatelessWidget {
   const BooksScreen({super.key});
@@ -85,7 +86,7 @@ class BooksScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Obx(
-                        () => Text(
+                    () => Text(
                       '${controller.books.length} PDFs shared with students',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.75),
@@ -162,10 +163,10 @@ class BooksScreen extends StatelessWidget {
   }
 
   Widget _bookCard(
-      AdminBooksController controller,
-      BookResource book,
-      BuildContext context,
-      ) {
+    AdminBooksController controller,
+    BookResource book,
+    BuildContext context,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
@@ -232,7 +233,7 @@ class BooksScreen extends StatelessWidget {
           Column(
             children: [
               IconButton(
-                onPressed: () => OpenFile.open(book.filePath),
+                onPressed: () => _openBook(book),
                 icon: const Icon(
                   Icons.visibility_outlined,
                   color: AppColors.primaryBlue,
@@ -265,7 +266,44 @@ class BooksScreen extends StatelessWidget {
       ),
     );
   }
+Future<void> _openBook(BookResource book) async {
+  if (book.pdfUrl.trim().isEmpty) {
+    Get.snackbar(
+      'PDF unavailable',
+      'This book does not have a PDF file.',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+    );
+    return;
+  }
 
+  try {
+    final uri = Uri.parse(book.pdfUrl);
+
+    final opened = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!opened) {
+      Get.snackbar(
+        'Unable to open PDF',
+        'Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+    }
+  } catch (e) {
+    debugPrint('OPEN BOOK ERROR: $e');
+
+    Get.snackbar(
+      'Error',
+      'Could not open this PDF.',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+    );
+  }
+}
   void _confirmDelete(AdminBooksController controller, BookResource book) {
     Get.dialog(
       AlertDialog(
@@ -290,10 +328,10 @@ class BooksScreen extends StatelessWidget {
   }
 
   void _showUploadSheet(
-      BuildContext context,
-      AdminBooksController controller, {
-        BookResource? editBook,
-      }) {
+    BuildContext context,
+    AdminBooksController controller, {
+    BookResource? editBook,
+  }) {
     if (editBook != null) {
       controller.startEdit(editBook);
     } else {
@@ -334,7 +372,7 @@ class BooksScreen extends StatelessWidget {
                     ),
                   ),
                   Obx(
-                        () => Text(
+                    () => Text(
                       controller.isEditing
                           ? 'Edit Book'
                           : 'Upload a Book (PDF)',
@@ -369,7 +407,7 @@ class BooksScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Obx(
-                        () => InkWell(
+                    () => InkWell(
                       borderRadius: BorderRadius.circular(14),
                       onTap: controller.isPicking.value
                           ? null
@@ -438,7 +476,7 @@ class BooksScreen extends StatelessWidget {
                         elevation: 0,
                       ),
                       child: Obx(
-                            () => Text(
+                        () => Text(
                           controller.isEditing
                               ? 'Save Changes'
                               : 'Upload & Share',

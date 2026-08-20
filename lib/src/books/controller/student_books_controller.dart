@@ -1,26 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../common/api_services/api_service.dart';
+
 import '../../../common/api_services/api_constants.dart';
+import '../../../common/api_services/api_service.dart';
 import '../../../common/models/book_resource.dart';
 import '../../../common/services/books_repository.dart';
 
 class StudentBooksController extends GetxController {
   final ApiService _apiService = const ApiService();
 
+  final BooksRepository _repo = BooksRepository.to;
+
+  final searchController = TextEditingController();
+
+  final query = ''.obs;
+
+  // BOOK ACCESS
+
   final RxBool bookAccess = false.obs;
+
   final RxBool isCheckingBookAccess = true.obs;
+
   final RxBool isRefreshingBookAccess = false.obs;
 
-  final BooksRepository _repo = BooksRepository.to;
-  final searchController = TextEditingController();
-  final query = ''.obs;
+  // BOOK LOADING
+
+  final RxBool isLoadingBooks = false.obs;
+
+  final RxString bookError = ''.obs;
+
+  // BOOKS
+
+  List<BookResource> get books => _repo.books;
+
+  List<BookResource> get filteredBooks {
+    final q = query.value.trim().toLowerCase();
+
+    if (q.isEmpty) {
+      return books;
+    }
+
+    return books.where((book) {
+      return book.title.toLowerCase().contains(q) ||
+          book.author.toLowerCase().contains(q) ||
+          book.description.toLowerCase().contains(q);
+    }).toList();
+  }
+
+  // INIT
 
   @override
   void onInit() {
     super.onInit();
+
     checkBookAccess();
   }
+
+  // CHECK BOOK ACCESS
 
   Future<void> checkBookAccess() async {
     try {
@@ -30,16 +66,23 @@ class StudentBooksController extends GetxController {
         url: ApiConstants.myMcqAccess,
       );
 
-      bookAccess.value = response["book_access"] == true;
+      debugPrint('================================');
+      debugPrint('BOOK ACCESS CHECK');
+      debugPrint('Response: $response');
+      debugPrint('================================');
 
-      print("================================");
-      print("BOOK ACCESS CHECK");
-      print("Response: $response");
-      print("Book Access: ${bookAccess.value}");
-      print("================================");
+      bookAccess.value =
+          response["book_access"] == true;
+
+      // If access is available, load books.
+      if (bookAccess.value) {
+        await loadBooks();
+      }
     } catch (e) {
-      print("BOOK ACCESS CHECK ERROR");
-      print(e);
+      debugPrint('================================');
+      debugPrint('BOOK ACCESS CHECK ERROR');
+      debugPrint(e.toString());
+      debugPrint('================================');
 
       // Fail closed.
       bookAccess.value = false;
@@ -48,44 +91,68 @@ class StudentBooksController extends GetxController {
     }
   }
 
+  // LOAD BOOKS
+
+  Future<void> loadBooks() async {
+    try {
+      isLoadingBooks.value = true;
+      bookError.value = '';
+
+      await _repo.loadBooks();
+
+      // Repository may have an error.
+      if (_repo.errorMessage.value.isNotEmpty) {
+        bookError.value =
+            _repo.errorMessage.value;
+      }
+    } catch (e) {
+      debugPrint('================================');
+      debugPrint('LOAD BOOKS ERROR');
+      debugPrint(e.toString());
+      debugPrint('================================');
+
+      bookError.value =
+          'Could not load books.';
+    } finally {
+      isLoadingBooks.value = false;
+    }
+  }
+
+  // REFRESH BOOK ACCESS + BOOKS
+
   Future<void> refreshBookAccess() async {
     try {
       isRefreshingBookAccess.value = true;
 
       await checkBookAccess();
-
-      // If access was granted, reload books as well.
-      if (bookAccess.value) {
-        // Call whatever method your controller currently uses
-        // to load/reload books.
-        //
-        // Example:
-        // await loadBooks();
-      }
     } finally {
       isRefreshingBookAccess.value = false;
     }
   }
 
-  List<BookResource> get books => _repo.books;
+  // REFRESH BOOKS
 
-  List<BookResource> get filteredBooks {
-    final q = query.value.trim().toLowerCase();
-    if (q.isEmpty) return books;
-    return books
-        .where(
-          (b) =>
-              b.title.toLowerCase().contains(q) ||
-              b.description.toLowerCase().contains(q),
-        )
-        .toList();
+  Future<void> refreshBooks() async {
+    if (!bookAccess.value) {
+      await checkBookAccess();
+      return;
+    }
+
+    await loadBooks();
   }
 
-  void onSearchChanged(String value) => query.value = value;
+  // SEARCH
+
+  void onSearchChanged(String value) {
+    query.value = value;
+  }
+
+  // CLOSE
 
   @override
   void onClose() {
     searchController.dispose();
+
     super.onClose();
   }
 }

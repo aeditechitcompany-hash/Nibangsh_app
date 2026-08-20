@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/models/book_resource.dart';
@@ -22,69 +21,108 @@ class StudentBooksScreen extends StatelessWidget {
       color: AppColors.background,
       child: Obx(() {
         // CHECKING BOOK ACCESS
-
         if (controller.isCheckingBookAccess.value) {
-          return _buildCheckingScreen();
+          return const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primaryBlue,
+            ),
+          );
         }
 
         // BOOK ACCESS NOT GRANTED
-
         if (!controller.bookAccess.value) {
-          return _buildBookAccessPendingScreen(controller);
+          return _buildBookAccessPendingScreen(
+            controller,
+            context,
+          );
         }
 
         // BOOK ACCESS GRANTED
-
-        return _buildBooksContent(controller, context);
+        return _buildBooksContent(
+          controller,
+          context,
+        );
       }),
     );
   }
 
-  // WHATSAPP LAUNCH
+  // PHONE CALL
+
+  Future<void> _makePhoneCall() async {
+    const phone = '9851001970';
+
+    final uri = Uri.parse('tel:$phone');
+
+    if (!await launchUrl(uri)) {
+      debugPrint('Could not launch dialer');
+    }
+  }
+
+  // WHATSAPP
+
   Future<void> _openWhatsApp() async {
-    const phone = '9779851001970'; // country code + number
-    const message = 'Hi, I would like to request Books access.';
+    const phone = '9779851001970';
+
+    const message =
+        'Hi, I would like to request Books access.';
+
     final uri = Uri.parse(
       'https://wa.me/$phone?text=${Uri.encodeComponent(message)}',
     );
 
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
       debugPrint('Could not launch WhatsApp');
     }
   }
 
-  // CHECKING SCREEN
+  // FACEBOOK
 
-  Widget _buildCheckingScreen() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: AppColors.background,
-      child: const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(
-              color: AppColors.primaryBlue,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Checking Books access...',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textGrey,
-              ),
-            ),
-          ],
+  Future<void> _openFacebook() async {
+    final uri = Uri.parse(
+      'https://www.facebook.com/nibangshconsultancy',
+    );
+
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      debugPrint('Could not launch Facebook');
+    }
+  }
+
+  // CONTACT ICON BUTTON
+
+  Widget _contactIconButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: color,
+          size: 20,
         ),
       ),
     );
   }
 
-  // BOOK ACCESS PENDING
+  // BOOK ACCESS PENDING SCREEN
 
   Widget _buildBookAccessPendingScreen(
     StudentBooksController controller,
+    BuildContext context,
   ) {
     return RefreshIndicator(
       onRefresh: controller.refreshBookAccess,
@@ -98,9 +136,10 @@ class StudentBooksScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  // Keep the same Books header
-                  // even when access is pending.
-                  _buildHeader(controller, context),
+                  _buildHeader(
+                    controller,
+                    context,
+                  ),
 
                   ResponsiveWrapper(
                     child: Padding(
@@ -115,13 +154,15 @@ class StudentBooksScreen extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius:
+                              BorderRadius.circular(20),
                           border: Border.all(
                             color: AppColors.borderGrey,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
+                              color:
+                                  Colors.black.withOpacity(0.03),
                               blurRadius: 10,
                               offset: const Offset(0, 3),
                             ),
@@ -129,8 +170,6 @@ class StudentBooksScreen extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            // ICON
-
                             Container(
                               width: 80,
                               height: 80,
@@ -142,13 +181,13 @@ class StudentBooksScreen extends StatelessWidget {
                               child: const Icon(
                                 Icons.menu_book_rounded,
                                 size: 40,
-                                color: AppColors.primaryBlue,
+                                color:
+                                    AppColors.primaryBlue,
                               ),
                             ),
 
                             const SizedBox(height: 20),
 
-                            // TITLE
                             const Text(
                               'Books Access Pending',
                               textAlign: TextAlign.center,
@@ -161,7 +200,6 @@ class StudentBooksScreen extends StatelessWidget {
 
                             const SizedBox(height: 10),
 
-                            // DESCRIPTION
                             const Text(
                               'Your Books access has not been granted yet.',
                               textAlign: TextAlign.center,
@@ -186,68 +224,91 @@ class StudentBooksScreen extends StatelessWidget {
 
                             const SizedBox(height: 24),
 
-                            // CHECK AGAIN BUTTON
                             Obx(() {
-                              final refreshing =
-                                  controller.isRefreshingBookAccess.value;
+                              final refreshing = controller
+                                  .isRefreshingBookAccess
+                                  .value;
 
                               return OutlinedButton.icon(
                                 onPressed: refreshing
                                     ? null
-                                    : controller.refreshBookAccess,
+                                    : controller
+                                        .refreshBookAccess,
                                 icon: refreshing
                                     ? const SizedBox(
                                         width: 18,
                                         height: 18,
-                                        child: CircularProgressIndicator(
+                                        child:
+                                            CircularProgressIndicator(
                                           strokeWidth: 2,
                                         ),
                                       )
                                     : const Icon(
-                                        Icons.refresh_rounded,
+                                        Icons
+                                            .refresh_rounded,
                                       ),
                                 label: Text(
                                   refreshing
                                       ? 'Checking...'
                                       : 'Check Again',
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight:
+                                        FontWeight.bold,
                                   ),
                                 ),
-                                style: OutlinedButton.styleFrom(
+                                style:
+                                    OutlinedButton.styleFrom(
                                   foregroundColor:
                                       AppColors.primaryBlue,
                                   side: const BorderSide(
-                                    color: AppColors.primaryBlue,
+                                    color:
+                                        AppColors.primaryBlue,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
+                                  padding:
+                                      const EdgeInsets
+                                          .symmetric(
                                     horizontal: 20,
                                     vertical: 12,
                                   ),
-                                  shape: RoundedRectangleBorder(
+                                  shape:
+                                      RoundedRectangleBorder(
                                     borderRadius:
-                                        BorderRadius.circular(12),
+                                        BorderRadius.circular(
+                                      12,
+                                    ),
                                   ),
                                 ),
                               );
                             }),
 
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 16),
 
-                            TextButton.icon(
-                              onPressed: _openWhatsApp,
-                              icon: const Icon(
-                                Icons.chat_bubble_outline_rounded,
-                                color: Color(0xFF25D366),
-                                size: 18,
-                              ),
-                              label: const Text(
-                                'Ask on WhatsApp: 9851001970',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF25D366),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                _contactIconButton(
+                                  icon: Icons.call_rounded,
+                                  color:
+                                      AppColors.primaryBlue,
+                                  onTap: _makePhoneCall,
                                 ),
-                              ),
+                                const SizedBox(width: 14),
+                                _contactIconButton(
+                                  icon: Icons.chat_rounded,
+                                  color:
+                                      const Color(0xFF25D366),
+                                  onTap: _openWhatsApp,
+                                ),
+                                const SizedBox(width: 14),
+                                _contactIconButton(
+                                  icon:
+                                      Icons.facebook_rounded,
+                                  color:
+                                      const Color(0xFF1877F2),
+                                  onTap: _openFacebook,
+                                ),
+                              ],
                             ),
 
                             const SizedBox(height: 16),
@@ -276,52 +337,41 @@ class StudentBooksScreen extends StatelessWidget {
     );
   }
 
-  // NORMAL BOOKS CONTENT
+  // BOOKS CONTENT
 
   Widget _buildBooksContent(
     StudentBooksController controller,
     BuildContext context,
   ) {
     return LayoutBuilder(
-      builder: (context, outerConstraints) {
+      builder: (context, constraints) {
         return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: outerConstraints.maxHeight,
-            ),
-            child: IntrinsicHeight(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(controller, context),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(
+                controller,
+                context,
+              ),
 
-                  Expanded(
-                    child: ResponsiveWrapper(
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AppColors.background,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(28),
-                            topRight: Radius.circular(28),
-                          ),
-                        ),
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            _buildBookList(controller),
-
-                            const SizedBox(height: 100),
-                          ],
-                        ),
-                      ),
+              ResponsiveWrapper(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
                     ),
                   ),
-                ],
+                  padding: const EdgeInsets.only(
+                    top: 20,
+                    bottom: 100,
+                  ),
+                  child: _buildBookList(controller),
+                ),
               ),
-            ),
+            ],
           ),
         );
       },
@@ -357,12 +407,14 @@ class StudentBooksScreen extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
 
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
@@ -377,13 +429,12 @@ class StudentBooksScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       'Shared by your consultancy',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
+                        color:
+                            Colors.white.withOpacity(0.85),
                         fontSize: 14.5,
                       ),
                     ),
@@ -398,18 +449,20 @@ class StudentBooksScreen extends StatelessWidget {
                 child: Stack(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(9),
+                      padding:
+                          const EdgeInsets.all(9),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.16),
+                        color:
+                            Colors.white.withOpacity(0.16),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        Icons.notifications_none_rounded,
+                        Icons
+                            .notifications_none_rounded,
                         color: Colors.white,
                         size: 20,
                       ),
                     ),
-
                     Positioned(
                       right: 0,
                       top: 0,
@@ -417,10 +470,12 @@ class StudentBooksScreen extends StatelessWidget {
                         width: 9,
                         height: 9,
                         decoration: BoxDecoration(
-                          color: AppColors.primaryRed,
+                          color:
+                              AppColors.primaryRed,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppColors.navyDark,
+                            color:
+                                AppColors.navyDark,
                             width: 1.5,
                           ),
                         ),
@@ -434,42 +489,47 @@ class StudentBooksScreen extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          // Search bar only appears when access is granted.
-          if (controller.bookAccess.value)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.16),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                ),
+          Container(
+            decoration: BoxDecoration(
+              color:
+                  Colors.white.withOpacity(0.16),
+              borderRadius:
+                  BorderRadius.circular(14),
+              border: Border.all(
+                color:
+                    Colors.white.withOpacity(0.2),
               ),
-              child: TextField(
-                controller: controller.searchController,
-                onChanged: controller.onSearchChanged,
-                style: const TextStyle(
-                  color: Colors.white,
+            ),
+            child: TextField(
+              controller:
+                  controller.searchController,
+              onChanged:
+                  controller.onSearchChanged,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15.5,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Search books...',
+                hintStyle: TextStyle(
+                  color:
+                      Colors.white.withOpacity(0.75),
                   fontSize: 15.5,
                 ),
-                decoration: InputDecoration(
-                  hintText: 'Search books...',
-                  hintStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.75),
-                    fontSize: 15.5,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.white.withOpacity(0.85),
-                    size: 21,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(
-                    vertical: 14,
-                  ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color:
+                      Colors.white.withOpacity(0.85),
+                  size: 21,
+                ),
+                border: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.symmetric(
+                  vertical: 14,
                 ),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -481,9 +541,91 @@ class StudentBooksScreen extends StatelessWidget {
     StudentBooksController controller,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
-        final books = controller.filteredBooks;
+        final books =
+            controller.filteredBooks;
+
+        // LOADING
+
+        if (controller.isLoadingBooks.value) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 60,
+            ),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryBlue,
+              ),
+            ),
+          );
+        }
+
+        // ERROR
+
+        if (controller.bookError.isNotEmpty) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 60,
+            ),
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 44,
+                    color: AppColors.primaryRed
+                        .withOpacity(0.7),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  const Text(
+                    'Could not load books',
+                    style: TextStyle(
+                      color: AppColors.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    controller.bookError.value,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.textGrey,
+                      fontSize: 13,
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  ElevatedButton.icon(
+                    onPressed:
+                        controller.refreshBooks,
+                    icon: const Icon(
+                      Icons.refresh_rounded,
+                    ),
+                    label:
+                        const Text('Try Again'),
+                    style:
+                        ElevatedButton.styleFrom(
+                      backgroundColor:
+                          AppColors.primaryBlue,
+                      foregroundColor:
+                          Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // EMPTY
 
         if (books.isEmpty) {
           return Padding(
@@ -495,36 +637,39 @@ class StudentBooksScreen extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.menu_book_rounded,
-                    size: 40,
-                    color:
-                        AppColors.textGrey.withOpacity(0.4),
+                    size: 44,
+                    color: AppColors.textGrey
+                        .withOpacity(0.4),
                   ),
 
                   const SizedBox(height: 12),
 
                   const Text(
-                    'No books shared yet',
+                    'No books available',
                     style: TextStyle(
                       color: AppColors.textGrey,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
 
                   const Text(
-                    'Your consultancy will post study materials here',
+                    'Your consultancy will post study materials here.',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.textGrey,
                       fontSize: 14,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
           );
         }
+
+        // BOOKS
 
         return Column(
           children: books
@@ -541,41 +686,53 @@ class StudentBooksScreen extends StatelessWidget {
 
   Widget _bookCard(BookResource book) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      width: double.infinity,
+      margin:
+          const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius:
+            BorderRadius.circular(18),
         border: Border.all(
           color: AppColors.borderGrey,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color:
+                Colors.black.withOpacity(0.03),
             blurRadius: 8,
-            offset: const Offset(0, 3),
+            offset:
+                const Offset(0, 3),
           ),
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
         children: [
+          // BOOK ICON
+
           Container(
-            width: 46,
-            height: 46,
+            width: 48,
+            height: 48,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: AppColors.primaryRed.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.primaryRed
+                  .withOpacity(0.1),
+              borderRadius:
+                  BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.picture_as_pdf_rounded,
               color: AppColors.primaryRed,
-              size: 22,
+              size: 24,
             ),
           ),
 
           const SizedBox(width: 12),
+
+          // BOOK INFORMATION
 
           Expanded(
             child: Column(
@@ -584,60 +741,101 @@ class StudentBooksScreen extends StatelessWidget {
               children: [
                 Text(
                   book.title,
+                  maxLines: 2,
+                  overflow:
+                      TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
+                    fontWeight:
+                        FontWeight.bold,
+                    color:
+                        AppColors.textDark,
                   ),
                 ),
 
-                if (book.description.isNotEmpty) ...[
-                  const SizedBox(height: 3),
-
+                // AUTHOR
+                if (book.author.isNotEmpty) ...[
+                  const SizedBox(height: 4),
                   Text(
-                    book.description,
+                    'By ${book.author}',
+                    maxLines: 1,
+                    overflow:
+                        TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 13,
-                      color: AppColors.textGrey,
+                      color:
+                          AppColors.textGrey,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
 
-                const SizedBox(height: 10),
+                // DESCRIPTION
+                if (book.description.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    book.description,
+                    maxLines: 2,
+                    overflow:
+                        TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color:
+                          AppColors.textGrey,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 12),
+
+                // ACTION BUTTONS
 
                 Row(
                   children: [
-                    // VIEW
                     Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () =>
-                            OpenFile.open(book.filePath),
+                      child:
+                          OutlinedButton.icon(
+                        onPressed:
+                            book.pdfUrl.isEmpty
+                                ? null
+                                : () =>
+                                    _viewBook(book),
                         icon: const Icon(
-                          Icons.visibility_outlined,
+                          Icons
+                              .visibility_outlined,
                           size: 16,
                         ),
                         label: const Text(
                           'View',
                           style: TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight:
+                                FontWeight.w600,
                           ),
                         ),
-                        style: OutlinedButton.styleFrom(
+                        style:
+                            OutlinedButton
+                                .styleFrom(
                           foregroundColor:
-                              AppColors.primaryBlue,
-                          side: const BorderSide(
-                            color: AppColors.primaryBlue,
+                              AppColors
+                                  .primaryBlue,
+                          side:
+                              const BorderSide(
+                            color: AppColors
+                                .primaryBlue,
                           ),
                           padding:
-                              const EdgeInsets.symmetric(
-                            vertical: 8,
+                              const EdgeInsets
+                                  .symmetric(
+                            vertical: 9,
                           ),
-                          shape: RoundedRectangleBorder(
+                          shape:
+                              RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(10),
+                                BorderRadius
+                                    .circular(
+                              10,
+                            ),
                           ),
                         ),
                       ),
@@ -645,35 +843,51 @@ class StudentBooksScreen extends StatelessWidget {
 
                     const SizedBox(width: 8),
 
-                    // DOWNLOAD
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () =>
-                            OpenFile.open(book.filePath),
+                      child:
+                          ElevatedButton.icon(
+                        onPressed:
+                            book.pdfUrl.isEmpty
+                                ? null
+                                : () =>
+                                    _downloadBook(
+                                      book,
+                                    ),
                         icon: const Icon(
-                          Icons.download_rounded,
+                          Icons
+                              .download_rounded,
                           size: 16,
                         ),
                         label: const Text(
                           'Download',
                           style: TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight:
+                                FontWeight.w600,
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
+                        style:
+                            ElevatedButton
+                                .styleFrom(
                           backgroundColor:
-                              AppColors.primaryBlue,
-                          foregroundColor: Colors.white,
-                          padding:
-                              const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
+                              AppColors
+                                  .primaryBlue,
+                          foregroundColor:
+                              Colors.white,
                           elevation: 0,
+                          padding:
+                              const EdgeInsets
+                                  .symmetric(
+                            vertical: 9,
+                          ),
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              10,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -685,5 +899,121 @@ class StudentBooksScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // VIEW BOOK
+
+  Future<void> _viewBook(
+    BookResource book,
+  ) async {
+    try {
+      if (book.pdfUrl.isEmpty) {
+        Get.snackbar(
+          'PDF unavailable',
+          'This book does not have a PDF file.',
+          snackPosition:
+              SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final uri =
+          Uri.parse(book.pdfUrl);
+
+      debugPrint(
+        'OPENING BOOK: ${book.pdfUrl}',
+      );
+
+      final launched =
+          await launchUrl(
+        uri,
+        mode:
+            LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        Get.snackbar(
+          'Unable to open PDF',
+          'Could not open ${book.title}.',
+          snackPosition:
+              SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      debugPrint(
+        'VIEW BOOK ERROR: $e',
+      );
+
+      Get.snackbar(
+        'Error',
+        'Could not open this book.',
+        snackPosition:
+            SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  // ============================================================
+  // DOWNLOAD BOOK
+  // ============================================================
+  //
+  // IMPORTANT:
+  // For this step we open the remote PDF URL.
+  //
+  // We are NOT using OpenFile.open() here because the Django
+  // "pdf" field is a remote URL, not a local phone file.
+  //
+  // Actual file downloading can be added after the API is
+  // confirmed working.
+  // ============================================================
+
+  Future<void> _downloadBook(
+    BookResource book,
+  ) async {
+    try {
+      if (book.pdfUrl.isEmpty) {
+        Get.snackbar(
+          'PDF unavailable',
+          'This book does not have a PDF file.',
+          snackPosition:
+              SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final uri =
+          Uri.parse(book.pdfUrl);
+
+      debugPrint(
+        'OPENING PDF FOR DOWNLOAD: ${book.pdfUrl}',
+      );
+
+      final launched =
+          await launchUrl(
+        uri,
+        mode:
+            LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        Get.snackbar(
+          'Unable to open PDF',
+          'Could not open ${book.title}.',
+          snackPosition:
+              SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      debugPrint(
+        'DOWNLOAD BOOK ERROR: $e',
+      );
+
+      Get.snackbar(
+        'Error',
+        'Could not open this book.',
+        snackPosition:
+            SnackPosition.BOTTOM,
+      );
+    }
   }
 }
