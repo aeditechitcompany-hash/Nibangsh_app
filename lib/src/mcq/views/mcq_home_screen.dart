@@ -46,7 +46,17 @@ class McqHomeScreen extends StatelessWidget {
     );
   }
 
-  // WHATSAPP LAUNCH
+  // PHONE CALL
+  Future<void> _makePhoneCall() async {
+    const phone = '9851001970';
+    final uri = Uri.parse('tel:$phone');
+
+    if (!await launchUrl(uri)) {
+      debugPrint('Could not launch dialer');
+    }
+  }
+
+  // WHATSAPP
   Future<void> _openWhatsApp() async {
     const phone = '9779851001970'; // country code + number
     const message = 'Hi, I would like to request MCQ access.';
@@ -57,6 +67,39 @@ class McqHomeScreen extends StatelessWidget {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       debugPrint('Could not launch WhatsApp');
     }
+  }
+
+  // FACEBOOK
+  Future<void> _openFacebook() async {
+    final uri = Uri.parse('https://www.facebook.com/nibangshconsultancy');
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch Facebook');
+    }
+  }
+
+  // SMALL CIRCULAR CONTACT ICON BUTTON
+  Widget _contactIconButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: color,
+          size: 20,
+        ),
+      ),
+    );
   }
 
   // CHECKING SCREEN
@@ -217,22 +260,34 @@ class McqHomeScreen extends StatelessWidget {
                               );
                             }),
 
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 16),
 
-                            TextButton.icon(
-                              onPressed: _openWhatsApp,
-                              icon: const Icon(
-                                Icons.chat_bubble_outline_rounded,
-                                color: Color(0xFF25D366),
-                                size: 18,
-                              ),
-                              label: const Text(
-                                'Ask on WhatsApp: 9851001970',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF25D366),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                _contactIconButton(
+                                  icon: Icons.call_rounded,
+                                  color: AppColors.primaryBlue,
+                                  onTap: _makePhoneCall,
                                 ),
-                              ),
+
+                                const SizedBox(width: 14),
+
+                                _contactIconButton(
+                                  icon: Icons.chat_rounded,
+                                  color: const Color(0xFF25D366),
+                                  onTap: _openWhatsApp,
+                                ),
+
+                                const SizedBox(width: 14),
+
+                                _contactIconButton(
+                                  icon: Icons.facebook_rounded,
+                                  color: const Color(0xFF1877F2),
+                                  onTap: _openFacebook,
+                                ),
+                              ],
                             ),
 
                             const SizedBox(height: 16),
