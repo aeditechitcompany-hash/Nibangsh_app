@@ -2,10 +2,10 @@ class ApiConstants {
   // BASE URL
 
   static const String baseUrl =
-      'http://192.168.101.29:8000/api';
+      'https://backend-7-uozu.onrender.com/api';
 
   static const String serverUrl =
-      'http://192.168.101.29:8000';
+      'https://backend-7-uozu.onrender.com';
 
   // AUTH
 
