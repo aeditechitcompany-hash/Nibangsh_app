@@ -213,10 +213,27 @@ class McqHomeController extends GetxController {
             )
             .toList();
 
-    // Keep your bundled/static sets too.
+    // Sort Quiz Sets in ascending numerical order
+    backendSets.sort((a, b) {
+      final aNumber = _extractSetNumber(a.title);
+      final bNumber = _extractSetNumber(b.title);
+
+      return aNumber.compareTo(bNumber);
+    });
+
     return [
       ...backendSets,
     ];
+  }
+
+  int _extractSetNumber(String title) {
+    final match = RegExp(r'\d+').firstMatch(title);
+
+    if (match != null) {
+      return int.tryParse(match.group(0)!) ?? 999999;
+    }
+
+    return 999999;
   }
 
   List<QuizSet> get filteredSets {
