@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,6 +31,8 @@ class StudentBooksController extends GetxController {
 
   final RxString bookError = ''.obs;
 
+  Timer? _accessPollingTimer;
+
   // BOOKS
 
   List<BookResource> get books => _repo.books;
@@ -53,14 +57,33 @@ class StudentBooksController extends GetxController {
   void onInit() {
     super.onInit();
 
-    checkBookAccess();
+    checkBookAccess(showLoading: true);
+
+    _startAccessPolling();
+  }
+
+  void _startAccessPolling() {
+    _accessPollingTimer?.cancel();
+
+    _accessPollingTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) async {
+        await checkBookAccess(
+          showLoading: false,
+        );
+      },
+    );
   }
 
   // CHECK BOOK ACCESS
 
-  Future<void> checkBookAccess() async {
+  Future<void> checkBookAccess({
+    bool showLoading = false,
+  }) async {
     try {
-      isCheckingBookAccess.value = true;
+      if (showLoading) {
+        isCheckingBookAccess.value = true;
+      }
 
       final response = await _apiService.get(
         url: ApiConstants.myMcqAccess,
@@ -71,11 +94,13 @@ class StudentBooksController extends GetxController {
       debugPrint('Response: $response');
       debugPrint('================================');
 
-      bookAccess.value =
-          response["book_access"] == true;
+      final access =
+          response is Map && response["book_access"] == true;
+
+      bookAccess.value = access;
 
       // If access is available, load books.
-      if (bookAccess.value) {
+      if (access) {
         await loadBooks();
       }
     } catch (e) {
@@ -87,7 +112,9 @@ class StudentBooksController extends GetxController {
       // Fail closed.
       bookAccess.value = false;
     } finally {
-      isCheckingBookAccess.value = false;
+      if (showLoading) {
+        isCheckingBookAccess.value = false;
+      }
     }
   }
 
@@ -121,10 +148,14 @@ class StudentBooksController extends GetxController {
   // REFRESH BOOK ACCESS + BOOKS
 
   Future<void> refreshBookAccess() async {
-    try {
-      isRefreshingBookAccess.value = true;
+    if (isRefreshingBookAccess.value) {
+      return;
+    }
 
-      await checkBookAccess();
+    isRefreshingBookAccess.value = true;
+
+    try {
+      await checkBookAccess(showLoading: false);
     } finally {
       isRefreshingBookAccess.value = false;
     }
@@ -134,7 +165,7 @@ class StudentBooksController extends GetxController {
 
   Future<void> refreshBooks() async {
     if (!bookAccess.value) {
-      await checkBookAccess();
+      await checkBookAccess(showLoading: false);
       return;
     }
 
@@ -151,6 +182,9 @@ class StudentBooksController extends GetxController {
 
   @override
   void onClose() {
+    _accessPollingTimer?.cancel();
+    _accessPollingTimer = null;
+
     searchController.dispose();
 
     super.onClose();
