@@ -215,7 +215,6 @@ class McqHomeController extends GetxController {
 
     // Keep your bundled/static sets too.
     return [
-      ...QuizCatalog.sets,
       ...backendSets,
     ];
   }
