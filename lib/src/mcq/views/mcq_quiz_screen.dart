@@ -20,6 +20,19 @@ class McqQuizScreen extends StatefulWidget {
 }
 
 class _McqQuizScreenState extends State<McqQuizScreen> {
+  // One playback controller per option index, so tapping anywhere on an
+  // answer box can trigger that option's audio without needing a
+  // GlobalKey. Reused across questions — the underlying AudioPlayButton
+  // State just gets new props (filePath etc.) on rebuild.
+  final Map<int, AudioPlayButtonController> _optionAudioControllers = {};
+
+  AudioPlayButtonController _controllerForOption(int index) {
+    return _optionAudioControllers.putIfAbsent(
+      index,
+      () => AudioPlayButtonController(),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -105,23 +118,30 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideLayout = screenWidth >= _kWideLayoutBreakpoint;
 
+    // Header scrolls away with the rest of the content.
     final body = SingleChildScrollView(
-      child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(controller, context),
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(28),
+                topRight: Radius.circular(28),
+              ),
+            ),
+            padding: const EdgeInsets.only(top: 22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildQuestionCard(controller, context, isWideLayout),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
-        ),
-        padding: const EdgeInsets.only(top: 22),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildQuestionCard(controller, context, isWideLayout),
-            const SizedBox(height: 40),
-          ],
-        ),
+        ],
       ),
     );
 
@@ -133,10 +153,12 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          _buildHeader(controller, context),
           Expanded(
             child: content,
           ),
+          // Fixed nav bar — stays on screen while the
+          // header and question content above scroll.
+          _buildBottomNavBar(controller, isWideLayout),
         ],
       ),
     );
@@ -297,8 +319,6 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
               isWideLayout
                   ? _buildWideBody(controller, question)
                   : _buildNarrowBody(controller, question),
-              const SizedBox(height: 8),
-              _buildNavButtons(controller),
             ],
           );
         }),
@@ -420,13 +440,17 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           ),
         ],
 
-        // Listening clip, if this question has one.
+        // Listening clip, if this question has one — bigger and
+        // centered under the question content.
         if (question.hasAudio) ...[
-          const SizedBox(height: 12),
-          AudioPlayButton(
-            filePath: question.audioAsset!,
-            isAsset: _isBundledAsset(question.audioAsset!),
-            label: 'Listen',
+          const SizedBox(height: 18),
+          Center(
+            child: AudioPlayButton(
+              filePath: question.audioAsset!,
+              isAsset: _isBundledAsset(question.audioAsset!),
+              label: 'Listen to the question',
+              size: 120,
+            ),
           ),
         ],
       ],
@@ -455,64 +479,92 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   return _buildOptionsList(controller, question);
 }
 
+  // ── Fixed bottom nav bar (Previous / Next) ──
+  Widget _buildBottomNavBar(
+    McqQuizController controller,
+    bool isWideLayout,
+  ) {
+    final navButtons = _buildNavButtons(controller);
+
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: AppColors.borderGrey, width: 1),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          child: isWideLayout
+              ? ResponsiveWrapper(child: navButtons)
+              : navButtons,
+        ),
+      ),
+    );
+  }
+
   Widget _buildNavButtons(McqQuizController controller) {
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: 46,
-            child: OutlinedButton(
-              onPressed: controller.isFirstQuestion
-                  ? null
-                  : controller.goPrevious,
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.borderGrey),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+    return Obx(
+      () => Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 46,
+              child: OutlinedButton(
+                onPressed: controller.isFirstQuestion
+                    ? null
+                    : controller.goPrevious,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.borderGrey),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'Previous',
-                style: TextStyle(
-                  color: AppColors.textDark,
-                  fontWeight: FontWeight.bold,
+                child: const Text(
+                  'Previous',
+                  style: TextStyle(
+                    color: AppColors.textDark,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: SizedBox(
-            height: 46,
-            child: ElevatedButton(
-              onPressed: controller.selectedForCurrent == null ||
-                      controller.isSubmittingAnswer.value
-                  ? null
-                  : controller.goNextOrFinish,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                disabledBackgroundColor: AppColors.primaryBlue
-                    .withOpacity(0.4),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SizedBox(
+              height: 46,
+              child: ElevatedButton(
+                onPressed: controller.selectedForCurrent == null ||
+                        controller.isSubmittingAnswer.value
+                    ? null
+                    : controller.goNextOrFinish,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  disabledBackgroundColor: AppColors.primaryBlue
+                      .withOpacity(0.4),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: Text(
-                controller.isLastQuestion ? 'Finish' : 'Next',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                child: Text(
+                  controller.isLastQuestion ? 'Finish' : 'Next',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   // ── Text / audio options ──
- // ── Text / audio options ──
 Widget _buildOptionsList(
   McqQuizController controller,
   QuizQuestion question,
@@ -526,7 +578,13 @@ Widget _buildOptionsList(
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: GestureDetector(
-          onTap: () => controller.selectOption(index),
+          onTap: () {
+            controller.selectOption(index);
+            // Tapping anywhere on the answer box also plays its audio.
+            if (hasAudioOption) {
+              _controllerForOption(index).play();
+            }
+          },
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
@@ -569,6 +627,7 @@ Widget _buildOptionsList(
                           label: displayText.isNotEmpty
                               ? displayText
                               : 'Listen ${index + 1}',
+                          controller: _controllerForOption(index),
                         )
                       : Text(
                           displayText,
@@ -607,9 +666,16 @@ Widget _buildOptionsList(
         final imagePath = question.hasOptionImageAt(index)
             ? question.optionImages![index]
             : null;
+        final hasAudioOption = question.hasOptionAudioAt(index);
 
         return GestureDetector(
-          onTap: () => controller.selectOption(index),
+          onTap: () {
+            controller.selectOption(index);
+            // Tapping anywhere on the answer box also plays its audio.
+            if (hasAudioOption) {
+              _controllerForOption(index).play();
+            }
+          },
           child: Container(
             decoration: BoxDecoration(
               color: selected
@@ -653,7 +719,7 @@ Widget _buildOptionsList(
                   left: 8,
                   child: _optionNumberBadge(index, selected: selected),
                 ),
-                if (question.hasOptionAudioAt(index))
+                if (hasAudioOption)
                   Positioned(
                     left: 8,
                     bottom: 8,
@@ -663,6 +729,8 @@ Widget _buildOptionsList(
                         question.optionAudioAt(index)!,
                       ),
                       label: 'Listen ${index + 1}',
+                      controller: _controllerForOption(index),
+                      size: 44,
                     ),
                   ),
               ],
@@ -680,11 +748,18 @@ Widget _buildOptionsList(
         final imagePath = question.hasOptionImageAt(index)
             ? question.optionImages![index]
             : null;
+        final hasAudioOption = question.hasOptionAudioAt(index);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: GestureDetector(
-            onTap: () => controller.selectOption(index),
+            onTap: () {
+              controller.selectOption(index);
+              // Tapping anywhere on the answer box also plays its audio.
+              if (hasAudioOption) {
+                _controllerForOption(index).play();
+              }
+            },
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -737,7 +812,7 @@ Widget _buildOptionsList(
                                   ),
                           ),
                         ),
-                        if (question.hasOptionAudioAt(index)) ...[
+                        if (hasAudioOption) ...[
                           const SizedBox(height: 8),
                           AudioPlayButton(
                             filePath: question.optionAudioAt(index)!,
@@ -745,6 +820,8 @@ Widget _buildOptionsList(
                               question.optionAudioAt(index)!,
                             ),
                             label: 'Listen ${index + 1}',
+                            controller: _controllerForOption(index),
+                            size: 52,
                           ),
                         ],
                       ],
@@ -779,18 +856,18 @@ Widget _buildOptionsList(
     }
 
     return Container(
-      width: 24,
-      height: 24,
+      width: 34,
+      height: 34,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: background,
-        border: Border.all(color: border),
+        border: Border.all(color: border, width: 1.5),
       ),
       child: Text(
         '${index + 1}',
         style: TextStyle(
-          fontSize: 14,
+          fontSize: 18,
           fontWeight: FontWeight.bold,
           color: text,
         ),

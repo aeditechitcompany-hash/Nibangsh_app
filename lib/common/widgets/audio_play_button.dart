@@ -2,7 +2,32 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../util/app_colors.dart';
 
-/// Small pill button that plays/pauses an mp3 file.
+/// Lets an external tap (e.g. tapping the whole answer box, not just the
+/// audio icon) trigger playback on a specific [AudioPlayButton] without
+/// needing a GlobalKey. Create one per audio clip and pass it to both the
+/// button and the surrounding tap handler.
+class AudioPlayButtonController {
+  VoidCallback? _playCallback;
+
+  void _bind(VoidCallback callback) {
+    _playCallback = callback;
+  }
+
+  void _unbind(VoidCallback callback) {
+    if (_playCallback == callback) {
+      _playCallback = null;
+    }
+  }
+
+  /// Starts playback if the clip is idle. Safe to call repeatedly — it
+  /// will never pause a clip that's already playing, so tapping the
+  /// answer box again mid-playback won't cut the audio off.
+  void play() {
+    _playCallback?.call();
+  }
+}
+
+/// Large circular icon button that plays/pauses an mp3 file.
 /// Used to preview MCQ audio clips on both the admin and student screens,
 /// and listening clips on the quiz screen.
 ///
@@ -19,11 +44,23 @@ class AudioPlayButton extends StatefulWidget {
   //   'assets/quiz/set1/q21.mp3' — used by the quiz listening questions.
   final bool isAsset;
 
+  // Diameter of the circular button. Bump this up for the main
+  // question-level "Listen" button; smaller values suit inline/overlay
+  // uses (e.g. on top of an image option tile).
+  final double size;
+
+  // Optional external trigger — pass the same controller into the
+  // surrounding GestureDetector's onTap so tapping anywhere on the
+  // answer box also starts this clip playing.
+  final AudioPlayButtonController? controller;
+
   const AudioPlayButton({
     super.key,
     required this.filePath,
     this.label = 'Play audio',
     this.isAsset = false,
+    this.size = 60,
+    this.controller,
   });
 
   @override
@@ -43,6 +80,16 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
     _player.onPlayerComplete.listen((_) {
       _resetToIdle();
     });
+    widget.controller?._bind(_playOnly);
+  }
+
+  @override
+  void didUpdateWidget(covariant AudioPlayButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._unbind(_playOnly);
+      widget.controller?._bind(_playOnly);
+    }
   }
 
   void _resetToIdle() {
@@ -61,6 +108,13 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
   Future<void> _stopForNextAudio() async {
     await _player.stop();
     _resetToIdle();
+  }
+
+  /// Starts playback only if idle — used when the surrounding answer box
+  /// is tapped, so it never pauses a clip that's already playing.
+  Future<void> _playOnly() async {
+    if (_isPlaying || _isLoading) return;
+    await _toggle();
   }
 
   Future<void> _toggle() async {
@@ -115,6 +169,7 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
 
   @override
   void dispose() {
+    widget.controller?._unbind(_playOnly);
     if (_activeButton == this) {
       _activeButton = null;
     }
@@ -124,43 +179,40 @@ class _AudioPlayButtonState extends State<AudioPlayButton> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: _toggle,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppColors.primaryBlue.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              _isLoading
-                  ? Icons.hourglass_top_rounded
-                  : _isPlaying
-                  ? Icons.pause_circle_filled_rounded
-                  : Icons.play_circle_fill_rounded,
-              color: AppColors.primaryBlue,
-              size: 18,
-            ),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                _isLoading
-                    ? 'Loading...'
-                    : _isPlaying
-                        ? 'Playing...'
-                        : widget.label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryBlue,
+    final iconSize = widget.size * 0.62;
+    final loaderSize = widget.size * 0.5;
+
+    return Tooltip(
+      message: widget.label,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(widget.size / 2),
+        onTap: _toggle,
+        child: Container(
+          width: widget.size,
+          height: widget.size,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: _isPlaying
+                ? const Color.fromARGB(255, 0, 0, 0)
+                : const Color.fromARGB(255, 63, 67, 70).withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: _isLoading
+              ? SizedBox(
+                  width: loaderSize,
+                  height: loaderSize,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3.4,
+                    color: _isPlaying ? Colors.white : const Color.fromARGB(255, 20, 23, 27),
+                  ),
+                )
+              : Icon(
+                  _isPlaying
+                      ? Icons.pause_rounded
+                      : Icons.headphones_rounded,
+                  color: _isPlaying ? Colors.white : const Color.fromARGB(255, 27, 30, 34),
+                  size: iconSize,
                 ),
-              ),
-            ),
-          ],
         ),
       ),
     );
