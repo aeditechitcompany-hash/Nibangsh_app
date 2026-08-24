@@ -693,13 +693,25 @@ Widget _buildOptionsList(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 30, 10, 10),
                     child: imagePath == null
-                        ? const Center(
-                            child: Icon(
-                              Icons.broken_image_outlined,
-                              size: 28,
-                              color: AppColors.textGrey,
-                            ),
-                          )
+                        ? hasAudioOption
+                            ? Center(
+                                child: AudioPlayButton(
+                                  filePath: question.optionAudioAt(index)!,
+                                  isAsset: _isBundledAsset(
+                                    question.optionAudioAt(index)!,
+                                  ),
+                                  label: 'Listen ${index + 1}',
+                                  controller: _controllerForOption(index),
+                                  size: 44,
+                                ),
+                              )
+                            : const Center(
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 28,
+                                  color: AppColors.textGrey,
+                                ),
+                              )
                         : _quizImage(
                             imagePath,
                             fit: BoxFit.contain,
@@ -790,13 +802,27 @@ Widget _buildOptionsList(
                             color: AppColors.background,
                             padding: const EdgeInsets.all(8),
                             child: imagePath == null
-                                ? const Center(
-                                    child: Icon(
-                                      Icons.broken_image_outlined,
-                                      size: 28,
-                                      color: AppColors.textGrey,
-                                    ),
-                                  )
+                                ? hasAudioOption
+                                    ? Center(
+                                        child: AudioPlayButton(
+                                          filePath:
+                                              question.optionAudioAt(index)!,
+                                          isAsset: _isBundledAsset(
+                                            question.optionAudioAt(index)!,
+                                          ),
+                                          label: 'Listen ${index + 1}',
+                                          controller:
+                                              _controllerForOption(index),
+                                          size: 44,
+                                        ),
+                                      )
+                                    : const Center(
+                                        child: Icon(
+                                          Icons.broken_image_outlined,
+                                          size: 28,
+                                          color: AppColors.textGrey,
+                                        ),
+                                      )
                                 : _quizImage(
                                     imagePath,
                                     fit: BoxFit.contain,

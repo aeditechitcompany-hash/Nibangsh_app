@@ -18,15 +18,16 @@ class McqResultScreen extends StatelessWidget {
     final QuizSet quizSet =
         args['quizSet'] as QuizSet;
 
-    // THESE VALUES COME FROM DJANGO DATABASE RESULT
+    // Keep the earned score from Django, but calculate the denominator from
+    // the complete quiz so unanswered questions are included.
     final int score =
-        args['score'] ?? 0;
+      int.tryParse(args['score']?.toString() ?? '') ?? 0;
 
-    final int maxScore =
-        args['maxScore'] ?? quizSet.totalQuestions;
+    final int maxScore = quizSet.totalQuestions;
 
-    final double percentage =
-        (args['percentage'] ?? 0).toDouble();
+    final double percentage = maxScore > 0
+      ? (score / maxScore) * 100
+      : 0;
 
     final bool passed =
         args['passed'] ?? false;

@@ -147,10 +147,12 @@ class QuizQuestion {
       audioAsset != null && audioAsset!.trim().isNotEmpty;
 
   bool get hasOptionImages =>
-      optionImages != null && optionImages!.isNotEmpty;
+      optionImages != null &&
+      optionImages!.any((image) => image.trim().isNotEmpty);
 
   bool get hasOptionAudios =>
-      optionAudios != null && optionAudios!.isNotEmpty;
+      optionAudios != null &&
+      optionAudios!.any((audio) => audio.trim().isNotEmpty);
 
   int get optionCount {
     if (quizOptions.isNotEmpty) {
