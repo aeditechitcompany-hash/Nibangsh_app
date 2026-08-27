@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:open_file/open_file.dart';
 import '../../../common/models/book_resource.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';

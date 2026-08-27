@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import '../util/app_colors.dart';
 
 /// Lets an external tap (e.g. tapping the whole answer box, not just the
 /// audio icon) trigger playback on a specific [AudioPlayButton] without
