@@ -1,6 +1,5 @@
 import 'api_constants.dart';
 import 'api_service.dart';
-import 'package:flutter/foundation.dart';
 
 /// Maps the labels shown in Flutter to Education.DegreeLevel choices in Django.
 const Map<String, String> kDegreeLevelApiValues = {
