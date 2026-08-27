@@ -16,6 +16,7 @@ import 'package:nibangsh_consultancy/src/mcq/views/mcq_instructions_screen.dart'
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_quiz_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
 import 'package:nibangsh_consultancy/src/notifications/views/notifications_screen.dart';
+import 'package:nibangsh_consultancy/src/splash/views/splash_screen.dart';
 import 'package:nibangsh_consultancy/src/universities/views/universities_screen.dart';
 import 'common/util/app_colors.dart';
 import 'common/util/app_route.dart';
@@ -51,12 +52,13 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-      initialRoute: AppRoute.onboarding,
+      initialRoute: AppRoute.splash,
       getPages: [
         GetPage(
           name: AppRoute.onboarding,
           page: () => const OnboardingScreen(),
         ),
+        GetPage(name: AppRoute.splash, page: () => const SplashScreen()),
         GetPage(name: AppRoute.login, page: () => const LoginScreen()),
         GetPage(name: AppRoute.signup, page: () => const SignupScreen()),
         GetPage(

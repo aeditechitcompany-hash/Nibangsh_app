@@ -41,6 +41,23 @@ class ApiService {
     }
   }
 
+  Future<bool> restoreSession() async {
+    final accessToken = await TokenStorageService.getAccessToken();
+    final refreshToken = await TokenStorageService.getRefreshToken();
+
+    if (accessToken == null || accessToken.isEmpty) {
+      return false;
+    }
+
+    // We already have an access token.
+    // It may still be valid, so let the caller use it.
+    if (refreshToken == null || refreshToken.isEmpty) {
+      return true;
+    }
+
+    return true;
+  }
+
   Future<Map<String, String>> _authHeaders() async {
     final accessToken = await TokenStorageService.getAccessToken();
     return {
@@ -189,37 +206,11 @@ class ApiService {
     required String url,
     Map<String, String>? headers,
   }) async {
-    final accessToken =
-        await TokenStorageService.getAccessToken();
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        "Content-Type": "application/json",
-        if (accessToken != null && accessToken.isNotEmpty)
-          "Authorization": "Bearer $accessToken",
-        ...?headers,
-      },
-    );
-
-    print("GET URL: $url");
-    print("ACCESS TOKEN EXISTS: ${accessToken != null}");
-    print("STATUS CODE: ${response.statusCode}");
-    print("RESPONSE BODY: ${response.body}");
-
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300) {
-      if (response.body.isEmpty) {
-        return {};
-      }
-
-      return jsonDecode(response.body);
-    }
-
-    throw Exception(
-      "GET request failed.\n"
-      "Status Code: ${response.statusCode}\n"
-      "Body: ${response.body}",
+    return _sendJson(
+      method: "GET",
+      url: url,
+      headers: headers,
+      authenticated: true,
     );
   }
 }
