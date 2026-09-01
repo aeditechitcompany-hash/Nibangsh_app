@@ -134,7 +134,6 @@ class McqRepository extends GetxService {
     } else {
       createdAt = DateTime.now();
     }
-
     return McqQuestion(
       id: json['id']?.toString() ?? '',
       question: json['text']?.toString() ?? '',
@@ -144,6 +143,7 @@ class McqRepository extends GetxService {
       // Students should not receive it.
       correctOptionIndex: null,
 
+      // Question image from Django/Cloudinary
       questionImagePath: ApiConstants.mediaUrl(
         json['image']?.toString(),
       ),
@@ -162,6 +162,35 @@ class McqRepository extends GetxService {
       questionSetId: questionSetId,
       optionIds: optionIds,
     );
+    // return McqQuestion(
+    //   id: json['id']?.toString() ?? '',
+    //   question: json['text']?.toString() ?? '',
+    //   options: optionTexts,
+    //
+    //   // NEVER read is_correct here.
+    //   // Students should not receive it.
+    //   correctOptionIndex: null,
+    //
+    //   // questionImagePath: ApiConstants.mediaUrl(
+    //   //   json['image']?.toString(),
+    //   // ),
+    //
+    //
+    //
+    //   audioFilePath: ApiConstants.mediaUrl(
+    //     json['audio']?.toString(),
+    //   ),
+    //
+    //   optionImagePaths: optionImages,
+    //   optionAudioPaths: optionAudios,
+    //
+    //   setName: setName,
+    //
+    //   createdAt: createdAt,
+    //
+    //   questionSetId: questionSetId,
+    //   optionIds: optionIds,
+    // );
   }
 
   /// Convert a complete backend question-set response
