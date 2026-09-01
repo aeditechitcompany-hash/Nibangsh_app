@@ -6,7 +6,7 @@ import '../../../common/util/responsive.dart';
 import '../../../common/widgets/app_bottom_nav.dart';
 import '../../countries/views/countries_screen.dart';
 import '../../home/views/home_screen.dart';
-import '../../books/views/student_books_screen.dart';
+import 'package:nibangsh_consultancy/src/books/views/student_books_screen.dart';
 import '../../profile/views/profile_screen.dart';
 import '../controller/main_navigation_controller.dart';
 
