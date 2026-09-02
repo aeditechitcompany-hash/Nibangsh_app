@@ -11,19 +11,19 @@ import '../../../common/api_services/api_constants.dart';
 import '../../../common/util/app_colors.dart';
 
 class McqHomeController extends GetxController {
-  final searchController =
-      TextEditingController();
+  final searchController = TextEditingController();
 
   final searchQuery = ''.obs;
 
-  final bestScores =
-      <String, int>{}.obs;
+  final bestScores = <String, int>{}.obs;
 
-  final ApiService _apiService =
-      const ApiService();
+  final ApiService _apiService = const ApiService();
 
-  final McqRepository _repository =
-      McqRepository.to;
+  final McqRepository _repository = McqRepository.to;
+
+  // ============================================================
+  // MCQ ACCESS
+  // ============================================================
 
   final RxBool mcqAccess = false.obs;
 
@@ -31,19 +31,26 @@ class McqHomeController extends GetxController {
 
   final RxBool isRefreshingAccess = false.obs;
 
+  // ============================================================
+  // MCQ LOADING
+  // ============================================================
+
   final RxBool isLoadingSets = false.obs;
 
   final RxString loadError = ''.obs;
 
   Timer? _accessPollingTimer;
 
+  // ============================================================
+  // INIT
+  // ============================================================
+
   @override
   void onInit() {
     super.onInit();
 
     searchController.addListener(() {
-      searchQuery.value =
-          searchController.text.trim();
+      searchQuery.value = searchController.text.trim();
     });
 
     checkMcqAccess(
@@ -53,18 +60,26 @@ class McqHomeController extends GetxController {
     _startAccessPolling();
   }
 
+  // ============================================================
+  // ACCESS POLLING
+  // ============================================================
+
   void _startAccessPolling() {
     _accessPollingTimer?.cancel();
 
     _accessPollingTimer = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) async {
+      const Duration(seconds: 30),
+          (_) async {
         await checkMcqAccess(
           showLoading: false,
         );
       },
     );
   }
+
+  // ============================================================
+  // CHECK MCQ ACCESS
+  // ============================================================
 
   Future<void> checkMcqAccess({
     bool showLoading = false,
@@ -74,34 +89,75 @@ class McqHomeController extends GetxController {
         isCheckingAccess.value = true;
       }
 
-      final response =
-          await _apiService.get(
+      final response = await _apiService.get(
         url: ApiConstants.myMcqAccess,
       );
 
-      final access =
-          response is Map &&
-          response['mcq_access'] == true;
+      debugPrint('================================');
+      debugPrint('MCQ ACCESS CHECK');
+      debugPrint('Response: $response');
+      debugPrint('================================');
 
-      mcqAccess.value = access;
+      // Only update access when we successfully
+      // receive a valid response.
+      if (response is Map<String, dynamic>) {
+        final access =
+            response['mcq_access'] == true;
 
-      if (access) {
-        await loadBackendQuestionSets();
-      } else {
-        _repository.questions.clear();
+        mcqAccess.value = access;
+
+        debugPrint(
+          'MCQ ACCESS VALUE: ${mcqAccess.value}',
+        );
+
+        if (access) {
+          await loadBackendQuestionSets();
+        } else {
+          _repository.questions.clear();
+        }
+      } else if (response is Map) {
+        // Safe fallback for other Map implementations.
+        final access =
+            response['mcq_access'] == true;
+
+        mcqAccess.value = access;
+
+        debugPrint(
+          'MCQ ACCESS VALUE: ${mcqAccess.value}',
+        );
+
+        if (access) {
+          await loadBackendQuestionSets();
+        } else {
+          _repository.questions.clear();
+        }
       }
     } catch (e) {
-      debugPrint(
-        'MCQ ACCESS ERROR: $e',
-      );
+      debugPrint('================================');
+      debugPrint('MCQ ACCESS ERROR');
+      debugPrint(e.toString());
+      debugPrint('================================');
 
-      mcqAccess.value = false;
+      // IMPORTANT:
+      //
+      // Do NOT do:
+      //
+      // mcqAccess.value = false;
+      //
+      // A network/DNS/API error does not mean
+      // that the student's access was revoked.
+      //
+      // Keep the previous valid access value.
     } finally {
       if (showLoading) {
         isCheckingAccess.value = false;
       }
     }
   }
+
+  // ============================================================
+  // REFRESH ACCESS
+  // ============================================================
 
   Future<void> refreshAccess() async {
     if (isRefreshingAccess.value) {
@@ -119,6 +175,10 @@ class McqHomeController extends GetxController {
     }
   }
 
+  // ============================================================
+  // LOAD BACKEND QUESTION SETS
+  // ============================================================
+
   /// Fetch every active question set from Django
   /// and then fetch its student-safe questions.
   Future<void> loadBackendQuestionSets() async {
@@ -127,22 +187,19 @@ class McqHomeController extends GetxController {
       loadError.value = '';
 
       final sets =
-          await _repository.fetchQuestionSets();
+      await _repository.fetchQuestionSets();
 
-      final backendQuestions =
-          <McqQuestion>[];
+      final backendQuestions = <McqQuestion>[];
 
       for (final set in sets) {
-        final setId =
-            set['id']?.toString();
+        final setId = set['id']?.toString();
 
-        if (setId == null ||
-            setId.isEmpty) {
+        if (setId == null || setId.isEmpty) {
           continue;
         }
 
         final fullSet =
-            await _repository.fetchQuestionSet(
+        await _repository.fetchQuestionSet(
           setId,
         );
 
@@ -163,7 +220,7 @@ class McqHomeController extends GetxController {
 
       debugPrint(
         'Loaded ${backendQuestions.length} '
-        'MCQ questions from Django.',
+            'MCQ questions from Django.',
       );
     } catch (e) {
       loadError.value = e.toString();
@@ -176,19 +233,22 @@ class McqHomeController extends GetxController {
     }
   }
 
+  // ============================================================
+  // ALL MCQ SETS
+  // ============================================================
+
   List<QuizSet> get allSets {
     if (!mcqAccess.value) {
       return [];
     }
 
-    // Group by actual question_set_id (UUID) from backend
+    // Group by actual question_set_id (UUID) from backend.
     final grouped =
-        <String, List<McqQuestion>>{};
+    <String, List<McqQuestion>>{};
 
-    for (final q
-        in _repository.questions) {
+    for (final q in _repository.questions) {
       final questionSetId =
-          (q.questionSetId ?? '').trim();
+      (q.questionSetId ?? '').trim();
 
       if (questionSetId.isEmpty) {
         continue;
@@ -196,27 +256,30 @@ class McqHomeController extends GetxController {
 
       grouped
           .putIfAbsent(
-            questionSetId,
+        questionSetId,
             () => [],
-          )
+      )
           .add(q);
     }
 
     final backendSets =
-        grouped.entries
-            .map(
-              (entry) => _toQuizSet(
-                entry.value[0].setName ?? 'Quiz',
-                entry.key,
-                entry.value,
-              ),
-            )
-            .toList();
+    grouped.entries
+        .map(
+          (entry) => _toQuizSet(
+        entry.value[0].setName ?? 'Quiz',
+        entry.key,
+        entry.value,
+      ),
+    )
+        .toList();
 
-    // Sort Quiz Sets in ascending numerical order
+    // Sort Quiz Sets in ascending numerical order.
     backendSets.sort((a, b) {
-      final aNumber = _extractSetNumber(a.title);
-      final bNumber = _extractSetNumber(b.title);
+      final aNumber =
+      _extractSetNumber(a.title);
+
+      final bNumber =
+      _extractSetNumber(b.title);
 
       return aNumber.compareTo(bNumber);
     });
@@ -226,15 +289,26 @@ class McqHomeController extends GetxController {
     ];
   }
 
+  // ============================================================
+  // EXTRACT SET NUMBER
+  // ============================================================
+
   int _extractSetNumber(String title) {
     final match = RegExp(r'\d+').firstMatch(title);
 
     if (match != null) {
-      return int.tryParse(match.group(0)!) ?? 999999;
+      return int.tryParse(
+        match.group(0)!,
+      ) ??
+          999999;
     }
 
     return 999999;
   }
+
+  // ============================================================
+  // FILTERED SETS
+  // ============================================================
 
   List<QuizSet> get filteredSets {
     final sets = allSets;
@@ -244,17 +318,20 @@ class McqHomeController extends GetxController {
     }
 
     final query =
-        searchQuery.value.toLowerCase();
+    searchQuery.value.toLowerCase();
 
     return sets.where(
-      (set) => set.title
+          (set) => set.title
           .toLowerCase()
           .contains(query),
     ).toList();
   }
 
-  static const List<Color>
-      _adminSetPalette = [
+  // ============================================================
+  // ADMIN SET COLORS
+  // ============================================================
+
+  static const List<Color> _adminSetPalette = [
     AppColors.primaryBlue,
     Color(0xFF16A34A),
     Color(0xFF9333EA),
@@ -262,24 +339,28 @@ class McqHomeController extends GetxController {
     Color(0xFFDC2626),
   ];
 
+  // ============================================================
+  // CONVERT TO QUIZ SET
+  // ============================================================
+
   QuizSet _toQuizSet(
-    String setName,
-    String questionSetId,
-    List<McqQuestion> questions,
-  ) {
+      String setName,
+      String questionSetId,
+      List<McqQuestion> questions,
+      ) {
     final ordered = [...questions]
       ..sort(
-        (a, b) =>
+            (a, b) =>
             a.createdAt.compareTo(
-          b.createdAt,
-        ),
+              b.createdAt,
+            ),
       );
 
     final color =
-        _adminSetPalette[
-          questionSetId.hashCode.abs() %
-              _adminSetPalette.length
-        ];
+    _adminSetPalette[
+    questionSetId.hashCode.abs() %
+        _adminSetPalette.length
+    ];
 
     return QuizSet(
       id: questionSetId,
@@ -292,22 +373,38 @@ class McqHomeController extends GetxController {
     );
   }
 
+  // ============================================================
+  // CONVERT TO QUIZ QUESTION
+  // ============================================================
+
   QuizQuestion _toQuizQuestion(
-    McqQuestion q,
-  ) {
-    // Build QuizOption objects from backend option IDs.
+      McqQuestion q,
+      ) {
     final quizOpts = <QuizOption>[];
+
     final optionIds = q.optionIds ?? [];
-    
-    for (int i = 0; i < q.options.length; i++) {
+
+    for (int i = 0;
+    i < q.options.length;
+    i++) {
       quizOpts.add(
         QuizOption(
-          id: i < optionIds.length ? optionIds[i] : null,
+          id: i < optionIds.length
+              ? optionIds[i]
+              : null,
           text: q.options[i],
-          image: i < (q.optionImagePaths?.length ?? 0)
+          image:
+          i <
+              (q.optionImagePaths
+                  ?.length ??
+                  0)
               ? q.optionImagePaths![i]
               : null,
-          audio: i < (q.optionAudioPaths?.length ?? 0)
+          audio:
+          i <
+              (q.optionAudioPaths
+                  ?.length ??
+                  0)
               ? q.optionAudioPaths![i]
               : null,
           order: i,
@@ -318,38 +415,41 @@ class McqHomeController extends GetxController {
     return QuizQuestion(
       id: q.id,
       question:
-          q.question.trim().isEmpty
-              ? null
-              : q.question,
+      q.question.trim().isEmpty
+          ? null
+          : q.question,
       options: q.options,
 
       // Backend questions don't expose
       // correct answers to students.
       correctIndex:
-          q.correctOptionIndex ?? -1,
+      q.correctOptionIndex ?? -1,
 
       imageAsset:
-          q.questionImagePath,
+      q.questionImagePath,
 
       optionImages:
-          q.optionImagePaths,
+      q.optionImagePaths,
 
       audioAsset:
-          q.audioFilePath,
+      q.audioFilePath,
 
       optionAudios:
-          q.optionAudioPaths,
-      
+      q.optionAudioPaths,
+
       quizOptions: quizOpts,
     );
   }
 
+  // ============================================================
+  // RECORD SCORE
+  // ============================================================
+
   void recordScore(
-    String setId,
-    int score,
-  ) {
-    final best =
-        bestScores[setId];
+      String setId,
+      int score,
+      ) {
+    final best = bestScores[setId];
 
     if (best == null ||
         score > best) {
@@ -357,11 +457,19 @@ class McqHomeController extends GetxController {
     }
   }
 
+  // ============================================================
+  // BEST SCORE
+  // ============================================================
+
   int? bestScoreFor(
-    String setId,
-  ) {
+      String setId,
+      ) {
     return bestScores[setId];
   }
+
+  // ============================================================
+  // FIRST SET
+  // ============================================================
 
   QuizSet? get firstSet {
     final sets = allSets;
@@ -372,6 +480,10 @@ class McqHomeController extends GetxController {
 
     return sets.first;
   }
+
+  // ============================================================
+  // CLOSE
+  // ============================================================
 
   @override
   void onClose() {
