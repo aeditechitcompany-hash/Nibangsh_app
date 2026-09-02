@@ -17,7 +17,9 @@ class StudentBooksController extends GetxController {
 
   final query = ''.obs;
 
+  // ============================================================
   // BOOK ACCESS
+  // ============================================================
 
   final RxBool bookAccess = false.obs;
 
@@ -25,7 +27,9 @@ class StudentBooksController extends GetxController {
 
   final RxBool isRefreshingBookAccess = false.obs;
 
+  // ============================================================
   // BOOK LOADING
+  // ============================================================
 
   final RxBool isLoadingBooks = false.obs;
 
@@ -33,7 +37,9 @@ class StudentBooksController extends GetxController {
 
   Timer? _accessPollingTimer;
 
+  // ============================================================
   // BOOKS
+  // ============================================================
 
   List<BookResource> get books => _repo.books;
 
@@ -51,7 +57,9 @@ class StudentBooksController extends GetxController {
     }).toList();
   }
 
+  // ============================================================
   // INIT
+  // ============================================================
 
   @override
   void onInit() {
@@ -62,12 +70,16 @@ class StudentBooksController extends GetxController {
     _startAccessPolling();
   }
 
+  // ============================================================
+  // ACCESS POLLING
+  // ============================================================
+
   void _startAccessPolling() {
     _accessPollingTimer?.cancel();
 
     _accessPollingTimer = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) async {
+      const Duration(seconds: 30),
+          (_) async {
         await checkBookAccess(
           showLoading: false,
         );
@@ -75,7 +87,9 @@ class StudentBooksController extends GetxController {
     );
   }
 
+  // ============================================================
   // CHECK BOOK ACCESS
+  // ============================================================
 
   Future<void> checkBookAccess({
     bool showLoading = false,
@@ -94,14 +108,36 @@ class StudentBooksController extends GetxController {
       debugPrint('Response: $response');
       debugPrint('================================');
 
-      final access =
-          response is Map && response["book_access"] == true;
+      // Only update the access value when we successfully
+      // receive a valid response from the backend.
+      if (response is Map<String, dynamic>) {
+        final access =
+            response["book_access"] == true;
 
-      bookAccess.value = access;
+        bookAccess.value = access;
 
-      // If access is available, load books.
-      if (access) {
-        await loadBooks();
+        debugPrint(
+          'BOOK ACCESS VALUE: ${bookAccess.value}',
+        );
+
+        // If access is available, load books.
+        if (access) {
+          await loadBooks();
+        }
+      } else if (response is Map) {
+        // Handles Map<dynamic, dynamic> safely.
+        final access =
+            response["book_access"] == true;
+
+        bookAccess.value = access;
+
+        debugPrint(
+          'BOOK ACCESS VALUE: ${bookAccess.value}',
+        );
+
+        if (access) {
+          await loadBooks();
+        }
       }
     } catch (e) {
       debugPrint('================================');
@@ -109,8 +145,15 @@ class StudentBooksController extends GetxController {
       debugPrint(e.toString());
       debugPrint('================================');
 
-      // Fail closed.
-      bookAccess.value = false;
+      // IMPORTANT:
+      // Do NOT set:
+      //
+      // bookAccess.value = false;
+      //
+      // A network/DNS/server error does NOT mean
+      // that the student has no access.
+      //
+      // Keep the previous valid access value.
     } finally {
       if (showLoading) {
         isCheckingBookAccess.value = false;
@@ -118,7 +161,9 @@ class StudentBooksController extends GetxController {
     }
   }
 
+  // ============================================================
   // LOAD BOOKS
+  // ============================================================
 
   Future<void> loadBooks() async {
     try {
@@ -139,13 +184,15 @@ class StudentBooksController extends GetxController {
       debugPrint('================================');
 
       bookError.value =
-          'Could not load books.';
+      'Could not load books.';
     } finally {
       isLoadingBooks.value = false;
     }
   }
 
+  // ============================================================
   // REFRESH BOOK ACCESS + BOOKS
+  // ============================================================
 
   Future<void> refreshBookAccess() async {
     if (isRefreshingBookAccess.value) {
@@ -155,30 +202,40 @@ class StudentBooksController extends GetxController {
     isRefreshingBookAccess.value = true;
 
     try {
-      await checkBookAccess(showLoading: false);
+      await checkBookAccess(
+        showLoading: false,
+      );
     } finally {
       isRefreshingBookAccess.value = false;
     }
   }
 
+  // ============================================================
   // REFRESH BOOKS
+  // ============================================================
 
   Future<void> refreshBooks() async {
     if (!bookAccess.value) {
-      await checkBookAccess(showLoading: false);
+      await checkBookAccess(
+        showLoading: false,
+      );
       return;
     }
 
     await loadBooks();
   }
 
+  // ============================================================
   // SEARCH
+  // ============================================================
 
   void onSearchChanged(String value) {
     query.value = value;
   }
 
+  // ============================================================
   // CLOSE
+  // ============================================================
 
   @override
   void onClose() {

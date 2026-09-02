@@ -97,6 +97,30 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
           return child;
         }
 
+        // Relative Django/Render URL
+        if (path.startsWith('/')) {
+          final url = 'https://backend-1-mltk.onrender.com$path';
+
+          return Image.network(
+            url,
+            fit: fit,
+            errorBuilder: errorBuilder,
+            loadingBuilder: (
+                context,
+                child,
+                loadingProgress,
+                ) {
+              if (loadingProgress == null) {
+                return child;
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
+        }
+
         return const Center(
           child: CircularProgressIndicator(),
         );
