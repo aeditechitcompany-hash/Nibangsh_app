@@ -8,24 +8,59 @@ import '../../../common/util/app_route.dart';
 import 'mcq_home_controller.dart';
 
 class McqQuizController extends GetxController {
-  // QUIZ SETTINGS
   static const int quizDurationSeconds = 50 * 60;
+
   late final QuizSet quizSet;
 
-  // API
   final McqService _mcqService = McqService();
 
-  // QUIZ STATE
+  // --------------------------------------------------
+  // CURRENT QUESTION
+  // --------------------------------------------------
+
   final currentIndex = 0.obs;
+
+  // --------------------------------------------------
+  // SELECTED ANSWERS
+  //
+  // question index -> selected option index
+  //
+  // Example:
+  // {
+  //   0: 2,
+  //   1: 0,
+  //   2: 1,
+  // }
+  // --------------------------------------------------
+
   final selectedAnswers = <int, int>{}.obs;
+
+  // --------------------------------------------------
+  // ANSWER SUBMISSION STATE
+  // --------------------------------------------------
+
   final isSubmittingAnswer = false.obs;
+
+  // Backend attempt ID
   int? attemptId;
-  final remainingSeconds = quizDurationSeconds.obs;
+
+  // --------------------------------------------------
+  // TIMER
+  // --------------------------------------------------
+
+  final remainingSeconds =
+      quizDurationSeconds.obs;
+
   Timer? _timer;
+
   bool _finished = false;
+
   bool _startingAttempt = true;
 
+  // --------------------------------------------------
   // INITIALIZATION
+  // --------------------------------------------------
+
   @override
   void onInit() {
     super.onInit();
@@ -46,7 +81,6 @@ class McqQuizController extends GetxController {
     try {
       await _startAttempt();
 
-      // Only start the timer after the backend successfully creates the attempt.
       _startTimer();
     } catch (e) {
       Get.snackbar(
@@ -59,16 +93,19 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // CLEANUP
   @override
   void onClose() {
     _timer?.cancel();
     super.onClose();
   }
 
+  // --------------------------------------------------
   // CURRENT QUESTION
+  // --------------------------------------------------
+
   QuizQuestion get currentQuestion {
-    return quizSet.questions[currentIndex.value];
+    return quizSet.questions[
+    currentIndex.value];
   }
 
   int get totalQuestions {
@@ -76,32 +113,51 @@ class McqQuizController extends GetxController {
   }
 
   bool get isLastQuestion {
-    return currentIndex.value == totalQuestions - 1;
+    return currentIndex.value ==
+        totalQuestions - 1;
   }
 
   bool get isFirstQuestion {
     return currentIndex.value == 0;
   }
 
+  // --------------------------------------------------
+  // CURRENT SELECTED OPTION
+  // --------------------------------------------------
+
   int? get selectedForCurrent {
-    return selectedAnswers[currentIndex.value];
+    return selectedAnswers[
+    currentIndex.value];
   }
+
+  // --------------------------------------------------
+  // ANSWER COUNT
+  // --------------------------------------------------
 
   int get answeredCount {
     return selectedAnswers.length;
   }
 
   bool isAnswered(int questionIndex) {
-    return selectedAnswers.containsKey(questionIndex);
+    return selectedAnswers.containsKey(
+      questionIndex,
+    );
   }
 
-  // TIMER
+  // --------------------------------------------------
+  // TIME FORMATTING
+  // --------------------------------------------------
+
   String get formattedTime {
     final minutes =
-        (remainingSeconds.value ~/ 60).toString().padLeft(2, '0');
+    (remainingSeconds.value ~/ 60)
+        .toString()
+        .padLeft(2, '0');
 
     final seconds =
-        (remainingSeconds.value % 60).toString().padLeft(2, '0');
+    (remainingSeconds.value % 60)
+        .toString()
+        .padLeft(2, '0');
 
     return '$minutes:$seconds';
   }
@@ -110,12 +166,16 @@ class McqQuizController extends GetxController {
     return remainingSeconds.value <= 30;
   }
 
+  // --------------------------------------------------
+  // START TIMER
+  // --------------------------------------------------
+
   void _startTimer() {
     _timer?.cancel();
 
     _timer = Timer.periodic(
       const Duration(seconds: 1),
-      (timer) {
+          (timer) {
         if (remainingSeconds.value <= 1) {
           remainingSeconds.value = 0;
 
@@ -129,61 +189,110 @@ class McqQuizController extends GetxController {
     );
   }
 
-  // ANSWER SELECTION
-  Future<void> selectOption(int optionIndex) async {
-    if (isSubmittingAnswer.value) return;
+  // --------------------------------------------------
+  // SELECT OPTION
+  // --------------------------------------------------
 
-    // Don't allow an answer before the backend attempt exists.
-    if (_startingAttempt || attemptId == null) {
+  Future<void> selectOption(
+      int optionIndex,
+      ) async {
+    if (isSubmittingAnswer.value) {
+      return;
+    }
+
+    if (_startingAttempt ||
+        attemptId == null) {
       Get.snackbar(
         'Please wait',
         'The quiz is still being initialized.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       return;
     }
 
-    selectedAnswers[currentIndex.value] = optionIndex;
-    isSubmittingAnswer.value = true;
-
     final question = currentQuestion;
 
-    // Get the actual option ID from the backend
-    final quizOptions = question.quizOptions;
-    
-    if (quizOptions.isEmpty || optionIndex >= quizOptions.length) {
-      isSubmittingAnswer.value = false;
+    final quizOptions =
+        question.quizOptions;
+
+    // --------------------------------------------------
+    // VALIDATE OPTION
+    // --------------------------------------------------
+
+    if (quizOptions.isEmpty ||
+        optionIndex < 0 ||
+        optionIndex >= quizOptions.length) {
       Get.snackbar(
         'Error',
         'Invalid option selected.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       return;
     }
 
-    final selectedOptionId = quizOptions[optionIndex].id;
+    final selectedOption =
+    quizOptions[optionIndex];
+
+    final selectedOptionId =
+        selectedOption.id;
 
     if (selectedOptionId == null) {
-      isSubmittingAnswer.value = false;
       Get.snackbar(
         'Error',
         'Option ID is missing from the backend.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       return;
     }
 
+    // --------------------------------------------------
+    // SAVE LOCALLY FIRST
+    // --------------------------------------------------
+
+    final previousSelection =
+    selectedAnswers[
+    currentIndex.value];
+
+    selectedAnswers[
+    currentIndex.value] = optionIndex;
+
+    isSubmittingAnswer.value = true;
+
     try {
+      // --------------------------------------------------
+      // SAVE TO BACKEND
+      // --------------------------------------------------
+
       await _mcqService.submitAnswer(
         attemptId: attemptId!,
-        questionId: int.parse(question.id.toString()),
-        selectedOptionId: int.parse(selectedOptionId),
+        questionId: int.parse(
+          question.id.toString(),
+        ),
+        selectedOptionId: int.parse(
+          selectedOptionId.toString(),
+        ),
       );
     } catch (e) {
-      selectedAnswers.remove(currentIndex.value);
+      // --------------------------------------------------
+      // RESTORE PREVIOUS VALUE IF API FAILED
+      // --------------------------------------------------
+
+      if (previousSelection == null) {
+        selectedAnswers.remove(
+          currentIndex.value,
+        );
+      } else {
+        selectedAnswers[
+        currentIndex.value] =
+            previousSelection;
+      }
+
       Get.snackbar(
         'Error',
-        'Could not save your answer',
+        'Could not save your answer.',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -191,15 +300,24 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // QUESTION NAVIGATION
+  // --------------------------------------------------
+  // PREVIOUS QUESTION
+  // --------------------------------------------------
+
   void goPrevious() {
     if (!isFirstQuestion) {
       currentIndex.value--;
     }
   }
 
+  // --------------------------------------------------
+  // NEXT QUESTION / FINISH
+  // --------------------------------------------------
+
   void goNextOrFinish() {
-    if (isSubmittingAnswer.value) return;
+    if (isSubmittingAnswer.value) {
+      return;
+    }
 
     if (isLastQuestion) {
       _finish();
@@ -208,13 +326,23 @@ class McqQuizController extends GetxController {
     }
   }
 
-  void jumpToQuestion(int index) {
-    if (index >= 0 && index < totalQuestions) {
+  // --------------------------------------------------
+  // JUMP TO QUESTION
+  // --------------------------------------------------
+
+  void jumpToQuestion(
+      int index,
+      ) {
+    if (index >= 0 &&
+        index < totalQuestions) {
       currentIndex.value = index;
     }
   }
 
-  // SUBMIT EXAM
+  // --------------------------------------------------
+  // SUBMIT EXAM BUTTON
+  // --------------------------------------------------
+
   void submitExam() {
     if (isSubmittingAnswer.value) {
       Get.snackbar(
@@ -222,25 +350,34 @@ class McqQuizController extends GetxController {
         'Your last answer is still being saved.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       return;
     }
 
     _finish();
   }
 
-  // START ATTEMPT
+  // --------------------------------------------------
+  // CREATE ATTEMPT
+  // --------------------------------------------------
+
   Future<void> _startAttempt() async {
-    final response = await _mcqService.createAttempt(
+    final response =
+    await _mcqService.createAttempt(
       questionSetId: quizSet.id,
     );
 
     final idValue = response['id'];
-    
+
     if (idValue == null) {
-      throw Exception('Backend did not return an attempt ID.');
+      throw Exception(
+        'Backend did not return an attempt ID.',
+      );
     }
 
-    attemptId = int.tryParse(idValue.toString());
+    attemptId = int.tryParse(
+      idValue.toString(),
+    );
 
     if (attemptId == null) {
       throw Exception(
@@ -249,13 +386,22 @@ class McqQuizController extends GetxController {
     }
   }
 
+  // --------------------------------------------------
   // FINISH QUIZ
+  // --------------------------------------------------
+
   Future<void> _finish({
     bool timeUp = false,
   }) async {
-    if (_finished) return;
+    // Prevent duplicate submissions
+    if (_finished) {
+      return;
+    }
 
-    if (isSubmittingAnswer.value) return;
+    // Don't finish while an answer is being saved
+    if (isSubmittingAnswer.value) {
+      return;
+    }
 
     if (attemptId == null) {
       Get.snackbar(
@@ -263,67 +409,165 @@ class McqQuizController extends GetxController {
         'Quiz attempt was not created.',
         snackPosition: SnackPosition.BOTTOM,
       );
+
       return;
     }
 
     _finished = true;
 
+    // Stop timer
     _timer?.cancel();
 
     try {
-      final result = await _mcqService.finishAttempt(
+      // --------------------------------------------------
+      // FINISH BACKEND ATTEMPT
+      // --------------------------------------------------
+
+      final result =
+      await _mcqService.finishAttempt(
         attemptId: attemptId!,
       );
 
+      // --------------------------------------------------
+      // SCORE
+      // --------------------------------------------------
+
       final score =
           double.tryParse(
-                result['score']?.toString() ?? '0',
-              )?.round() ??
+            result['score']
+                ?.toString() ??
+                '0',
+          )?.round() ??
               0;
 
       final maxScore =
           double.tryParse(
-                result['max_score']?.toString() ?? '0',
-              )?.round() ??
-              0;
+            result['max_score']
+                ?.toString() ??
+                '0',
+          )?.round() ??
+              quizSet.totalQuestions;
 
       final percentage =
           double.tryParse(
-                result['percentage']?.toString() ?? '0',
-              ) ??
+            result['percentage']
+                ?.toString() ??
+                '0',
+          ) ??
               0.0;
 
       final passed =
           result['passed'] == true;
 
-      // Record the score in the home controller
-      // so the score ring updates on the home screen
+      // --------------------------------------------------
+      // CONVERT SELECTED ANSWERS TO LIST
+      //
+      // Example:
+      // [2, 0, null, 1]
+      // --------------------------------------------------
+
+      final List<int?>
+      selectedAnswersList =
+      List<int?>.generate(
+        quizSet.questions.length,
+            (index) {
+          return selectedAnswers[index];
+        },
+      );
+
+      // --------------------------------------------------
+      // GET CORRECT ANSWERS FROM BACKEND
+      // --------------------------------------------------
+
+      final List<int>
+      correctAnswersList =
+      _extractCorrectAnswers(
+        result,
+      );
+
+      // --------------------------------------------------
+      // DEBUG
+      // --------------------------------------------------
+
+      print(
+        '========================================',
+      );
+
+      print(
+        'MCQ FINISHED',
+      );
+
+      print(
+        'Selected answers: $selectedAnswersList',
+      );
+
+      print(
+        'Correct answers: $correctAnswersList',
+      );
+
+      print(
+        'Score: $score',
+      );
+
+      print(
+        'Max score: $maxScore',
+      );
+
+      print(
+        'Percentage: $percentage',
+      );
+
+      print(
+        'Passed: $passed',
+      );
+
+      print(
+        'Time up: $timeUp',
+      );
+
+      print(
+        '========================================',
+      );
+
+      // --------------------------------------------------
+      // SAVE SCORE LOCALLY
+      // --------------------------------------------------
+
       try {
-        final homeController = Get.find<McqHomeController>();
-        homeController.recordScore(quizSet.id, score.toInt());
+        final homeController =
+        Get.find<McqHomeController>();
+
+        homeController.recordScore(
+          quizSet.id,
+          score,
+        );
       } catch (e) {
-        print('Could not record score: $e');
+        print(
+          'Could not record score: $e',
+        );
       }
 
-      // SEND DATABASE RESULT TO RESULT SCREEN
+      // --------------------------------------------------
+      // GO TO RESULT SCREEN
+      // --------------------------------------------------
+
       Get.offNamed(
         AppRoute.mcqResult,
         arguments: {
           'quizSet': quizSet,
-
-          // Score calculated by Django
           'score': score,
-
-          // Maximum score calculated by Django
           'maxScore': maxScore,
-
-          // Percentage calculated by Django
           'percentage': percentage,
-
-          // Passed calculated by Django
           'passed': passed,
-
           'timeUp': timeUp,
+
+          // Student selected answers
+          'selectedAnswers':
+          selectedAnswersList,
+
+          // Correct answers from Django
+          'correctAnswers':
+          correctAnswersList,
         },
       );
     } catch (e) {
@@ -335,5 +579,150 @@ class McqQuizController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     }
+  }
+
+  // --------------------------------------------------
+  // EXTRACT CORRECT ANSWER INDEXES
+  // --------------------------------------------------
+  //
+  // Backend returns:
+  //
+  // question_results: [
+  //   {
+  //     question_id: 1,
+  //     selected_option_id: 5,
+  //     correct_option_id: 6,
+  //     is_correct: false
+  //   }
+  // ]
+  //
+  // Flutter then converts correct_option_id
+  // into the option INDEX used by the UI.
+  // --------------------------------------------------
+
+  List<int> _extractCorrectAnswers(
+      Map<String, dynamic> result,
+      ) {
+    // Start all answers as unknown.
+    //
+    // -1 means we could not determine
+    // the correct option.
+    final List<int> correctIndexes =
+    List<int>.filled(
+      quizSet.questions.length,
+      -1,
+    );
+
+    final rawResults =
+    result['question_results'];
+
+    if (rawResults is! List) {
+      print(
+        'WARNING: question_results missing from backend.',
+      );
+
+      return correctIndexes;
+    }
+
+    for (final rawResult in rawResults) {
+      if (rawResult is! Map) {
+        continue;
+      }
+
+      // --------------------------------------------------
+      // QUESTION ID
+      // --------------------------------------------------
+
+      final questionId =
+      int.tryParse(
+        rawResult['question_id']
+            ?.toString() ??
+            '',
+      );
+
+      if (questionId == null) {
+        continue;
+      }
+
+      // --------------------------------------------------
+      // CORRECT OPTION ID
+      // --------------------------------------------------
+
+      final correctOptionId =
+      int.tryParse(
+        rawResult['correct_option_id']
+            ?.toString() ??
+            '',
+      );
+
+      if (correctOptionId == null) {
+        continue;
+      }
+
+      // --------------------------------------------------
+      // FIND QUESTION INDEX
+      // --------------------------------------------------
+
+      final questionIndex =
+      quizSet.questions.indexWhere(
+            (question) {
+          final id =
+          int.tryParse(
+            question.id.toString(),
+          );
+
+          return id == questionId;
+        },
+      );
+
+      if (questionIndex == -1) {
+        print(
+          'WARNING: Question $questionId '
+              'was not found in quizSet.',
+        );
+
+        continue;
+      }
+
+      // --------------------------------------------------
+      // FIND CORRECT OPTION INDEX
+      // --------------------------------------------------
+
+      final question =
+      quizSet.questions[
+      questionIndex];
+
+      final optionIndex =
+      question.quizOptions.indexWhere(
+            (option) {
+          final optionId =
+          int.tryParse(
+            option.id.toString(),
+          );
+
+          return optionId ==
+              correctOptionId;
+        },
+      );
+
+      if (optionIndex == -1) {
+        print(
+          'WARNING: Correct option '
+              '$correctOptionId was not found '
+              'for question $questionId.',
+        );
+
+        continue;
+      }
+
+      // --------------------------------------------------
+      // SAVE CORRECT INDEX
+      // --------------------------------------------------
+
+      correctIndexes[
+      questionIndex] = optionIndex;
+    }
+
+    return correctIndexes;
   }
 }

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
-import 'package:nibangsh_consultancy/common/util/responsive.dart';
+import '../../../common/util/responsive.dart';
 
 const double _kWideLayoutBreakpoint = 700;
 
@@ -15,52 +15,44 @@ class McqResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = Get.arguments as Map;
 
-    final QuizSet quizSet =
-        args['quizSet'] as QuizSet;
+    final QuizSet quizSet = args['quizSet'] as QuizSet;
 
-    // Keep the earned score from Django, but calculate the denominator from
-    // the complete quiz so unanswered questions are included.
     final int score =
-      int.tryParse(args['score']?.toString() ?? '') ?? 0;
+        int.tryParse(args['score']?.toString() ?? '') ?? 0;
 
     final int maxScore = quizSet.totalQuestions;
 
-    final double percentage = maxScore > 0
-      ? (score / maxScore) * 100
-      : 0;
+    final double percentage =
+    maxScore > 0 ? (score / maxScore) * 100 : 0;
 
-    final bool passed =
-        args['passed'] ?? false;
+    final bool passed = args['passed'] ?? false;
 
-    final screenWidth =
-        MediaQuery.of(context).size.width;
-
-    final isWideLayout =
-        screenWidth >= _kWideLayoutBreakpoint;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWideLayout = screenWidth >= _kWideLayoutBreakpoint;
 
     return Scaffold(
       backgroundColor:
-          isWideLayout
-              ? AppColors.background
-              : AppColors.white,
-
+      isWideLayout ? AppColors.background : AppColors.white,
       body: isWideLayout
           ? _buildWideLayout(
-              score: score,
-              maxScore: maxScore,
-              percentage: percentage,
-              passed: passed,
-            )
+        score: score,
+        maxScore: maxScore,
+        percentage: percentage,
+        passed: passed,
+      )
           : _buildNarrowLayout(
-              score: score,
-              maxScore: maxScore,
-              percentage: percentage,
-              passed: passed,
-            ),
+        score: score,
+        maxScore: maxScore,
+        percentage: percentage,
+        passed: passed,
+      ),
     );
   }
 
+  // ============================================================
   // NARROW / MOBILE
+  // ============================================================
+
   Widget _buildNarrowLayout({
     required int score,
     required int maxScore,
@@ -118,7 +110,10 @@ class McqResultScreen extends StatelessWidget {
     );
   }
 
-  // WIDE LAYOUT (TABLET / DESKTOP)
+  // ============================================================
+  // WIDE / TABLET / DESKTOP
+  // ============================================================
+
   Widget _buildWideLayout({
     required int score,
     required int maxScore,
@@ -144,20 +139,14 @@ class McqResultScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 40,
-                      vertical: 40,
+                      vertical: 36,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius:
-                          BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              Colors.black.withOpacity(0.05),
-                          blurRadius: 24,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppColors.borderGrey,
+                      ),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -170,15 +159,15 @@ class McqResultScreen extends StatelessWidget {
                           scoreFontSize: 39,
                         ),
 
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 36),
 
                         _resultHeading(
                           passed: passed,
-                          headingFontSize: 27,
+                          headingFontSize: 27.5,
                           subFontSize: 15.5,
                         ),
 
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 36),
 
                         _actionButtons(),
                       ],
@@ -193,7 +182,9 @@ class McqResultScreen extends StatelessWidget {
     );
   }
 
+  // ============================================================
   // SCORE CIRCLE
+  // ============================================================
 
   Widget _scoreCircle({
     required int score,
@@ -205,63 +196,39 @@ class McqResultScreen extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-
-        gradient: LinearGradient(
-          colors: [
-            Color.lerp(
-              AppColors.primaryBlue,
-              Colors.black,
-              0.5,
-            )!,
-            AppColors.primaryBlue,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: Colors.white,
+        border: Border.all(
+          color: AppColors.primaryBlue,
+          width: 8,
         ),
-
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlue
-                .withOpacity(0.3),
-            blurRadius: 30,
-            spreadRadius: 4,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'Your Score',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 17,
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
           Text(
-            '$score/$total',
+            '$score / $total',
             style: TextStyle(
-              color: Colors.white,
               fontSize: scoreFontSize,
               fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
             ),
           ),
-
-          const SizedBox(height: 4),
-
+          const SizedBox(height: 6),
           Text(
             '${percentage.toStringAsFixed(0)}%',
             style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.w600,
+              color: AppColors.textGrey,
             ),
           ),
         ],
@@ -269,7 +236,10 @@ class McqResultScreen extends StatelessWidget {
     );
   }
 
+  // ============================================================
   // RESULT HEADING
+  // ============================================================
+
   Widget _resultHeading({
     required bool passed,
     required double headingFontSize,
@@ -278,76 +248,74 @@ class McqResultScreen extends StatelessWidget {
     return Column(
       children: [
         Text(
-          passed
-              ? 'Congratulations'
-              : 'Keep Practicing',
-
+          passed ? 'Congratulations!' : 'Keep Practicing!',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppColors.primaryBlue,
             fontSize: headingFontSize,
             fontWeight: FontWeight.bold,
+            color: passed
+                ? const Color(0xFF16A34A)
+                : const Color(0xFFDC2626),
           ),
         ),
-
         const SizedBox(height: 8),
-
         Text(
           passed
-              ? 'Great job! You did it.'
-              : 'Review the topic and try this set again.',
-
+              ? 'You passed the quiz.'
+              : 'You did not reach the passing score.',
           textAlign: TextAlign.center,
-
           style: TextStyle(
-            color: AppColors.textGrey,
             fontSize: subFontSize,
+            color: AppColors.textGrey,
           ),
         ),
       ],
     );
   }
 
+  // ============================================================
   // BUTTONS
+  // ============================================================
+
   Widget _actionButtons() {
     return Column(
       children: [
+        // --------------------------------------------------------
+        // REVIEW QUESTIONS
+        // --------------------------------------------------------
+
         SizedBox(
           width: double.infinity,
           height: 50,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              final args = Get.arguments as Map;
 
-          child: OutlinedButton.icon(
-            onPressed: () => Get.snackbar(
-              'Share',
-              'Sharing your result isn\'t wired up yet.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor:
-                  AppColors.primaryBlue,
-              colorText: Colors.white,
-              margin: const EdgeInsets.all(16),
-              borderRadius: 12,
-            ),
-
+              Get.toNamed(
+                AppRoute.mcqReview,
+                arguments: {
+                  'quizSet': args['quizSet'],
+                  'selectedAnswers': args['selectedAnswers'],
+                  'correctAnswers': args['correctAnswers'],
+                },
+              );
+            },
             icon: const Icon(
-              Icons.share_outlined,
-              size: 18,
-              color: AppColors.primaryBlue,
+              Icons.fact_check_outlined,
+              size: 19,
             ),
-
             label: const Text(
-              'Share',
+              'Review Questions',
               style: TextStyle(
-                color: AppColors.primaryBlue,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(
-                color: AppColors.primaryBlue,
-              ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
           ),
@@ -355,30 +323,70 @@ class McqResultScreen extends StatelessWidget {
 
         const SizedBox(height: 12),
 
+        // --------------------------------------------------------
+        // SHARE
+        // --------------------------------------------------------
+
         SizedBox(
           width: double.infinity,
           height: 50,
-
-          child: ElevatedButton(
-            onPressed: () => Get.until(
-              (route) =>
-                  route.settings.name ==
-                  AppRoute.home,
+          child: OutlinedButton.icon(
+            onPressed: () => Get.snackbar(
+              'Share',
+              'Sharing your result isn\'t wired up yet.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.primaryBlue,
+              colorText: Colors.white,
+              margin: const EdgeInsets.all(16),
+              borderRadius: 12,
             ),
-
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  AppColors.primaryBlue,
-              foregroundColor: Colors.white,
-
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(14),
+            icon: const Icon(
+              Icons.share_outlined,
+              size: 18,
+              color: AppColors.primaryBlue,
+            ),
+            label: const Text(
+              'Share',
+              style: TextStyle(
+                color: AppColors.primaryBlue,
+                fontWeight: FontWeight.bold,
               ),
-
-              elevation: 0,
             ),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(
+                color: AppColors.primaryBlue,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+        ),
 
+        const SizedBox(height: 12),
+
+        // --------------------------------------------------------
+        // BACK TO HOME
+        // --------------------------------------------------------
+
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              Get.until(
+                    (route) =>
+                route.settings.name == AppRoute.home,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
             child: const Text(
               'Back to Home',
               style: TextStyle(
