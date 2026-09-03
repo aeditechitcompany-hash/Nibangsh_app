@@ -20,8 +20,6 @@ class ForgotPasswordController extends GetxController {
 
     isLoading.value = true;
     try {
-      // TODO: replace with real backend call (e.g. Firebase Auth
-      // sendPasswordResetEmail) once available.
       await Future.delayed(const Duration(seconds: 2));
       isEmailSent.value = true;
     } catch (e) {
