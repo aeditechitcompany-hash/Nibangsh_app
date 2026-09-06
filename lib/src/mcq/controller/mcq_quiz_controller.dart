@@ -14,13 +14,13 @@ class McqQuizController extends GetxController {
 
   final McqService _mcqService = McqService();
 
-  // --------------------------------------------------
+  // ============================================================
   // CURRENT QUESTION
-  // --------------------------------------------------
+  // ============================================================
 
   final currentIndex = 0.obs;
 
-  // --------------------------------------------------
+  // ============================================================
   // SELECTED ANSWERS
   //
   // question index -> selected option index
@@ -31,25 +31,27 @@ class McqQuizController extends GetxController {
   //   1: 0,
   //   2: 1,
   // }
-  // --------------------------------------------------
+  // ============================================================
 
   final selectedAnswers = <int, int>{}.obs;
 
-  // --------------------------------------------------
+  // ============================================================
   // ANSWER SUBMISSION STATE
-  // --------------------------------------------------
+  // ============================================================
 
   final isSubmittingAnswer = false.obs;
 
-  // Backend attempt ID
+  // ============================================================
+  // BACKEND ATTEMPT ID
+  // ============================================================
+
   int? attemptId;
 
-  // --------------------------------------------------
+  // ============================================================
   // TIMER
-  // --------------------------------------------------
+  // ============================================================
 
-  final remainingSeconds =
-      quizDurationSeconds.obs;
+  final remainingSeconds = quizDurationSeconds.obs;
 
   Timer? _timer;
 
@@ -57,9 +59,9 @@ class McqQuizController extends GetxController {
 
   bool _startingAttempt = true;
 
-  // --------------------------------------------------
+  // ============================================================
   // INITIALIZATION
-  // --------------------------------------------------
+  // ============================================================
 
   @override
   void onInit() {
@@ -99,13 +101,12 @@ class McqQuizController extends GetxController {
     super.onClose();
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // CURRENT QUESTION
-  // --------------------------------------------------
+  // ============================================================
 
   QuizQuestion get currentQuestion {
-    return quizSet.questions[
-    currentIndex.value];
+    return quizSet.questions[currentIndex.value];
   }
 
   int get totalQuestions {
@@ -113,49 +114,43 @@ class McqQuizController extends GetxController {
   }
 
   bool get isLastQuestion {
-    return currentIndex.value ==
-        totalQuestions - 1;
+    return currentIndex.value == totalQuestions - 1;
   }
 
   bool get isFirstQuestion {
     return currentIndex.value == 0;
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // CURRENT SELECTED OPTION
-  // --------------------------------------------------
+  // ============================================================
 
   int? get selectedForCurrent {
-    return selectedAnswers[
-    currentIndex.value];
+    return selectedAnswers[currentIndex.value];
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // ANSWER COUNT
-  // --------------------------------------------------
+  // ============================================================
 
   int get answeredCount {
     return selectedAnswers.length;
   }
 
   bool isAnswered(int questionIndex) {
-    return selectedAnswers.containsKey(
-      questionIndex,
-    );
+    return selectedAnswers.containsKey(questionIndex);
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // TIME FORMATTING
-  // --------------------------------------------------
+  // ============================================================
 
   String get formattedTime {
-    final minutes =
-    (remainingSeconds.value ~/ 60)
+    final minutes = (remainingSeconds.value ~/ 60)
         .toString()
         .padLeft(2, '0');
 
-    final seconds =
-    (remainingSeconds.value % 60)
+    final seconds = (remainingSeconds.value % 60)
         .toString()
         .padLeft(2, '0');
 
@@ -166,9 +161,9 @@ class McqQuizController extends GetxController {
     return remainingSeconds.value <= 30;
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // START TIMER
-  // --------------------------------------------------
+  // ============================================================
 
   void _startTimer() {
     _timer?.cancel();
@@ -189,19 +184,16 @@ class McqQuizController extends GetxController {
     );
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // SELECT OPTION
-  // --------------------------------------------------
+  // ============================================================
 
-  Future<void> selectOption(
-      int optionIndex,
-      ) async {
+  Future<void> selectOption(int optionIndex) async {
     if (isSubmittingAnswer.value) {
       return;
     }
 
-    if (_startingAttempt ||
-        attemptId == null) {
+    if (_startingAttempt || attemptId == null) {
       Get.snackbar(
         'Please wait',
         'The quiz is still being initialized.',
@@ -213,12 +205,11 @@ class McqQuizController extends GetxController {
 
     final question = currentQuestion;
 
-    final quizOptions =
-        question.quizOptions;
+    final quizOptions = question.quizOptions;
 
-    // --------------------------------------------------
+    // ============================================================
     // VALIDATE OPTION
-    // --------------------------------------------------
+    // ============================================================
 
     if (quizOptions.isEmpty ||
         optionIndex < 0 ||
@@ -232,11 +223,9 @@ class McqQuizController extends GetxController {
       return;
     }
 
-    final selectedOption =
-    quizOptions[optionIndex];
+    final selectedOption = quizOptions[optionIndex];
 
-    final selectedOptionId =
-        selectedOption.id;
+    final selectedOptionId = selectedOption.id;
 
     if (selectedOptionId == null) {
       Get.snackbar(
@@ -248,23 +237,25 @@ class McqQuizController extends GetxController {
       return;
     }
 
-    // --------------------------------------------------
-    // SAVE LOCALLY FIRST
-    // --------------------------------------------------
+    // ============================================================
+    // SAVE PREVIOUS VALUE
+    // ============================================================
 
     final previousSelection =
-    selectedAnswers[
-    currentIndex.value];
+    selectedAnswers[currentIndex.value];
 
-    selectedAnswers[
-    currentIndex.value] = optionIndex;
+    // ============================================================
+    // SAVE LOCALLY FIRST
+    // ============================================================
+
+    selectedAnswers[currentIndex.value] = optionIndex;
 
     isSubmittingAnswer.value = true;
 
     try {
-      // --------------------------------------------------
+      // ============================================================
       // SAVE TO BACKEND
-      // --------------------------------------------------
+      // ============================================================
 
       await _mcqService.submitAnswer(
         attemptId: attemptId!,
@@ -276,17 +267,16 @@ class McqQuizController extends GetxController {
         ),
       );
     } catch (e) {
-      // --------------------------------------------------
+      // ============================================================
       // RESTORE PREVIOUS VALUE IF API FAILED
-      // --------------------------------------------------
+      // ============================================================
 
       if (previousSelection == null) {
         selectedAnswers.remove(
           currentIndex.value,
         );
       } else {
-        selectedAnswers[
-        currentIndex.value] =
+        selectedAnswers[currentIndex.value] =
             previousSelection;
       }
 
@@ -300,9 +290,9 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // PREVIOUS QUESTION
-  // --------------------------------------------------
+  // ============================================================
 
   void goPrevious() {
     if (!isFirstQuestion) {
@@ -310,9 +300,9 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // NEXT QUESTION / FINISH
-  // --------------------------------------------------
+  // ============================================================
 
   void goNextOrFinish() {
     if (isSubmittingAnswer.value) {
@@ -326,22 +316,33 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // --------------------------------------------------
-  // JUMP TO QUESTION
-  // --------------------------------------------------
+  // ============================================================
+  // COMPATIBILITY METHOD
+  //
+  // If any old part of your quiz screen still calls goNext(),
+  // this prevents:
+  //
+  // "The getter 'goNext' isn't defined..."
+  //
+  // ============================================================
 
-  void jumpToQuestion(
-      int index,
-      ) {
-    if (index >= 0 &&
-        index < totalQuestions) {
+  void goNext() {
+    goNextOrFinish();
+  }
+
+  // ============================================================
+  // JUMP TO QUESTION
+  // ============================================================
+
+  void jumpToQuestion(int index) {
+    if (index >= 0 && index < totalQuestions) {
       currentIndex.value = index;
     }
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // SUBMIT EXAM BUTTON
-  // --------------------------------------------------
+  // ============================================================
 
   void submitExam() {
     if (isSubmittingAnswer.value) {
@@ -357,13 +358,12 @@ class McqQuizController extends GetxController {
     _finish();
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // CREATE ATTEMPT
-  // --------------------------------------------------
+  // ============================================================
 
   Future<void> _startAttempt() async {
-    final response =
-    await _mcqService.createAttempt(
+    final response = await _mcqService.createAttempt(
       questionSetId: quizSet.id,
     );
 
@@ -386,9 +386,9 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // FINISH QUIZ
-  // --------------------------------------------------
+  // ============================================================
 
   Future<void> _finish({
     bool timeUp = false,
@@ -419,55 +419,62 @@ class McqQuizController extends GetxController {
     _timer?.cancel();
 
     try {
-      // --------------------------------------------------
+      // ============================================================
       // FINISH BACKEND ATTEMPT
-      // --------------------------------------------------
+      // ============================================================
 
-      final result =
-      await _mcqService.finishAttempt(
+      final result = await _mcqService.finishAttempt(
         attemptId: attemptId!,
       );
 
-      // --------------------------------------------------
+      // ============================================================
       // SCORE
-      // --------------------------------------------------
+      // ============================================================
 
       final score =
           double.tryParse(
-            result['score']
-                ?.toString() ??
-                '0',
+            result['score']?.toString() ?? '0',
           )?.round() ??
               0;
 
       final maxScore =
           double.tryParse(
-            result['max_score']
-                ?.toString() ??
-                '0',
+            result['max_score']?.toString() ?? '0',
           )?.round() ??
               quizSet.totalQuestions;
 
       final percentage =
           double.tryParse(
-            result['percentage']
-                ?.toString() ??
-                '0',
+            result['percentage']?.toString() ?? '0',
           ) ??
               0.0;
 
-      final passed =
-          result['passed'] == true;
+      // ============================================================
+      // PASSED
+      // ============================================================
 
-      // --------------------------------------------------
+      final passedValue = result['passed'];
+
+      final bool passed =
+          passedValue == true ||
+              passedValue.toString().toLowerCase() == 'true';
+
+      // ============================================================
+      // ATTEMPTED QUESTIONS
+      // ============================================================
+
+      final int attemptedQuestions = selectedAnswers.length;
+
+      // ============================================================
       // CONVERT SELECTED ANSWERS TO LIST
       //
       // Example:
+      //
       // [2, 0, null, 1]
-      // --------------------------------------------------
+      //
+      // ============================================================
 
-      final List<int?>
-      selectedAnswersList =
+      final List<int?> selectedAnswersList =
       List<int?>.generate(
         quizSet.questions.length,
             (index) {
@@ -475,63 +482,32 @@ class McqQuizController extends GetxController {
         },
       );
 
-      // --------------------------------------------------
+      // ============================================================
       // GET CORRECT ANSWERS FROM BACKEND
-      // --------------------------------------------------
+      // ============================================================
 
-      final List<int>
-      correctAnswersList =
-      _extractCorrectAnswers(
-        result,
-      );
+      final List<int> correctAnswersList =
+      _extractCorrectAnswers(result);
 
-      // --------------------------------------------------
+      // ============================================================
       // DEBUG
-      // --------------------------------------------------
+      // ============================================================
 
-      print(
-        '========================================',
-      );
+      print('========================================');
+      print('MCQ FINISHED');
+      print('Selected answers: $selectedAnswersList');
+      print('Correct answers: $correctAnswersList');
+      print('Attempted: $attemptedQuestions');
+      print('Score: $score');
+      print('Max score: $maxScore');
+      print('Percentage: $percentage');
+      print('Passed: $passed');
+      print('Time up: $timeUp');
+      print('========================================');
 
-      print(
-        'MCQ FINISHED',
-      );
-
-      print(
-        'Selected answers: $selectedAnswersList',
-      );
-
-      print(
-        'Correct answers: $correctAnswersList',
-      );
-
-      print(
-        'Score: $score',
-      );
-
-      print(
-        'Max score: $maxScore',
-      );
-
-      print(
-        'Percentage: $percentage',
-      );
-
-      print(
-        'Passed: $passed',
-      );
-
-      print(
-        'Time up: $timeUp',
-      );
-
-      print(
-        '========================================',
-      );
-
-      // --------------------------------------------------
+      // ============================================================
       // SAVE SCORE LOCALLY
-      // --------------------------------------------------
+      // ============================================================
 
       try {
         final homeController =
@@ -547,27 +523,41 @@ class McqQuizController extends GetxController {
         );
       }
 
-      // --------------------------------------------------
+      // ============================================================
       // GO TO RESULT SCREEN
-      // --------------------------------------------------
+      // ============================================================
 
       Get.offNamed(
         AppRoute.mcqResult,
         arguments: {
+          // Quiz
           'quizSet': quizSet,
+
+          // Score
           'score': score,
-          'maxScore': maxScore,
+
+          // IMPORTANT:
+          // Your result screen reads totalQuestions.
+          'totalQuestions': maxScore,
+
+          // IMPORTANT:
+          // Your result screen reads answeredCount.
+          'answeredCount': attemptedQuestions,
+
+          // Percentage
           'percentage': percentage,
+
+          // Pass/fail
           'passed': passed,
+
+          // Time
           'timeUp': timeUp,
 
           // Student selected answers
-          'selectedAnswers':
-          selectedAnswersList,
+          'selectedAnswers': selectedAnswersList,
 
           // Correct answers from Django
-          'correctAnswers':
-          correctAnswersList,
+          'correctAnswers': correctAnswersList,
         },
       );
     } catch (e) {
@@ -581,11 +571,11 @@ class McqQuizController extends GetxController {
     }
   }
 
-  // --------------------------------------------------
+  // ============================================================
   // EXTRACT CORRECT ANSWER INDEXES
-  // --------------------------------------------------
+  // ============================================================
   //
-  // Backend returns:
+  // Backend:
   //
   // question_results: [
   //   {
@@ -596,17 +586,14 @@ class McqQuizController extends GetxController {
   //   }
   // ]
   //
-  // Flutter then converts correct_option_id
+  // Flutter converts correct_option_id
   // into the option INDEX used by the UI.
-  // --------------------------------------------------
+  //
+  // ============================================================
 
   List<int> _extractCorrectAnswers(
       Map<String, dynamic> result,
       ) {
-    // Start all answers as unknown.
-    //
-    // -1 means we could not determine
-    // the correct option.
     final List<int> correctIndexes =
     List<int>.filled(
       quizSet.questions.length,
@@ -629,39 +616,35 @@ class McqQuizController extends GetxController {
         continue;
       }
 
-      // --------------------------------------------------
+      // ============================================================
       // QUESTION ID
-      // --------------------------------------------------
+      // ============================================================
 
       final questionId =
       int.tryParse(
-        rawResult['question_id']
-            ?.toString() ??
-            '',
+        rawResult['question_id']?.toString() ?? '',
       );
 
       if (questionId == null) {
         continue;
       }
 
-      // --------------------------------------------------
+      // ============================================================
       // CORRECT OPTION ID
-      // --------------------------------------------------
+      // ============================================================
 
       final correctOptionId =
       int.tryParse(
-        rawResult['correct_option_id']
-            ?.toString() ??
-            '',
+        rawResult['correct_option_id']?.toString() ?? '',
       );
 
       if (correctOptionId == null) {
         continue;
       }
 
-      // --------------------------------------------------
+      // ============================================================
       // FIND QUESTION INDEX
-      // --------------------------------------------------
+      // ============================================================
 
       final questionIndex =
       quizSet.questions.indexWhere(
@@ -684,13 +667,12 @@ class McqQuizController extends GetxController {
         continue;
       }
 
-      // --------------------------------------------------
+      // ============================================================
       // FIND CORRECT OPTION INDEX
-      // --------------------------------------------------
+      // ============================================================
 
       final question =
-      quizSet.questions[
-      questionIndex];
+      quizSet.questions[questionIndex];
 
       final optionIndex =
       question.quizOptions.indexWhere(
@@ -700,8 +682,7 @@ class McqQuizController extends GetxController {
             option.id.toString(),
           );
 
-          return optionId ==
-              correctOptionId;
+          return optionId == correctOptionId;
         },
       );
 
@@ -715,12 +696,12 @@ class McqQuizController extends GetxController {
         continue;
       }
 
-      // --------------------------------------------------
+      // ============================================================
       // SAVE CORRECT INDEX
-      // --------------------------------------------------
+      // ============================================================
 
-      correctIndexes[
-      questionIndex] = optionIndex;
+      correctIndexes[questionIndex] =
+          optionIndex;
     }
 
     return correctIndexes;

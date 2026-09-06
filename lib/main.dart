@@ -16,6 +16,7 @@ import 'package:nibangsh_consultancy/src/home/views/home_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_instructions_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_quiz_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
+import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
 import 'package:nibangsh_consultancy/src/notifications/views/notifications_screen.dart';
 import 'package:nibangsh_consultancy/src/splash/views/splash_screen.dart';
 import 'package:nibangsh_consultancy/src/universities/views/universities_screen.dart';
@@ -31,6 +32,7 @@ import 'src/onboarding/views/onboarding_screen.dart';
 import 'src/profile/views/profile_screen.dart';
 import 'package:nibangsh_consultancy/admin/mcq/views/admin_mcq_sets_screen.dart';
 import 'src/mcq/views/mcq_review_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
           primary: AppColors.primaryRed,
           secondary: AppColors.primaryBlue,
         ),
-        fontFamily: 'Poppins',
+        textTheme: GoogleFonts.notoSansKrTextTheme(),
         useMaterial3: true,
       ),
       initialRoute: AppRoute.splash,
