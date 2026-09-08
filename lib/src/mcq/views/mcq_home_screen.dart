@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../../leaderboard_screen/leaderboard_screen.dart';
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -345,6 +345,10 @@ class McqHomeScreen extends StatelessWidget {
                 children: [
                   _buildBanner(controller),
 
+                  const SizedBox(height: 16),
+
+                  _buildLeaderboardButton(),
+
                   const SizedBox(height: 20),
 
                   _buildSearchBar(controller),
@@ -652,6 +656,47 @@ class McqHomeScreen extends StatelessWidget {
             contentPadding:
                 EdgeInsets.symmetric(
               vertical: 14,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // LEADERBOARD BUTTON
+  Widget _buildLeaderboardButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () {
+            Get.to(
+                  () => const LeaderboardScreen(),
+            );
+          },
+          icon: const Icon(
+            Icons.emoji_events_rounded,
+            size: 21,
+          ),
+          label: const Text(
+            'Leaderboard',
+            style: TextStyle(
+              fontSize: 15.5,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primaryBlue,
+            backgroundColor: Colors.white,
+            side: const BorderSide(
+              color: AppColors.primaryBlue,
+            ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 14,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
             ),
           ),
         ),

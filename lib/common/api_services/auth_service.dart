@@ -6,12 +6,8 @@ import 'token_storage_service.dart';
 class AuthService {
   final ApiService _api = const ApiService();
 
-  /// Registers the account and then immediately logs it in.
-  ///
-  /// Registration itself does not return JWT tokens in the current backend.
-  /// The second call is therefore required so the newly registered student
-  /// can access the authenticated academic-details endpoints.
   Future<AuthResponse> register({
+    required String role,
     required String fullName,
     required String email,
     required String phone,
@@ -21,9 +17,18 @@ class AuthService {
     required String province,
   }) async {
     final username = email.split('@').first;
-    final names = fullName.trim().split(' ');
-    final firstName = names.first;
-    final lastName = names.length > 1 ? names.sublist(1).join(' ') : "";
+
+    final names = fullName.trim().split(RegExp(r'\s+'));
+
+    final firstName = names.isNotEmpty ? names.first : '';
+    final lastName =
+    names.length > 1 ? names.sublist(1).join(' ') : '';
+
+    final normalizedRole = role.trim().toLowerCase();
+
+    if (normalizedRole != 'student' && normalizedRole != 'ubt') {
+      throw Exception('Invalid account type.');
+    }
 
     await _api.post(
       url: ApiConstants.register,
@@ -34,14 +39,16 @@ class AuthService {
         "password": password,
         "first_name": firstName,
         "last_name": lastName,
-        "role": "student",
-        "street_address": address,
-        "district": district,
-        "province": province,
+        "role": normalizedRole,
+        "street_address":
+        normalizedRole == 'student' ? address : '',
+        "district":
+        normalizedRole == 'student' ? district : '',
+        "province":
+        normalizedRole == 'student' ? province : '',
       },
     );
 
-    // Obtain JWT access/refresh tokens for the newly created account.
     return login(
       email: email,
       password: password,

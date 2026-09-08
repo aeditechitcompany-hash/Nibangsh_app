@@ -431,29 +431,30 @@ class McqQuizController extends GetxController {
       // SCORE
       // ============================================================
 
+      final attemptData =
+      result['attempt'] is Map
+          ? Map<String, dynamic>.from(result['attempt'])
+          : <String, dynamic>{};
+
       final score =
           double.tryParse(
-            result['score']?.toString() ?? '0',
+            attemptData['score']?.toString() ?? '0',
           )?.round() ??
               0;
 
       final maxScore =
           double.tryParse(
-            result['max_score']?.toString() ?? '0',
+            attemptData['max_score']?.toString() ?? '0',
           )?.round() ??
               quizSet.totalQuestions;
 
       final percentage =
           double.tryParse(
-            result['percentage']?.toString() ?? '0',
+            attemptData['percentage']?.toString() ?? '0',
           ) ??
               0.0;
 
-      // ============================================================
-      // PASSED
-      // ============================================================
-
-      final passedValue = result['passed'];
+      final passedValue = attemptData['passed'];
 
       final bool passed =
           passedValue == true ||

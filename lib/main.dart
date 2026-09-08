@@ -19,6 +19,7 @@ import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
 import 'package:nibangsh_consultancy/src/mcq/views/mcq_result_screen.dart';
 import 'package:nibangsh_consultancy/src/notifications/views/notifications_screen.dart';
 import 'package:nibangsh_consultancy/src/splash/views/splash_screen.dart';
+import 'package:nibangsh_consultancy/src/ubt/views/ubt_navigation_screen.dart';
 import 'package:nibangsh_consultancy/src/universities/views/universities_screen.dart';
 import 'common/util/app_colors.dart';
 import 'common/util/app_route.dart';
@@ -110,6 +111,10 @@ class MyApp extends StatelessWidget {
           page: () => const StudentNotificationsScreen(),
         ),
         GetPage(name: AppRoute.adminBooks, page: () => const BooksScreen()),
+        GetPage(
+          name: AppRoute.ubtHome,
+          page: () => const UbtNavigationScreen(),
+        ),
         GetPage(
           name: AppRoute.studentBooks,
           page: () => const StudentBooksScreen(),

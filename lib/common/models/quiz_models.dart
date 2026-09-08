@@ -298,22 +298,124 @@ class QuizQuestion {
 class QuizSet {
   final String id;
   final String title;
+  final String? description;
+  final String? category;
+
+  final int timeLimitMinutes;
+  final double passingScorePercentage;
+
   final IconData icon;
   final Color color;
+
   final List<QuizQuestion> questions;
 
   QuizSet({
     required this.id,
     required this.title,
-    required this.icon,
-    required this.color,
+    this.description,
+    this.category,
+    this.timeLimitMinutes = 50,
+    this.passingScorePercentage = 0,
+    this.icon = Icons.quiz,
+    this.color = Colors.blue,
     required this.questions,
   });
+
+  // ============================================================
+  // FROM JSON
+  // ============================================================
+
+  factory QuizSet.fromJson(Map<String, dynamic> json) {
+    final rawQuestions = json['questions'];
+
+    final parsedQuestions = rawQuestions is List
+        ? rawQuestions
+        .whereType<Map>()
+        .map(
+          (question) => QuizQuestion.fromJson(
+        Map<String, dynamic>.from(question),
+      ),
+    )
+        .toList()
+        : <QuizQuestion>[];
+
+    return QuizSet(
+      id: json['id']?.toString() ?? '',
+      title: (json['title'] ?? '').toString(),
+      description: json['description']?.toString(),
+      category: json['category']?.toString(),
+
+      timeLimitMinutes:
+      _toInt(json['time_limit_minutes'], defaultValue: 50),
+
+      passingScorePercentage:
+      _toDouble(json['passing_score_percentage']),
+
+      questions: parsedQuestions,
+    );
+  }
+
+  // ============================================================
+  // TO JSON
+  // ============================================================
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'category': category,
+      'time_limit_minutes': timeLimitMinutes,
+      'passing_score_percentage': passingScorePercentage,
+      'questions': questions.map((question) {
+        return {
+          'id': question.id,
+          'text': question.question,
+          'image': question.imageAsset,
+          'audio': question.audioAsset,
+          'options': question.quizOptions
+              .map((option) => option.toJson())
+              .toList(),
+        };
+      }).toList(),
+    };
+  }
 
   int get totalQuestions => questions.length;
 
   bool get isDatabaseQuiz {
     return questions.isNotEmpty &&
-        questions.any((question) => question.hasDatabaseId);
+        questions.any(
+              (question) => question.hasDatabaseId,
+        );
+  }
+
+  static int _toInt(
+      dynamic value, {
+        int defaultValue = 0,
+      }) {
+    if (value is int) {
+      return value;
+    }
+
+    return int.tryParse(
+      value?.toString() ?? '',
+    ) ??
+        defaultValue;
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value is double) {
+      return value;
+    }
+
+    if (value is int) {
+      return value.toDouble();
+    }
+
+    return double.tryParse(
+      value?.toString() ?? '',
+    ) ??
+        0.0;
   }
 }

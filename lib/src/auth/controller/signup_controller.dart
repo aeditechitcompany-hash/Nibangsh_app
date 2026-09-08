@@ -22,6 +22,18 @@ class SignupController extends GetxController {
 
   final RxString selectedDistrict = ''.obs;
   final RxString selectedProvince = ''.obs;
+  final RxString selectedRole = 'student'.obs;
+
+  void selectRole(String role) {
+    selectedRole.value = role.toLowerCase();
+    if (selectedRole.value == 'ubt') {
+      selectedDistrict.value = '';
+      selectedProvince.value = '';
+    }
+  }
+  bool get isStudent => selectedRole.value == 'student';
+
+  bool get isUbt => selectedRole.value == 'ubt';
 
   final formKey = GlobalKey<FormState>();
 
@@ -122,10 +134,16 @@ class SignupController extends GetxController {
     return null;
   }
 
+
   Future<void> signup() async {
     if (!formKey.currentState!.validate()) return;
-    if (validateDistrict(null) != null || validateProvince(null) != null) {
-      return;
+
+    // Province and district are required ONLY for students.
+    if (selectedRole.value == 'student') {
+      if (validateDistrict(null) != null ||
+          validateProvince(null) != null) {
+        return;
+      }
     }
 
     isLoading.value = true;
@@ -133,21 +151,36 @@ class SignupController extends GetxController {
     try {
       final authService = AuthService();
 
-      // Register + immediately log in so JWT tokens and user.id are available
-      // before AcademicDetailsScreen calls the protected API.
+      final isStudent = selectedRole.value == 'student';
+
       final auth = await authService.register(
+        role: selectedRole.value,
+
         fullName: fullNameController.text.trim(),
-        email: emailController.text.trim(),
+
         phone: phoneController.text.trim(),
+
+        email: emailController.text.trim(),
+
         password: passwordController.text,
-        address: addressController.text.trim(),
-        district: AppConstants.districtValues[selectedDistrict.value] ??
-            selectedDistrict.value.toLowerCase(),
-        province: AppConstants.provinceValues[selectedProvince.value] ??
-            selectedProvince.value.toLowerCase(),
+
+        // Student-only fields.
+        address: isStudent
+            ? addressController.text.trim()
+            : '',
+
+        district: isStudent
+            ? (AppConstants.districtValues[selectedDistrict.value] ??
+            selectedDistrict.value.toLowerCase())
+            : '',
+
+        province: isStudent
+            ? (AppConstants.provinceValues[selectedProvince.value] ??
+            selectedProvince.value.toLowerCase())
+            : '',
       );
 
-      // Never inherit academic details from another account on this device.
+      // Never inherit academic details from another account.
       await StorageService.clearAcademicDetails();
 
       await StorageService.saveUserInfo(
@@ -158,7 +191,9 @@ class SignupController extends GetxController {
         role: auth.user.role,
       );
 
-      await StorageService.saveUserPassword(passwordController.text);
+      await StorageService.saveUserPassword(
+        passwordController.text,
+      );
 
       Get.snackbar(
         "Success",
@@ -168,11 +203,20 @@ class SignupController extends GetxController {
         colorText: Colors.white,
       );
 
-      // First-time student flow:
-      // signup -> academic details -> home
+      final role = auth.user.role.trim().toLowerCase();
+
+      // UBT does NOT need Academic Details.
+      if (role == 'ubt') {
+        Get.offAllNamed(AppRoute.ubtHome);
+        return;
+      }
+
+      // Student → Academic Details.
       Get.offAllNamed(
         AppRoute.academicDetails,
-        arguments: {'email': auth.user.email},
+        arguments: {
+          'email': auth.user.email,
+        },
       );
     } catch (e) {
       print("REGISTER ERROR");
@@ -189,6 +233,7 @@ class SignupController extends GetxController {
       isLoading.value = false;
     }
   }
+
 
   // Google Sign-In
   Future<void> signInWithGoogle() async {

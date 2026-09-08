@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     try {
       final refreshToken =
-          await TokenStorageService.getRefreshToken();
+      await TokenStorageService.getRefreshToken();
 
       // No saved session.
       if (refreshToken == null || refreshToken.isEmpty) {
@@ -36,9 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      // Try to use the saved access token.
-      // If it has expired, ApiService will refresh it
-      // when the first authenticated request is made.
+      // Get saved backend role.
       final role = await StorageService.getUserRole();
 
       if (role == null || role.isEmpty) {
@@ -47,19 +45,57 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      if (role.toLowerCase() == 'admin') {
+      final normalizedRole = role.trim().toLowerCase();
+
+      print("========== SPLASH ROLE ==========");
+      print(normalizedRole);
+      print("=================================");
+
+      // ============================================================
+      // ADMIN
+      // ============================================================
+
+      if (normalizedRole == 'admin') {
         Get.offAllNamed(AppRoute.adminDashboard);
         return;
       }
 
-      if (role.toLowerCase() == 'counselor') {
+      // ============================================================
+      // COUNSELOR
+      // ============================================================
+
+      if (normalizedRole == 'counselor') {
         Get.offAllNamed(AppRoute.home);
         return;
       }
 
-      // Student
-      Get.offAllNamed(AppRoute.home);
+      // ============================================================
+      // UBT
+      // ============================================================
+
+      if (normalizedRole == 'ubt') {
+        Get.offAllNamed(AppRoute.ubtHome);
+        return;
+      }
+
+      // ============================================================
+      // STUDENT
+      // ============================================================
+
+      if (normalizedRole == 'student') {
+        Get.offAllNamed(AppRoute.home);
+        return;
+      }
+
+      // ============================================================
+      // UNKNOWN ROLE
+      // ============================================================
+
+      await TokenStorageService.clearStorage();
+      Get.offAllNamed(AppRoute.login);
     } catch (e) {
+      print("SPLASH SESSION ERROR: $e");
+
       await TokenStorageService.clearStorage();
       Get.offAllNamed(AppRoute.login);
     }

@@ -58,7 +58,7 @@ class ApiConstants {
       '$baseUrl/mcq/attempts/';
 
   static String questionSetTake(String id) {
-    return '$questionSets$id/take/';
+    return '$questionSets$id/';
   }
 
   static String attemptAnswer(String attemptId) {

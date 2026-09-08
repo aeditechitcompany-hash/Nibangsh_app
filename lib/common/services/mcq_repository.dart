@@ -55,7 +55,7 @@ class McqRepository extends GetxService {
       return [];
     } catch (e) {
       errorMessage.value = e.toString();
-      return [];
+      rethrow;
     } finally {
       isLoading.value = false;
     }

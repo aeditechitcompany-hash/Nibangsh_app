@@ -11,63 +11,90 @@ import '../../../common/util/app_route.dart';
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   final AuthService _authService = AuthService();
 
   final RxBool isLoading = false.obs;
   final RxBool isPasswordVisible = false.obs;
+
+  final RxString selectedRole = 'student'.obs;
+
   final formKey = GlobalKey<FormState>();
 
+  void selectRole(String role) {
+    selectedRole.value = role.trim().toLowerCase();
+  }
+
   void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
+    isPasswordVisible.value =
+    !isPasswordVisible.value;
   }
 
   String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email is required';
-    if (!GetUtils.isEmail(value)) return 'Enter a valid email address';
+    if (value == null || value.trim().isEmpty) {
+      return 'Email is required';
+    }
+
+    if (!GetUtils.isEmail(value.trim())) {
+      return 'Enter a valid email address';
+    }
+
     return null;
   }
 
   String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password is required';
-    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
       return 'Must contain at least one uppercase letter (A-Z)';
     }
+
     if (!RegExp(r'[a-z]').hasMatch(value)) {
       return 'Must contain at least one lowercase letter (a-z)';
     }
+
     if (!RegExp(r'[0-9]').hasMatch(value)) {
       return 'Must contain at least one number (0-9)';
     }
-    if (!RegExp(r'[!@#\$&*~%^()_\-+=\[\]{};:,.<>?/\\|`]').hasMatch(value)) {
+
+    if (!RegExp(
+      r'[!@#\$&*~%^()_\-+=\[\]{};:,.<>?/\\|`]',
+    ).hasMatch(value)) {
       return 'Must contain at least one special character (!@#\$&*~)';
     }
+
     return null;
   }
 
   final AcademicDetailsService _academicDetailsService =
-      AcademicDetailsService();
+  AcademicDetailsService();
 
-  /// The database is the source of truth.
-  /// Existing education -> Home.
-  /// No education -> Academic Details.
   Future<void> _navigateAfterLogin(String email) async {
     final hasAcademicDetails =
-        await _academicDetailsService.hasAcademicDetails();
+    await _academicDetailsService.hasAcademicDetails();
 
     if (hasAcademicDetails) {
       Get.offAllNamed(AppRoute.home);
     } else {
       Get.offAllNamed(
         AppRoute.academicDetails,
-        arguments: {'email': email},
+        arguments: {
+          'email': email,
+        },
       );
     }
   }
 
-  // Email & password login
   Future<void> login() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
 
     isLoading.value = true;
 
@@ -75,8 +102,6 @@ class LoginController extends GetxController {
       final email = emailController.text.trim();
       final password = passwordController.text;
 
-      // Login through Django API for ALL accounts,
-      // including admin accounts.
       final auth = await _authService.login(
         email: email,
         password: password,
@@ -87,7 +112,8 @@ class LoginController extends GetxController {
       print("Role: ${auth.user.role}");
       print("====================================");
 
-      // Save user information locally
+      final role = auth.user.role.trim().toLowerCase();
+
       await StorageService.saveUserInfo(
         id: auth.user.id,
         email: auth.user.email,
@@ -96,23 +122,40 @@ class LoginController extends GetxController {
         role: auth.user.role,
       );
 
-      // await StorageService.saveUserPassword(password);
-
-      // Admin → Admin Dashboard
-      if (auth.user.role.toLowerCase() == 'admin') {
+      if (role == 'admin') {
         Get.offAllNamed(AppRoute.adminDashboard);
         return;
       }
 
-      // Counselor → Counselor area
-      if (auth.user.role.toLowerCase() == 'counselor') {
-        // Change this route if your project has a counselor route.
+      if (role == 'counselor') {
         Get.offAllNamed(AppRoute.home);
         return;
       }
 
-      // Student → database-backed academic-details check.
-      await _navigateAfterLogin(auth.user.email);
+      if (role != selectedRole.value) {
+        Get.snackbar(
+          "Wrong Account Type",
+          "This account is registered as ${role.toUpperCase()}.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (role == 'ubt') {
+        Get.offAllNamed(AppRoute.ubtHome);
+        return;
+      }
+
+      if (role == 'student') {
+        await _navigateAfterLogin(auth.user.email);
+        return;
+      }
+
+      throw Exception(
+        'Unknown account role: ${auth.user.role}',
+      );
     } catch (e) {
       print("LOGIN ERROR:");
       print(e);
@@ -129,12 +172,15 @@ class LoginController extends GetxController {
     }
   }
 
-  // Google Sign-In
   Future<void> signInWithGoogle() async {
     isLoading.value = true;
+
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
+
+      final GoogleSignInAccount? account =
+      await googleSignIn.signIn();
+
       if (account != null) {
         await StorageService.saveUserInfo(
           email: account.email,
@@ -142,37 +188,50 @@ class LoginController extends GetxController {
               ? account.displayName!.trim()
               : account.email.split('@').first,
         );
+
         await _navigateAfterLogin(account.email);
       }
     } catch (e) {
-      _showError('Google Sign-In Failed', e.toString());
+      _showError(
+        'Google Sign-In Failed',
+        e.toString(),
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Facebook Sign-In
   Future<void> signInWithFacebook() async {
     isLoading.value = true;
+
     try {
-      final LoginResult result = await FacebookAuth.instance.login();
+      final LoginResult result =
+      await FacebookAuth.instance.login();
+
       if (result.status == LoginStatus.success) {
-        final userData = await FacebookAuth.instance.getUserData();
-        final email = userData['email']?.toString() ?? '';
+        final userData =
+        await FacebookAuth.instance.getUserData();
+
+        final email =
+            userData['email']?.toString() ?? '';
+
         await StorageService.saveUserInfo(
           email: email,
           name: userData['name']?.toString() ?? 'Student',
         );
+
         await _navigateAfterLogin(email);
       }
     } catch (e) {
-      _showError('Facebook Sign-In Failed', e.toString());
+      _showError(
+        'Facebook Sign-In Failed',
+        e.toString(),
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Email button
   void signInWithEmail() {
     _showInfo(
       'Email Sign-In',
@@ -180,7 +239,10 @@ class LoginController extends GetxController {
     );
   }
 
-  void _showError(String title, String message) {
+  void _showError(
+      String title,
+      String message,
+      ) {
     Get.snackbar(
       title,
       message,
@@ -192,7 +254,10 @@ class LoginController extends GetxController {
     );
   }
 
-  void _showInfo(String title, String message) {
+  void _showInfo(
+      String title,
+      String message,
+      ) {
     Get.snackbar(
       title,
       message,
@@ -208,6 +273,7 @@ class LoginController extends GetxController {
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
+
     super.onClose();
   }
 }
