@@ -13,6 +13,7 @@ import '../../../common/util/secure_screen.dart';
 import '../../../common/widgets/audio_play_button.dart';
 import '../controller/mcq_quiz_controller.dart';
 
+
 const double _kWideLayoutBreakpoint = 700;
 
 class McqQuizScreen extends StatefulWidget {
@@ -39,7 +40,6 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
 
     SecureScreen.enable();
 
-    // Quiz screen is landscape only.
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -50,7 +50,6 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
   void dispose() {
     SecureScreen.disable();
 
-    // Restore all orientations when leaving the quiz.
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -874,7 +873,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
       CrossAxisAlignment
           .start,
       children: [
-        if (question.hasQuestionText)
+
           if (question.hasQuestionText)
             Wrap(
               spacing: 4,

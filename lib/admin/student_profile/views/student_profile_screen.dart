@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../common/models/required_document.dart';
 import '../../../../common/util/academic_constants.dart';
 import '../../../../common/util/app_colors.dart';
@@ -558,20 +559,81 @@ class StudentProfileScreen extends StatelessWidget {
     );
   }
 
-  void _viewDocument(RequiredDocument doc) {
-    if (doc.filePath == null || doc.filePath!.isEmpty) {
-      Get.snackbar(
-        'No file attached',
-        'This was marked uploaded in seed data — upload a real file to view it.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.primaryRed,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
+  Future<void> _viewDocument(
+      RequiredDocument doc,
+      ) async {
+    // Student-uploaded file from Django/Supabase.
+    if (doc.hasRemoteFile) {
+      final url = doc.fileUrl!.trim();
+
+      debugPrint(
+        'OPENING REMOTE DOCUMENT: $url',
       );
+
+      final uri = Uri.tryParse(url);
+
+      if (uri == null) {
+        Get.snackbar(
+          'Invalid document',
+          'The document URL is invalid.',
+          snackPosition:
+          SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      try {
+        final launched =
+        await launchUrl(
+          uri,
+          mode:
+          LaunchMode.externalApplication,
+        );
+
+        if (!launched) {
+          Get.snackbar(
+            'Could not open document',
+            'No application could open this document.',
+            snackPosition:
+            SnackPosition.BOTTOM,
+          );
+        }
+      } catch (e) {
+        debugPrint(
+          'REMOTE DOCUMENT ERROR: $e',
+        );
+
+        Get.snackbar(
+          'Could not open document',
+          'Please try again.',
+          snackPosition:
+          SnackPosition.BOTTOM,
+        );
+      }
+
       return;
     }
-    OpenFile.open(doc.filePath!);
+
+    // Locally selected file.
+    if (doc.hasLocalFile) {
+      debugPrint(
+        'OPENING LOCAL DOCUMENT: '
+            '${doc.filePath}',
+      );
+
+      await OpenFile.open(
+        doc.filePath!,
+      );
+
+      return;
+    }
+
+    Get.snackbar(
+      'No file attached',
+      'There is no document available to view.',
+      snackPosition:
+      SnackPosition.BOTTOM,
+    );
   }
 
   Future<void> _pickDocumentFile(

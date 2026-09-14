@@ -464,7 +464,7 @@ class BooksScreen extends StatelessWidget {
       );
     } catch (e) {
       debugPrint(
-        'DELETE BOOK ERROR: $e',
+        'DELE TE BOOK ERROR: $e',
       );
 
       Get.snackbar(

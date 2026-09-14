@@ -165,11 +165,84 @@ class McqQuizController extends GetxController {
   // START TIMER
   // ============================================================
 
+
+// ============================================================
+// START TIMER
+// ============================================================
+
   void _startTimer() {
+    // Cancel any existing timer
     _timer?.cancel();
 
+    // ------------------------------------------------------------
+    // GET QUIZ TIME LIMIT
+    //
+    // If backend sends null, use 50 minutes.
+    // ------------------------------------------------------------
 
+    final int durationMinutes =
+        quizSet.timeLimitMinutes ?? 50;
+
+    remainingSeconds.value =
+        durationMinutes * 60;
+
+    print('========================================');
+    print('MCQ TIMER STARTED');
+    print('Time limit: $durationMinutes minutes');
+    print('Seconds: ${remainingSeconds.value}');
+    print('Formatted: $formattedTime');
+    print('========================================');
+
+    // ------------------------------------------------------------
+    // START COUNTDOWN
+    // ------------------------------------------------------------
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+          (timer) {
+        // Quiz already finished
+        if (_finished) {
+          timer.cancel();
+          return;
+        }
+
+        // --------------------------------------------------------
+        // TIME UP
+        // --------------------------------------------------------
+
+        if (remainingSeconds.value <= 1) {
+          remainingSeconds.value = 0;
+
+          timer.cancel();
+          _timer = null;
+
+          print('========================================');
+          print('MCQ TIME UP');
+          print('Automatically finishing quiz...');
+          print('========================================');
+
+          _finish(timeUp: true);
+
+          return;
+        }
+
+        // --------------------------------------------------------
+        // COUNT DOWN
+        // --------------------------------------------------------
+
+        remainingSeconds.value--;
+
+        // Optional debug
+        if (remainingSeconds.value % 60 == 0 ||
+            remainingSeconds.value <= 10) {
+          print(
+            'MCQ TIMER: $formattedTime',
+          );
+        }
+      },
+    );
   }
+
 
   // ============================================================
   // SELECT OPTION
@@ -332,6 +405,13 @@ class McqQuizController extends GetxController {
   // ============================================================
 
   void submitExam() {
+    print('========================================');
+    print('SUBMIT EXAM CALLED');
+    print('Current question: ${currentIndex.value}');
+    print('Total questions: $totalQuestions');
+    print('Attempted: ${selectedAnswers.length}');
+    print('========================================');
+
     if (isSubmittingAnswer.value) {
       Get.snackbar(
         'Please wait',
