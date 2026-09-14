@@ -173,6 +173,61 @@ class SignupScreen extends StatelessWidget {
 
                       const SizedBox(height: 14),
 
+
+                      Obx(
+                            () => DropdownButtonFormField<String>(
+                          value: controller.referralType.value.isEmpty
+                              ? null
+                              : controller.referralType.value,
+                          decoration: const InputDecoration(
+                            labelText: 'Referral Type',
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'individual',
+                              child: Text('Individual'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'institute',
+                              child: Text('Institute'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            controller.referralType.value = value ?? '';
+
+                            if (value == 'individual') {
+                              controller.referralInstituteController.clear();
+                            } else if (value == 'institute') {
+                              controller.referralNameController.clear();
+                            }
+                          },
+                        ),
+                      ),
+
+                      Obx(() {
+                        if (controller.referralType.value == 'individual') {
+                          return TextFormField(
+                            controller: controller.referralNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Referral Name',
+                            ),
+                          );
+                        }
+
+                        if (controller.referralType.value == 'institute') {
+                          return TextFormField(
+                            controller: controller.referralInstituteController,
+                            decoration: const InputDecoration(
+                              labelText: 'Institute Name',
+                            ),
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      }),
+
+                      const SizedBox(height: 14),
+
                       _buildLabel('Email Address'),
                       const SizedBox(height: 8),
                       _buildTextField(

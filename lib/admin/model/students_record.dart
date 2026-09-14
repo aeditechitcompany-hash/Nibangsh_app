@@ -777,12 +777,17 @@ class StudentRecord {
 
     final currentStep =
         int.tryParse(
-          json['current_process_step']
-              ?.toString() ??
+          json['current_step'] ?? json['current_process_step']              ?.toString() ??
               '',
         ) ??
             1;
+    debugPrint(
+      'BACKEND CURRENT STEP: ${json['current_step']}',
+    );
 
+    debugPrint(
+      'PARSED CURRENT STEP: $currentStep',
+    );
     // ========================================================
     // RETURN STUDENT
     // ========================================================
