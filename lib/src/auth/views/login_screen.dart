@@ -110,14 +110,67 @@ class LoginScreen extends StatelessWidget {
                           color: AppColors.textDark,
                         ),
                       ),
+
                       const SizedBox(height: 4),
+
+
+
+// Account Type
                       const Text(
                         'Sign in to your account',
-                        style: TextStyle(fontSize: 14, color: AppColors.textGrey),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textGrey,
+                        ),
                       ),
-                      const SizedBox(height: 28),
 
-                      // Email
+                      const SizedBox(height: 24),
+                      // Account Type
+                      _buildLabel('Account Type'),
+
+                      const SizedBox(height: 8),
+
+                      Obx(
+                            () => Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppColors.borderGrey,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _buildRoleButton(
+                                  controller: controller,
+                                  role: 'student',
+                                  label: 'Student',
+                                  icon: Icons.school_outlined,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: _buildRoleButton(
+                                  controller: controller,
+                                  role: 'ubt',
+                                  label: 'UBT',
+                                  icon: Icons.business_outlined,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+// Email
+
+
+// Email
                       _buildLabel('Email Address'),
                       const SizedBox(height: 8),
                       _buildTextField(
@@ -311,6 +364,56 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildRoleButton({
+    required LoginController controller,
+    required String role,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected =
+        controller.selectedRole.value == role;
+
+    return GestureDetector(
+      onTap: () {
+        controller.selectRole(role);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: 48,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.navyLight
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 19,
+              color: isSelected
+                  ? Colors.white
+                  : AppColors.textGrey,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected
+                    ? Colors.white
+                    : AppColors.textGrey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildLabel(String text) {
     return Text(

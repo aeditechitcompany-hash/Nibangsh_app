@@ -1,49 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../common/api_services/auth_service.dart';
+import '../../../common/util/app_route.dart';
+
 class ForgotPasswordController extends GetxController {
+  final AuthService _authService = AuthService();
+
   final emailController = TextEditingController();
 
   final RxBool isLoading = false.obs;
-  final RxBool isEmailSent = false.obs;
+
   final formKey = GlobalKey<FormState>();
 
   String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email is required';
-    if (!GetUtils.isEmail(value)) return 'Enter a valid email address';
+    if (value == null || value.trim().isEmpty) {
+      return 'Email is required';
+    }
+
+    if (!GetUtils.isEmail(value.trim())) {
+      return 'Enter a valid email address';
+    }
+
     return null;
   }
 
-  // Sends a password reset link to the entered email
-  Future<void> sendResetLink() async {
-    if (!formKey.currentState!.validate()) return;
+  Future<void> sendResetOTP() async {
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+
+    final email = emailController.text.trim();
 
     isLoading.value = true;
+
     try {
-      await Future.delayed(const Duration(seconds: 2));
-      isEmailSent.value = true;
+      await _authService.forgotPassword(
+        email: email,
+      );
+
+      Get.toNamed(
+        AppRoute.otpVerification,
+        arguments: {
+          'email': email,
+        },
+      );
     } catch (e) {
-      _showError('Request Failed', e.toString());
+      Get.snackbar(
+        'Request Failed',
+        e.toString().replaceFirst(
+          'Exception: ',
+          '',
+        ),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade700,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
     } finally {
       isLoading.value = false;
     }
-  }
-
-  Future<void> resendLink() async {
-    isEmailSent.value = false;
-    await sendResetLink();
-  }
-
-  void _showError(String title, String message) {
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red.shade700,
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
-    );
   }
 
   @override

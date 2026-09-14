@@ -83,27 +83,60 @@ class AcademicDetailsService {
   }
 
   Future<Map<String, dynamic>?> getMyAcademicDetails() async {
-    final response = await _api.get(
-      url: ApiConstants.myEducationStatus,
-    );
+    try {
+      final response = await _api.get(
+        url: ApiConstants.myEducationStatus,
+      );
 
-    if (response is! Map<String, dynamic>) {
+      print('========================================');
+      print('ACADEMIC DETAILS API RESPONSE');
+      print(response);
+      print('========================================');
+
+      if (response is! Map) {
+        print('Academic response is NOT a Map');
+        return null;
+      }
+
+      final education = response['education'];
+
+      print('EDUCATION: $education');
+
+      if (education is! List) {
+        print('education is NOT a List');
+        return null;
+      }
+
+      if (education.isEmpty) {
+        print('education list is EMPTY');
+        return null;
+      }
+
+      final firstEducation = education.first;
+
+      print('FIRST EDUCATION: $firstEducation');
+
+      if (firstEducation is! Map) {
+        print('firstEducation is NOT a Map');
+        return null;
+      }
+
+      final result = Map<String, dynamic>.from(firstEducation);
+
+      print('GPA: ${result['gpa']}');
+      print('GPA SCALE: ${result['gpa_scale']}');
+      print('GRADE: ${result['grade']}');
+      print('PASSOUT YEAR: ${result['passout_year']}');
+      print('DEGREE: ${result['degree_level']}');
+      print('COUNTRY: ${result['country']}');
+      print('COUNTRY NAME: ${result['country_name']}');
+      print('========================================');
+
+      return result;
+    } catch (e) {
+      print('GET ACADEMIC DETAILS ERROR: $e');
       return null;
     }
-
-    final education = response['education'];
-
-    if (education is! List || education.isEmpty) {
-      return null;
-    }
-
-    final firstEducation = education.first;
-
-    if (firstEducation is! Map) {
-      return null;
-    }
-
-    return Map<String, dynamic>.from(firstEducation);
   }
 
   /// Returns true when the backend already has an education record for the

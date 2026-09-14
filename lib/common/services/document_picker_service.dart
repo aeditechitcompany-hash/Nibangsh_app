@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 
 /// Result of a successful file pick.
@@ -6,41 +8,64 @@ class PickedDocument {
   final String? path;
   final int? sizeBytes;
 
-  const PickedDocument({required this.name, this.path, this.sizeBytes});
+  const PickedDocument({
+    required this.name,
+    this.path,
+    this.sizeBytes,
+  });
 }
 
-/// Thin wrapper around `file_picker` so every "Browse" button in the app
-/// opens the same native picker (Files / Gallery / Photos / Drive, etc.)
-/// and returns a consistent result.
-///
-/// Requires the `file_picker` package:
-///   dependencies:
-///     file_picker: ^8.1.2
+/// Thin wrapper around file_picker.
 class DocumentPickerService {
   DocumentPickerService._();
 
-  /// Opens the native file/photo browser and lets the user pick a single
-  /// document (PDF) or image (jpg/jpeg/png). Returns `null` if the user
-  /// cancels the picker.
+  /// Opens the native file picker and lets the user
+  /// select a single PDF or image.
   static Future<PickedDocument?> pickDocument() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final file = await FilePicker.pickFile(
         type: FileType.custom,
-        allowedExtensions: const ['pdf', 'jpg', 'jpeg', 'png', 'heic'],
-        withData: false,
+        allowedExtensions: const [
+          'pdf',
+          'jpg',
+          'jpeg',
+          'png',
+          'heic',
+        ],
       );
 
-      if (result == null || result.files.isEmpty) return null;
+      if (file == null) {
+        return null;
+      }
 
-      final file = result.files.single;
-      return PickedDocument(name: file.name, path: file.path, sizeBytes: file.size);
+      return PickedDocument(
+        name: file.name,
+        path: file.path,
+        sizeBytes: file.path != null
+            ? await File(file.path!).length()
+            : null,      );
     } catch (_) {
-      // FileType.custom can throw on some platforms/configs if the
-      // allowedExtensions filter isn't supported — fall back to FileType.any.
-      final result = await FilePicker.platform.pickFiles(type: FileType.any);
-      if (result == null || result.files.isEmpty) return null;
-      final file = result.files.single;
-      return PickedDocument(name: file.name, path: file.path, sizeBytes: file.size);
+      // Fallback to any file if the custom extension filter
+      // is not supported on the current platform.
+      try {
+        final file = await FilePicker.pickFile(
+          type: FileType.any,
+        );
+
+        if (file == null) {
+          return null;
+        }
+
+        return PickedDocument(
+          name: file.name,
+          path: file.path,
+          sizeBytes: file.path != null
+              ? await File(file.path!).length()
+              : null,
+        );
+      } catch (_) {
+        return null;
+      }
     }
   }
 }

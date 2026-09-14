@@ -3,7 +3,8 @@ class ApiConstants {
 
   static const String baseUrl =
       'https://backend-1-mltk.onrender.com/api';
-
+  static const String deviceToken =
+      '$baseUrl/notifications/device-token/';
   static const String serverUrl =
       'https://backend-1-mltk.onrender.com';
 
@@ -22,6 +23,17 @@ class ApiConstants {
 
   static const String students =
       '$baseUrl/accounts/users/';
+  static const String mcqQuestions =
+      '$baseUrl/mcq/questions/';
+
+  static const String mcqOptions =
+      '$baseUrl/mcq/options/';
+
+  static String mcqQuestion(String id) =>
+      '$mcqQuestions$id/';
+
+  static String mcqOption(String id) =>
+      '$mcqOptions$id/';
 
   static const String studentProfiles =
       '$baseUrl/students/profiles/';

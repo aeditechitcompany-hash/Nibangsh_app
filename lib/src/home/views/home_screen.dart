@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -594,7 +596,16 @@ class HomeScreen extends StatelessWidget {
             doneColor: const Color(0xFF16A34A),
           ),
           const SizedBox(height: 12),
-          ...userSteps.map((step) => _stepTile(controller, step, context)),
+          ...userSteps.map(
+                (step) => Column(
+              children: [
+                _stepTile(controller, step, context),
+
+                if (step.id == 1)
+                  _buildStep1Preview(controller),
+              ],
+            ),
+          ),
           const SizedBox(height: 10),
           _sectionHeader(
             icon: Icons.shield_outlined,
@@ -974,5 +985,68 @@ class HomeScreen extends StatelessWidget {
         );
       },
     );
+  }
+  Widget _buildStep1Preview(HomeController controller) {
+    return Obx(() {
+      final path = controller.step1FilePath.value;
+
+      if (path == null || path.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(
+          left: 0,
+          right: 0,
+          bottom: 12,
+        ),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.borderGrey,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Selected document',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.file(
+                File(path),
+                width: double.infinity,
+                height: 220,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              controller.step1FileName.value ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textGrey,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

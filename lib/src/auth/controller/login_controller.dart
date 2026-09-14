@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../common/api_services/auth_service.dart';
 import '../../../common/api_services/academic_details_service.dart';
+import '../../../common/services/firebase_notification_service.dart';
 import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
@@ -106,6 +107,13 @@ class LoginController extends GetxController {
         email: email,
         password: password,
       );
+
+      try {
+        await FirebaseNotificationService.instance
+            .registerCurrentDeviceToken();
+      } catch (e) {
+        print('FCM DEVICE TOKEN ERROR: $e');
+      }
 
       print("========== LOGGED IN USER ==========");
       print("Email: ${auth.user.email}");

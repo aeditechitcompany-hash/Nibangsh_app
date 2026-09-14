@@ -2,7 +2,7 @@ import '../api_models/auth_response.dart';
 import 'api_constants.dart';
 import 'api_service.dart';
 import 'token_storage_service.dart';
-
+import '../../../common/services/firebase_notification_service.dart';
 class AuthService {
   final ApiService _api = const ApiService();
 
@@ -78,10 +78,112 @@ class AuthService {
       refreshToken: auth.refresh,
     );
 
+    await FirebaseNotificationService.instance
+        .registerCurrentDeviceToken();
+
     return auth;
   }
 
   Future<void> logout() async {
     await TokenStorageService.clearStorage();
   }
+
+  Future<void> forgotPassword({
+    required String email,
+  }) async {
+    final response = await _api.post(
+      url:
+      '${ApiConstants.baseUrl}/accounts/password/forgot/',
+      body: {
+        'email': email.trim(),
+      },
+      authenticated: false,
+    );
+
+    if (response is! Map) {
+      throw Exception(
+        'Invalid password reset response.',
+      );
+    }
+  }
+
+  Future<String> verifyPasswordResetOTP({
+    required String email,
+    required String code,
+  }) async {
+    final response = await _api.post(
+      url:
+      '${ApiConstants.baseUrl}/accounts/password/verify-otp/',
+      body: {
+        'email': email.trim(),
+        'code': code.trim(),
+      },
+      authenticated: false,
+    );
+
+    if (response is! Map) {
+      throw Exception(
+        'Invalid OTP verification response.',
+      );
+    }
+
+    final resetToken =
+    response['reset_token']?.toString();
+
+    if (resetToken == null ||
+        resetToken.isEmpty) {
+      throw Exception(
+        'Reset token was not returned by the server.',
+      );
+    }
+
+    return resetToken;
+  }
+
+  Future<void> resetPassword({
+    required String resetToken,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await _api.post(
+      url:
+      '${ApiConstants.baseUrl}/accounts/password/reset/',
+      body: {
+        'token': resetToken,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+      },
+      authenticated: false,
+    );
+
+    if (response is! Map) {
+      throw Exception(
+        'Invalid password reset response.',
+      );
+    }
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await _api.post(
+      url:
+      '${ApiConstants.baseUrl}/accounts/password/change/',
+      body: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+      },
+      authenticated: true,
+    );
+
+    if (response is! Map) {
+      throw Exception(
+        'Invalid change password response.',
+      );
+    }
+  }
 }
+

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+
 
 import '../api_services/api_constants.dart';
 import '../api_services/api_service.dart';
@@ -18,13 +20,12 @@ class McqRepository extends GetxService {
   final questions = <McqQuestion>[].obs;
 
   final isLoading = false.obs;
-
   final errorMessage = ''.obs;
 
-  /// Loads all active MCQ sets from Django.
-  ///
-  /// The backend only returns question sets when the logged-in
-  /// student has mcq_access=True.
+  // ============================================================
+  // LOAD QUESTION SETS
+  // ============================================================
+
   Future<List<Map<String, dynamic>>> fetchQuestionSets() async {
     try {
       isLoading.value = true;
@@ -42,7 +43,6 @@ class McqRepository extends GetxService {
             .toList();
       }
 
-      // DRF pagination support.
       if (response is Map &&
           response['results'] is List) {
         return (response['results'] as List)
@@ -61,10 +61,10 @@ class McqRepository extends GetxService {
     }
   }
 
-  /// Loads one complete student-safe question set.
-  ///
-  /// IMPORTANT:
-  /// This endpoint does NOT contain correct answers.
+  // ============================================================
+  // LOAD ONE QUESTION SET
+  // ============================================================
+
   Future<Map<String, dynamic>?> fetchQuestionSet(
       String questionSetId,
       ) async {
@@ -86,25 +86,68 @@ class McqRepository extends GetxService {
     }
   }
 
-  /// Convert one backend question into the existing
-  /// McqQuestion model.
+  // ============================================================
+  // LOAD ADMIN QUESTION SET
+  //
+  // IMPORTANT:
+  // Admin receives QuestionSetDetailSerializer.
+  //
+  // Therefore:
+  // - options are included
+  // - is_correct is included
+  // - explanation is included
+  // ============================================================
+
+  Future<Map<String, dynamic>?> fetchAdminQuestionSet(
+      String questionSetId,
+      ) async {
+    try {
+      final response = await _apiService.get(
+        url: ApiConstants.questionSetTake(
+          questionSetId,
+        ),
+      );
+
+      if (response is Map) {
+        return Map<String, dynamic>.from(response);
+      }
+
+      return null;
+    } catch (e) {
+      errorMessage.value = e.toString();
+      rethrow;
+    }
+  }
+
+  // ============================================================
+  // QUESTION -> MODEL
+  // ============================================================
+
   McqQuestion questionFromBackend(
       Map<String, dynamic> json, {
         String? setName,
         String? questionSetId,
+        bool admin = false,
       }) {
-    final rawOptions = json['options'] as List? ?? [];
+    final rawOptions =
+        json['options'] as List? ?? [];
 
     final optionIds = <String>[];
     final optionTexts = <String>[];
     final optionImages = <String>[];
     final optionAudios = <String>[];
 
-    for (final raw in rawOptions) {
-      final option = Map<String, dynamic>.from(raw);
+    int? correctIndex;
 
-      final id = option['id']?.toString() ?? '';
-      final text = option['text']?.toString() ?? '';
+    for (var i = 0; i < rawOptions.length; i++) {
+      final option =
+      Map<String, dynamic>.from(rawOptions[i]);
+
+      final id =
+          option['id']?.toString() ?? '';
+
+      final text =
+          option['text']?.toString() ?? '';
 
       optionIds.add(id);
       optionTexts.add(text);
@@ -120,86 +163,74 @@ class McqRepository extends GetxService {
           option['audio']?.toString(),
         ),
       );
+
+      // ONLY ADMIN DATA may read is_correct.
+      if (admin &&
+          option['is_correct'] == true) {
+        correctIndex = i;
+      }
     }
 
     final createdAtString =
     json['created_at']?.toString();
 
-    DateTime createdAt;
+    final createdAt =
+    createdAtString != null
+        ? DateTime.tryParse(
+      createdAtString,
+    ) ??
+        DateTime.now()
+        : DateTime.now();
 
-    if (createdAtString != null) {
-      createdAt =
-          DateTime.tryParse(createdAtString) ??
-              DateTime.now();
-    } else {
-      createdAt = DateTime.now();
-    }
     return McqQuestion(
       id: json['id']?.toString() ?? '',
-      question: json['text']?.toString() ?? '',
+      question:
+      json['text']?.toString() ?? '',
       options: optionTexts,
 
-      // NEVER read is_correct here.
-      // Students should not receive it.
-      correctOptionIndex: null,
+      correctOptionIndex:
+      admin ? correctIndex : null,
 
-      // Question image from Django/Cloudinary
-      questionImagePath: ApiConstants.mediaUrl(
+      questionImagePath:
+      ApiConstants.mediaUrl(
         json['image']?.toString(),
       ),
 
-      audioFilePath: ApiConstants.mediaUrl(
+      audioFilePath:
+      ApiConstants.mediaUrl(
         json['audio']?.toString(),
       ),
 
-      optionImagePaths: optionImages,
-      optionAudioPaths: optionAudios,
+      optionImagePaths:
+      optionImages,
+
+      optionAudioPaths:
+      optionAudios,
 
       setName: setName,
 
       createdAt: createdAt,
 
-      questionSetId: questionSetId,
+      questionSetId:
+      questionSetId,
+
       optionIds: optionIds,
     );
-    // return McqQuestion(
-    //   id: json['id']?.toString() ?? '',
-    //   question: json['text']?.toString() ?? '',
-    //   options: optionTexts,
-    //
-    //   // NEVER read is_correct here.
-    //   // Students should not receive it.
-    //   correctOptionIndex: null,
-    //
-    //   // questionImagePath: ApiConstants.mediaUrl(
-    //   //   json['image']?.toString(),
-    //   // ),
-    //
-    //
-    //
-    //   audioFilePath: ApiConstants.mediaUrl(
-    //     json['audio']?.toString(),
-    //   ),
-    //
-    //   optionImagePaths: optionImages,
-    //   optionAudioPaths: optionAudios,
-    //
-    //   setName: setName,
-    //
-    //   createdAt: createdAt,
-    //
-    //   questionSetId: questionSetId,
-    //   optionIds: optionIds,
-    // );
   }
 
-  /// Convert a complete backend question-set response
-  /// into McqQuestion objects.
+  // ============================================================
+  // QUESTION SET -> QUESTIONS
+  // ============================================================
+
   List<McqQuestion> questionsFromBackend(
-      Map<String, dynamic> json,
-      ) {
-    final setId = json['id']?.toString();
-    final setName = json['title']?.toString();
+      Map<String, dynamic> json, {
+        bool admin = false,
+      }) {
+    final setId =
+    json['id']?.toString();
+
+    final setName =
+    json['title']?.toString();
 
     final rawQuestions =
         json['questions'] as List? ?? [];
@@ -210,10 +241,15 @@ class McqRepository extends GetxService {
         Map<String, dynamic>.from(raw),
         setName: setName,
         questionSetId: setId,
+        admin: admin,
       ),
     )
         .toList();
   }
+
+  // ============================================================
+  // SET LOCAL QUESTIONS
+  // ============================================================
 
   void setQuestions(
       List<McqQuestion> newQuestions,
@@ -222,16 +258,150 @@ class McqRepository extends GetxService {
     _sortQuestions();
   }
 
-  void addQuestion(
-      McqQuestion question,
-      ) {
+  // ============================================================
+  // UPDATE QUESTION ON DJANGO
+  // ============================================================
+
+  Future<McqQuestion> updateQuestionOnServer(
+      McqQuestion updated,
+      ) async {
+    if (updated.id.isEmpty) {
+      throw Exception(
+        'Question ID is missing.',
+      );
+    }
+
+    // ----------------------------------------------------------
+    // 1. UPDATE QUESTION
+    // ----------------------------------------------------------
+
+    final questionResponse =
+    await _apiService.patch(
+      url: ApiConstants.mcqQuestion(
+        updated.id,
+      ),
+      body: {
+        'text': updated.question,
+      },
+      authenticated: true,
+    );
+
+    debugPrint(
+      'QUESTION UPDATE RESPONSE: '
+          '$questionResponse',
+    );
+
+    // ----------------------------------------------------------
+    // 2. UPDATE OPTIONS
+    // ----------------------------------------------------------
+
+    if (updated.optionIds == null ||
+        updated.optionIds!.length !=
+            updated.options.length) {
+      throw Exception(
+        'Option IDs are missing or do not match the options.',
+      );
+    }
+
+    for (
+    var i = 0;
+    i < updated.options.length;
+    i++
+    ) {
+      final optionId =
+      updated.optionIds![i];
+
+      await _apiService.patch(
+        url: ApiConstants.mcqOption(
+          optionId,
+        ),
+        body: {
+          'text': updated.options[i],
+          'is_correct':
+          i ==
+              updated.correctOptionIndex,
+          'order': i,
+        },
+        authenticated: true,
+      );
+    }
+
+    // ----------------------------------------------------------
+    // 3. RELOAD QUESTION
+    // ----------------------------------------------------------
+
+    final refreshed =
+    await _apiService.get(
+      url: ApiConstants.mcqQuestion(
+        updated.id,
+      ),
+    );
+
+    if (refreshed is! Map) {
+      throw Exception(
+        'Invalid question response from server.',
+      );
+    }
+
+    final result =
+    questionFromBackend(
+      Map<String, dynamic>.from(
+        refreshed,
+      ),
+      setName: updated.setName,
+      questionSetId:
+      updated.questionSetId,
+      admin: true,
+    );
+
+    // ----------------------------------------------------------
+    // 4. UPDATE LOCAL STATE
+    // ----------------------------------------------------------
+
+    final index =
+    questions.indexWhere(
+          (q) => q.id == updated.id,
+    );
+
+    if (index != -1) {
+      questions[index] = result;
+      _sortQuestions();
+    }
+
+    return result;
+  }
+
+  // ============================================================
+  // DELETE QUESTION
+  // ============================================================
+
+  Future<void> deleteQuestionOnServer(
+      String id,
+      ) async {
+    await _apiService.delete(
+      url: ApiConstants.mcqQuestion(id),
+      authenticated: true,
+    );
+
+    questions.removeWhere(
+          (q) => q.id == id,
+    );
+  }
+
+  // ============================================================
+  // LOCAL HELPERS
+  // ============================================================
+
+// ============================================================
+// LOCAL HELPERS
+// ============================================================
+
+  void addQuestion(McqQuestion question) {
     questions.add(question);
     _sortQuestions();
   }
 
-  void updateQuestion(
-      McqQuestion updated,
-      ) {
+  void updateQuestion(McqQuestion updated) {
     final index = questions.indexWhere(
           (q) => q.id == updated.id,
     );
@@ -242,9 +412,7 @@ class McqRepository extends GetxService {
     }
   }
 
-  void removeQuestion(
-      String id,
-      ) {
+  void removeQuestion(String id) {
     questions.removeWhere(
           (q) => q.id == id,
     );
@@ -252,8 +420,7 @@ class McqRepository extends GetxService {
 
   void _sortQuestions() {
     questions.sort(
-          (a, b) =>
-          a.createdAt.compareTo(b.createdAt),
+          (a, b) => a.createdAt.compareTo(b.createdAt),
     );
   }
 }

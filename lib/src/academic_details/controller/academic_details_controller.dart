@@ -101,12 +101,27 @@ class AcademicDetailsController extends GetxController {
         homeController.degree.value = selectedDegree.value;
       }
 
+
       if (Get.isRegistered<ProfileController>()) {
         final profileController = Get.find<ProfileController>();
-        profileController.country.value = selectedCountry.value;
-        profileController.gpa.value = gpa;
-        profileController.passoutYear.value = selectedPassoutYear.value;
-        profileController.degree.value = selectedDegree.value;
+
+        profileController.country.value =
+            selectedCountry.value;
+
+        profileController.gpa.value =
+            gpa;
+
+        profileController.gpaScale.value =
+        '4.0';
+
+        profileController.grade.value =
+            gpa;
+
+        profileController.passoutYear.value =
+            selectedPassoutYear.value;
+
+        profileController.degree.value =
+            selectedDegree.value;
       }
     } catch (e) {
       print('SUBMIT ACADEMIC DETAILS ERROR:');
