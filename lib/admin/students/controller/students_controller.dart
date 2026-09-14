@@ -13,8 +13,7 @@ class StudentsController extends GetxController {
 
   final selectedStatus = Rxn<StudentStatus>();
 
-  final RxList<StudentRecord> students =
-      <StudentRecord>[].obs;
+  final RxList<StudentRecord> students = <StudentRecord>[].obs;
 
   final isLoading = false.obs;
   final errorMessage = ''.obs;
@@ -23,21 +22,35 @@ class StudentsController extends GetxController {
   void onInit() {
     super.onInit();
 
-    fetchStudents();
-
     searchController.addListener(() {
-      searchQuery.value =
-          searchController.text.trim();
+      searchQuery.value = searchController.text.trim();
     });
+
+    fetchStudents();
   }
 
+  // ============================================================
+  // FETCH STUDENTS
+  // ============================================================
+
   Future<void> fetchStudents() async {
+    final stopwatch = Stopwatch()..start();
+
+    debugPrint('========== STUDENTS FETCH START ==========');
+
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
+      final apiStart = stopwatch.elapsedMilliseconds;
+
       final response = await _api.get(
         url: '${ApiConstants.baseUrl}/students/profiles/',
+      );
+
+      debugPrint(
+        'STUDENTS API TIME: '
+            '${stopwatch.elapsedMilliseconds - apiStart} ms',
       );
 
       List<dynamic> data;
@@ -53,6 +66,8 @@ class StudentsController extends GetxController {
         );
       }
 
+      final parseStart = stopwatch.elapsedMilliseconds;
+
       students.assignAll(
         data.map((json) {
           return StudentRecord.fromJson(
@@ -60,60 +75,108 @@ class StudentsController extends GetxController {
           );
         }).toList(),
       );
+
+      debugPrint(
+        'STUDENTS PARSE TIME: '
+            '${stopwatch.elapsedMilliseconds - parseStart} ms',
+      );
+
+      debugPrint(
+        'TOTAL STUDENTS FETCH TIME: '
+            '${stopwatch.elapsedMilliseconds} ms',
+      );
+
     } catch (e) {
       errorMessage.value = e.toString();
+      debugPrint('STUDENTS ERROR: $e');
     } finally {
       isLoading.value = false;
+
+      debugPrint(
+          '========== STUDENTS FETCH END =========='
+      );
     }
   }
 
+  // ============================================================
+  // FORCE REFRESH
+  // ============================================================
+
+  Future<void> refreshStudents() async {
+    await fetchStudents();
+  }
+
+  // ============================================================
+  // FILTERED STUDENTS
+  // ============================================================
 
   List<StudentRecord> get filteredStudents {
-    return students.where((s) {
-      final query =
-          searchQuery.value.toLowerCase();
+    final query = searchQuery.value.toLowerCase();
 
+    return students.where((student) {
       final matchesStatus =
           selectedStatus.value == null ||
-          s.status == selectedStatus.value;
+              student.status == selectedStatus.value;
 
       final matchesQuery =
           query.isEmpty ||
-          s.name.toLowerCase().contains(query) ||
-          s.email.toLowerCase().contains(query);
+              student.name.toLowerCase().contains(query) ||
+              student.email.toLowerCase().contains(query);
 
       return matchesStatus && matchesQuery;
     }).toList();
   }
 
+  // ============================================================
+  // STATUS FILTER
+  // ============================================================
+
   void setStatusFilter(StudentStatus? status) {
     selectedStatus.value = status;
   }
 
-  StudentRecord? byId(String id) {
-    final index =
-        students.indexWhere((s) => s.id == id);
+  // ============================================================
+  // FIND STUDENT
+  // ============================================================
 
-    return index == -1
-        ? null
-        : students[index];
+  StudentRecord? byId(String id) {
+    final index = students.indexWhere(
+          (student) => student.id == id,
+    );
+
+    if (index == -1) {
+      return null;
+    }
+
+    return students[index];
   }
 
-  void updateStudent(
-    String id,
-    StudentRecord Function(
-      StudentRecord current,
-    ) updater,
-  ) {
-    final index =
-        students.indexWhere((s) => s.id == id);
+  // ============================================================
+  // UPDATE LOCAL STUDENT
+  // ============================================================
 
-    if (index == -1) return;
+  void updateStudent(
+      String id,
+      StudentRecord Function(
+          StudentRecord current,
+          ) updater,
+      ) {
+    final index = students.indexWhere(
+          (student) => student.id == id,
+    );
+
+    if (index == -1) {
+      return;
+    }
 
     students[index] = updater(
       students[index],
     );
   }
+
+  // ============================================================
+  // CLEANUP
+  // ============================================================
 
   @override
   void onClose() {

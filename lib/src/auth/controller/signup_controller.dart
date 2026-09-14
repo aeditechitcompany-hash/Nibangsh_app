@@ -15,6 +15,10 @@ class SignupController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final addressController = TextEditingController();
+  final referralNameController = TextEditingController();
+  final referralInstituteController = TextEditingController();
+
+  final RxString referralType = ''.obs;
 
   final RxBool isLoading = false.obs;
   final RxBool isPasswordVisible = false.obs;
@@ -178,6 +182,15 @@ class SignupController extends GetxController {
             ? (AppConstants.provinceValues[selectedProvince.value] ??
             selectedProvince.value.toLowerCase())
             : '',
+
+        // Referral
+        referralType: isStudent ? referralType.value : '',
+        referralName: isStudent
+            ? referralNameController.text.trim()
+            : '',
+        referralInstitute: isStudent
+            ? referralInstituteController.text.trim()
+            : '',
       );
 
       // Never inherit academic details from another account.
@@ -317,6 +330,9 @@ class SignupController extends GetxController {
     passwordController.dispose();
     confirmPasswordController.dispose();
     addressController.dispose();
+
+    referralNameController.dispose();
+    referralInstituteController.dispose();
     super.onClose();
   }
 }

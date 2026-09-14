@@ -15,6 +15,10 @@ class AuthService {
     required String address,
     required String district,
     required String province,
+
+    String? referralType,
+    String? referralName,
+    String? referralInstitute,
   }) async {
     final username = email.split('@').first;
 
@@ -46,6 +50,12 @@ class AuthService {
         normalizedRole == 'student' ? district : '',
         "province":
         normalizedRole == 'student' ? province : '',
+
+        // Referral
+        "referral_type": referralType ?? "",
+        "referral_name": referralName ?? "",
+        "referral_institute": referralInstitute ?? "",
+
       },
     );
 
