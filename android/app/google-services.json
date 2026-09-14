@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "835851472767",
+    "project_id": "nibangsh-ubt-app-41372",
+    "storage_bucket": "nibangsh-ubt-app-41372.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835851472767:android:9fd532dd892fcbaca6944a",
+        "android_client_info": {
+          "package_name": "com.example.nibangsh_consultancy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC654-duXbzXPE1h8AhyQnwPXVffJVl8JE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

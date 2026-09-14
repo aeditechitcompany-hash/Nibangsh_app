@@ -218,8 +218,9 @@ class StudentsScreen extends StatelessWidget {
 
   Widget _studentCard(StudentRecord student) {
     final flag = AcademicConstants.countryFlags[student.countryName] ?? '🌍';
-    final docFraction = student.documentsUploaded / student.documentsTotal;
-
+    final docFraction = student.documentsTotal == 0
+        ? 0.0
+        : student.documentsUploaded / student.documentsTotal;
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),

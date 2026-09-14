@@ -117,4 +117,7 @@ class BooksRepository extends GetxService {
       (book) => book.id == id,
     );
   }
+  void setBooks(List<BookResource> items) {
+    books.assignAll(items);
+  }
 }

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'api_constants.dart';
 import 'token_storage_service.dart';
+import 'dart:io';
 
 class ApiService {
   const ApiService();
@@ -211,6 +213,276 @@ class ApiService {
       url: url,
       headers: headers,
       authenticated: true,
+    );
+  }
+
+  Future<Map<String, dynamic>> patchMultipart({
+    required String url,
+    required Map<String, String> fields,
+    Map<String, File> files = const {},
+    bool authenticated = true,
+    bool isRetryAttempt = false,
+  }) async {
+    final uri = Uri.parse(url);
+
+    try {
+      final request = http.MultipartRequest(
+        'PATCH',
+        uri,
+      );
+
+      // ----------------------------------------------------------
+      // AUTHORIZATION
+      // ----------------------------------------------------------
+
+      if (authenticated) {
+        final accessToken =
+        await TokenStorageService.getAccessToken();
+
+        if (accessToken != null && accessToken.isNotEmpty) {
+          request.headers['Authorization'] =
+          'Bearer $accessToken';
+        }
+      }
+
+      // ----------------------------------------------------------
+      // NORMAL FIELDS
+      // ----------------------------------------------------------
+
+      request.fields.addAll(fields);
+
+      // ----------------------------------------------------------
+      // FILES
+      // ----------------------------------------------------------
+
+      for (final entry in files.entries) {
+        final fieldName = entry.key;
+        final file = entry.value;
+
+        if (!await file.exists()) {
+          throw Exception(
+            'File does not exist: ${file.path}',
+          );
+        }
+
+        final fileSize = await file.length();
+
+        print(
+          'Uploading $fieldName: '
+              '${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB',
+        );
+
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            fieldName,
+            file.path,
+          ),
+        );
+      }
+
+      print('====================================');
+      print('MULTIPART PATCH START');
+      print('URL: $url');
+      print('FIELDS: $fields');
+      print(
+        'FILES: ${files.map(
+              (key, value) => MapEntry(key, value.path),
+        )}',
+      );
+      print('====================================');
+
+      // ----------------------------------------------------------
+      // SEND WITH TIMEOUT
+      // ----------------------------------------------------------
+
+      final streamedResponse = await request
+          .send()
+          .timeout(
+        const Duration(minutes: 2),
+        onTimeout: () {
+          throw Exception(
+            'File upload timed out. '
+                'Please check your internet connection '
+                'and try again.',
+          );
+        },
+      );
+
+      final response =
+      await http.Response.fromStream(streamedResponse);
+
+      print('====================================');
+      print('MULTIPART PATCH RESPONSE');
+      print('STATUS: ${response.statusCode}');
+      print('BODY: ${response.body}');
+      print('====================================');
+
+      // ----------------------------------------------------------
+      // SUCCESS
+      // ----------------------------------------------------------
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300) {
+        if (response.body.isEmpty) {
+          return {};
+        }
+
+        dynamic data;
+
+        try {
+          data = jsonDecode(response.body);
+        } catch (_) {
+          throw Exception(
+            'Server returned an invalid response.',
+          );
+        }
+
+        if (data is Map) {
+          return Map<String, dynamic>.from(data);
+        }
+
+        return {};
+      }
+
+      // ----------------------------------------------------------
+      // TOKEN EXPIRED
+      // ----------------------------------------------------------
+
+      if (response.statusCode == 401 &&
+          authenticated &&
+          !isRetryAttempt) {
+        print(
+          'Multipart upload received 401. '
+              'Refreshing token...',
+        );
+
+        final refreshed =
+        await _tryRefreshToken();
+
+        if (refreshed) {
+          print(
+            'Token refreshed. Retrying upload...',
+          );
+
+          return patchMultipart(
+            url: url,
+            fields: fields,
+            files: files,
+            authenticated: authenticated,
+            isRetryAttempt: true,
+          );
+        }
+
+        await TokenStorageService.clearStorage();
+
+        throw Exception(
+          'Session expired. Please log in again.',
+        );
+      }
+
+      // ----------------------------------------------------------
+      // ERROR
+      // ----------------------------------------------------------
+
+      dynamic data;
+
+      try {
+        data = jsonDecode(response.body);
+      } catch (_) {
+        throw Exception(
+          'Upload failed.\n'
+              'Status Code: ${response.statusCode}\n'
+              'Body:\n${response.body}',
+        );
+      }
+
+      if (data is Map) {
+        final buffer = StringBuffer();
+
+        data.forEach((key, value) {
+          buffer.writeln(
+            '$key : $value',
+          );
+        });
+
+        throw Exception(
+          buffer.toString().trim().isNotEmpty
+              ? buffer.toString()
+              : 'Upload failed.',
+        );
+      }
+
+      throw Exception(
+        'Upload failed.\n'
+            'Status Code: ${response.statusCode}',
+      );
+    } catch (e) {
+      print('====================================');
+      print('MULTIPART UPLOAD ERROR');
+      print(e);
+      print('====================================');
+
+      rethrow;
+    }
+  }
+  Future<Map<String, dynamic>> postMultipart({
+    required String url,
+    required Map<String, String> fields,
+    Map<String, File> files = const {},
+    bool authenticated = true,
+  }) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(url),
+    );
+
+    if (authenticated) {
+      final accessToken =
+      await TokenStorageService.getAccessToken();
+
+      if (accessToken != null && accessToken.isNotEmpty) {
+        request.headers['Authorization'] =
+        'Bearer $accessToken';
+      }
+    }
+
+    request.fields.addAll(fields);
+
+    for (final entry in files.entries) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          entry.key,
+          entry.value.path,
+        ),
+      );
+    }
+
+    final streamedResponse = await request.send();
+
+    final response =
+    await http.Response.fromStream(streamedResponse);
+
+    debugPrint('POST MULTIPART URL: $url');
+    debugPrint('STATUS: ${response.statusCode}');
+    debugPrint('BODY: ${response.body}');
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      if (response.body.isEmpty) {
+        return {};
+      }
+
+      final decoded = jsonDecode(response.body);
+
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+
+      return Map<String, dynamic>.from(decoded);
+    }
+
+    throw Exception(
+      'Upload failed: ${response.statusCode} ${response.body}',
     );
   }
 }

@@ -168,20 +168,7 @@ class McqQuizController extends GetxController {
   void _startTimer() {
     _timer?.cancel();
 
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-          (timer) {
-        if (remainingSeconds.value <= 1) {
-          remainingSeconds.value = 0;
 
-          timer.cancel();
-
-          _finish(timeUp: true);
-        } else {
-          remainingSeconds.value--;
-        }
-      },
-    );
   }
 
   // ============================================================

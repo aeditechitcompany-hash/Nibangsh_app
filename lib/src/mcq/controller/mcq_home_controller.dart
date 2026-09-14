@@ -56,26 +56,13 @@ class McqHomeController extends GetxController {
     checkMcqAccess(
       showLoading: true,
     );
-
-    _startAccessPolling();
   }
 
   // ============================================================
   // ACCESS POLLING
   // ============================================================
 
-  void _startAccessPolling() {
-    _accessPollingTimer?.cancel();
 
-    _accessPollingTimer = Timer.periodic(
-      const Duration(seconds: 30),
-          (_) async {
-        await checkMcqAccess(
-          showLoading: false,
-        );
-      },
-    );
-  }
 
   // ============================================================
   // CHECK MCQ ACCESS

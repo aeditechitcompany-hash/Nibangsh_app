@@ -36,47 +36,37 @@ class StudentsController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Your Django endpoint is:
-      // /api/accounts/users/
-      //
-      // We only want users whose role is "student".
       final response = await _api.get(
-        url: '${ApiConstants.students}?role=student',
+        url: '${ApiConstants.baseUrl}/students/profiles/',
       );
 
-      print('========== STUDENTS API ==========');
-      print('Response: $response');
-      print('===================================');
+      List<dynamic> data;
 
-      if (response is! List) {
+      if (response is List) {
+        data = response;
+      } else if (response is Map<String, dynamic> &&
+          response['results'] is List) {
+        data = response['results'] as List;
+      } else {
         throw Exception(
-          'Expected a list of students, but received: $response',
+          'Expected student profiles list, but received: $response',
         );
       }
-
-      final List<dynamic> data = response;
 
       students.assignAll(
         data.map((json) {
           return StudentRecord.fromJson(
-            json as Map<String, dynamic>,
+            Map<String, dynamic>.from(json),
           );
         }).toList(),
       );
-
-      print(
-        'Students loaded: ${students.length}',
-      );
     } catch (e) {
       errorMessage.value = e.toString();
-
-      print('========== FETCH STUDENTS ERROR ==========');
-      print(e);
-      print('==========================================');
     } finally {
       isLoading.value = false;
     }
   }
+
 
   List<StudentRecord> get filteredStudents {
     return students.where((s) {

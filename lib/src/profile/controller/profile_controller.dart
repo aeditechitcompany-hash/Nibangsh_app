@@ -10,6 +10,8 @@ import '../../../common/api_services/academic_details_service.dart';
 class ProfileController extends GetxController {
   final country = ''.obs;
   final gpa = ''.obs;
+  final gpaScale = ''.obs;
+  final grade = ''.obs;
   final passoutYear = ''.obs;
   final degree = ''.obs;
 
@@ -56,11 +58,17 @@ class ProfileController extends GetxController {
 
         // If backend returns country as an ID instead of country_name,
         // this will remain empty. We handle that below.
-        gpa.value = academic['gpa']?.toString() ?? '';
+        gpa.value =
+            academic['gpa']?.toString() ?? '';
+
+        gpaScale.value =
+            academic['gpa_scale']?.toString() ?? '';
+
+        grade.value =
+            academic['grade']?.toString() ?? '';
 
         passoutYear.value =
             academic['passout_year']?.toString() ?? '';
-
         // Django stores:
         // bachelor
         // master

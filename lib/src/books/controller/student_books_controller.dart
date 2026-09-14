@@ -35,7 +35,7 @@ class StudentBooksController extends GetxController {
 
   final RxString bookError = ''.obs;
 
-  Timer? _accessPollingTimer;
+
 
   // ============================================================
   // BOOKS
@@ -67,25 +67,12 @@ class StudentBooksController extends GetxController {
 
     checkBookAccess(showLoading: true);
 
-    _startAccessPolling();
   }
 
   // ============================================================
   // ACCESS POLLING
   // ============================================================
 
-  void _startAccessPolling() {
-    _accessPollingTimer?.cancel();
-
-    _accessPollingTimer = Timer.periodic(
-      const Duration(seconds: 30),
-          (_) async {
-        await checkBookAccess(
-          showLoading: false,
-        );
-      },
-    );
-  }
 
   // ============================================================
   // CHECK BOOK ACCESS
@@ -239,8 +226,7 @@ class StudentBooksController extends GetxController {
 
   @override
   void onClose() {
-    _accessPollingTimer?.cancel();
-    _accessPollingTimer = null;
+
 
     searchController.dispose();
 

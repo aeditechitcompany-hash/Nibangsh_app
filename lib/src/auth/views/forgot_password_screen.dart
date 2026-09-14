@@ -113,11 +113,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             ResponsiveWrapper(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Obx(
-                      () => controller.isEmailSent.value
-                      ? _buildSuccessState(controller)
-                      : _buildFormState(controller),
-                ),
+                child: _buildFormState(controller),
               ),
             ),
           ],
@@ -143,7 +139,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           const SizedBox(height: 4),
           const Text(
             'Enter the email associated with your account and '
-                'we\'ll send you a link to reset your password.',
+                'we\'ll send you a verification code.',
             style: TextStyle(fontSize: 16, color: AppColors.textGrey),
           ),
           const SizedBox(height: 28),
@@ -209,7 +205,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: controller.isLoading.value
                     ? null
-                    : controller.sendResetLink,
+                    : controller.sendResetOTP,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.navyLight,
                   disabledBackgroundColor: AppColors.darkBlue.withOpacity(
@@ -231,7 +227,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                   ),
                 )
                     : const Text(
-                  'Send Reset Link',
+                  'Send OTP',
                   style: TextStyle(
                     fontSize: 18.5,
                     fontWeight: FontWeight.bold,
@@ -270,84 +266,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSuccessState(ForgotPasswordController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: 8),
-        Container(
-          width: 88,
-          height: 88,
-          decoration: BoxDecoration(
-            color: AppColors.primaryBlue.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.mark_email_read_outlined,
-            color: AppColors.primaryBlue,
-            size: 44,
-          ),
-        ),
-        const SizedBox(height: 24),
-        const Text(
-          'Check your email',
-          style: TextStyle(
-            fontSize: 25.5,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'We\'ve sent a password reset link to\n${controller.emailController.text.trim()}',
-          style: const TextStyle(fontSize: 16, color: AppColors.textGrey),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
 
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton(
-            onPressed: () => Get.back(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.navyLight,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              elevation: 3,
-            ),
-            child: const Text(
-              'Back to Sign In',
-              style: TextStyle(
-                fontSize: 18.5,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        Obx(
-              () => TextButton(
-            onPressed: controller.isLoading.value ? null : controller.resendLink,
-            child: Text(
-              controller.isLoading.value ? 'Resending...' : 'Resend Email',
-              style: const TextStyle(
-                color: AppColors.primaryBlue,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 50),
-      ],
-    );
-  }
 
   Widget _buildLabel(String text) {
     return Text(

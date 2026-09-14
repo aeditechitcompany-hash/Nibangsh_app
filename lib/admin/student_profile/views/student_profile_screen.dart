@@ -581,13 +581,22 @@ class StudentProfileScreen extends StatelessWidget {
       RequiredDocument doc,
       ) async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final file = await FilePicker.pickFile(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+        allowedExtensions: [
+          'pdf',
+          'jpg',
+          'jpeg',
+          'png',
+          'heic',
+        ],
       );
-      if (result == null || result.files.isEmpty) return;
-      final path = result.files.single.path;
-      if (path == null) {
+
+      if (file == null) return;
+
+      final path = file.path;
+
+      if (path == null || path.isEmpty) {
         Get.snackbar(
           'Error',
           'Could not access that file on this device.',
@@ -599,14 +608,20 @@ class StudentProfileScreen extends StatelessWidget {
 
       final updatedDocs = student.documents
           .map(
-            (d) =>
-        d.id == doc.id ? d.copyWith(uploaded: true, filePath: path) : d,
+            (d) => d.id == doc.id
+            ? d.copyWith(
+          uploaded: true,
+          filePath: path,
+        )
+            : d,
       )
           .toList();
 
       controller.updateStudent(
         student.id,
-            (current) => current.copyWith(documents: updatedDocs),
+            (current) => current.copyWith(
+          documents: updatedDocs,
+        ),
       );
 
       Get.snackbar(
@@ -619,6 +634,7 @@ class StudentProfileScreen extends StatelessWidget {
       );
     } catch (e) {
       debugPrint('Document picker failed: $e');
+
       Get.snackbar(
         'Error',
         'Could not open the file picker.',

@@ -3,8 +3,13 @@ import 'package:get/get.dart';
 import '../../../common/models/country_info.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
+import '../../notifications/controller/notifications_controller.dart';
 import '../controller/countries_controller.dart';
+
 import 'package:nibangsh_consultancy/common/util/responsive.dart';
+
+
+
 
 class CountriesScreen extends StatelessWidget {
   const CountriesScreen({super.key});
@@ -13,11 +18,18 @@ class CountriesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(CountriesController());
 
+    final notificationController = Get.put(
+      StudentNotificationsController(),
+      permanent: true,
+    );
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(controller),
+          _buildHeader(  
+            controller,
+            notificationController,),
           ResponsiveWrapper(
             child: Container(
               decoration: const BoxDecoration(
@@ -57,7 +69,10 @@ class CountriesScreen extends StatelessWidget {
   }
 
   // Header
-  Widget _buildHeader(CountriesController controller) {
+  Widget _buildHeader(
+      CountriesController controller,
+      StudentNotificationsController notificationController,
+      ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
@@ -105,39 +120,69 @@ class CountriesScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () => Get.toNamed(AppRoute.studentNotifications),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(9),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.16),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.notifications_none_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        width: 9,
-                        height: 9,
+              Obx(() {
+                final unreadCount = notificationController.unreadCount;
+
+                return GestureDetector(
+                  onTap: () => Get.toNamed(
+                    AppRoute.studentNotifications,
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(9),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryRed,
+                          color: Colors.white.withOpacity(0.16),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.navyDark, width: 1.5),
+                        ),
+                        child: const Icon(
+                          Icons.notifications_none_rounded,
+                          color: Colors.white,
+                          size: 20,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+
+                      // Unread badge
+                      if (unreadCount > 0)
+                        Positioned(
+                          right: -5,
+                          top: -5,
+                          child: Container(
+                            constraints: const BoxConstraints(
+                              minWidth: 18,
+                              minHeight: 18,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryRed,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.navyDark,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                unreadCount > 99
+                                    ? '99+'
+                                    : unreadCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 16),

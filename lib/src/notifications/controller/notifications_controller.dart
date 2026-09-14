@@ -1,66 +1,142 @@
+import 'dart:async';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
-enum StudentNotificationType { success, info, warning }
+import '../../../common/api_services/notification_service.dart';
+import '../../../common/services/firebase_notification_service.dart';
+import '../model/student_notification.dart';
 
-class StudentNotification {
-  final String title;
-  final String message;
-  final String time;
-  final StudentNotificationType type;
+class StudentNotificationsController extends GetxController {
+  final NotificationService _notificationService =
+  NotificationService();
 
-  const StudentNotification({
-    required this.title,
-    required this.message,
-    required this.time,
-    required this.type,
-  });
-}
-
-class NotificationsController extends GetxController {
   final notifications = <StudentNotification>[].obs;
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+
+  StreamSubscription<RemoteMessage>? _notificationSubscription;
 
   @override
   void onInit() {
     super.onInit();
-    notifications.assignAll(const [
-      StudentNotification(
-        title: 'Document Approved',
-        message: 'Your passport copy has been verified by the admin team.',
-        time: '2h ago',
-        type: StudentNotificationType.success,
-      ),
-      StudentNotification(
-        title: 'Visa Application Update',
-        message: 'Your visa application has moved to processing.',
-        time: '5h ago',
-        type: StudentNotificationType.info,
-      ),
-      StudentNotification(
-        title: 'Action Required',
-        message: 'Please upload your latest bank statement to continue.',
-        time: '1d ago',
-        type: StudentNotificationType.warning,
-      ),
-      StudentNotification(
-        title: 'Counselor Message',
-        message: 'Priya Sharma sent you a new message about your application.',
-        time: '1d ago',
-        type: StudentNotificationType.info,
-      ),
-      StudentNotification(
-        title: 'Offer Letter Received',
-        message: 'Congratulations! Your offer letter has arrived.',
-        time: '3d ago',
-        type: StudentNotificationType.success,
-      ),
-      StudentNotification(
-        title: 'IELTS Reminder',
-        message: 'Your language test is scheduled in 5 days.',
-        time: '4d ago',
-        type: StudentNotificationType.warning,
-      ),
-    ]);
+
+    // Load existing notifications.
+    fetchNotifications();
+
+    // Listen for new FCM notifications.
+    _notificationSubscription =
+        FirebaseNotificationService.instance
+            .onNotificationReceived
+            .listen((message) {
+          debugPrint(
+            'NEW FCM NOTIFICATION RECEIVED',
+          );
+
+          debugPrint(
+            'Title: ${message.notification?.title}',
+          );
+
+          debugPrint(
+            'Body: ${message.notification?.body}',
+          );
+
+          // Reload notifications from Django.
+          fetchNotifications();
+        });
   }
 
-  int get unreadCount => notifications.length;
+  Future<void> fetchNotifications() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final result =
+      await _notificationService.getMyNotifications();
+
+      debugPrint(
+        'NOTIFICATIONS LOADED: ${result.length}',
+      );
+
+      notifications.assignAll(result);
+
+      debugPrint(
+        'UNREAD COUNT: $unreadCount',
+      );
+    } catch (e) {
+      debugPrint(
+        'NOTIFICATION ERROR: $e',
+      );
+
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> markAsRead(
+      StudentNotification notification,
+      ) async {
+    if (notification.isRead) {
+      return;
+    }
+
+    try {
+      await _notificationService.markAsRead(
+        notification.id,
+      );
+
+      final index = notifications.indexWhere(
+            (item) => item.id == notification.id,
+      );
+
+      if (index != -1) {
+        notifications[index] =
+            notification.copyWith(
+              isRead: true,
+            );
+      }
+
+      debugPrint(
+        'Notification marked as read: ${notification.id}',
+      );
+    } catch (e) {
+      errorMessage.value = e.toString();
+
+      debugPrint(
+        'MARK AS READ ERROR: $e',
+      );
+    }
+  }
+
+  Future<void> markAllAsRead() async {
+    final unread = notifications
+        .where(
+          (notification) => !notification.isRead,
+    )
+        .toList();
+
+    for (final notification in unread) {
+      await markAsRead(notification);
+    }
+  }
+
+  int get unreadCount {
+    return notifications
+        .where(
+          (notification) => !notification.isRead,
+    )
+        .length;
+  }
+
+  Future<void> refreshNotifications() async {
+    await fetchNotifications();
+  }
+
+  @override
+  void onClose() {
+    _notificationSubscription?.cancel();
+    super.onClose();
+  }
 }

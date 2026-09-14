@@ -3,7 +3,8 @@ class ApiConstants {
 
   static const String baseUrl =
       'https://backend-1-mltk.onrender.com/api';
-
+  static const String deviceToken =
+      '$baseUrl/notifications/device-token/';
   static const String serverUrl =
       'https://backend-1-mltk.onrender.com';
 

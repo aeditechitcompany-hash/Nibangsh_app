@@ -6,13 +6,17 @@ class McqAccessService {
 
   Future<bool> hasMcqAccess() async {
     final response = await _apiService.get(
-      url: ApiConstants.myStudentProfile,
+      url: ApiConstants.myMcqAccess,
     );
 
-    if (response is! Map<String, dynamic>) {
+    print('========== MCQ ACCESS RESPONSE ==========');
+    print(response);
+    print('=========================================');
+
+    if (response is! Map) {
       return false;
     }
 
-    return response["mcq_access"] == true;
+    return response['mcq_access'] == true;
   }
 }

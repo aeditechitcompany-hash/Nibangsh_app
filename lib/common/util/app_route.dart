@@ -28,4 +28,9 @@ class AppRoute {
   static const String adminMcq = '/admin-mcq';
   static const String universities = '/universities';
   static const String courses = '/courses';
+  static const String otpVerification =
+      '/otp-verification';
+
+  static const String resetPassword =
+      '/reset-password';
 }

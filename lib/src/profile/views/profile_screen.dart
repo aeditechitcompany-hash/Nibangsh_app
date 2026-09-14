@@ -353,26 +353,46 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   _infoRow(
                     'GPA',
-                    controller.gpa.value.isEmpty ? '--' : controller.gpa.value,
+                    controller.gpa.value.isEmpty
+                        ? '--'
+                        : controller.gpa.value,
                   ),
+
+                  _infoRow(
+                    'GPA Scale',
+                    controller.gpaScale.value.isEmpty
+                        ? '--'
+                        : controller.gpaScale.value,
+                  ),
+
+                  _infoRow(
+                    'Grade',
+                    controller.grade.value.isEmpty
+                        ? '--'
+                        : controller.grade.value,
+                  ),
+
                   _infoRow(
                     'Pass-out Year',
                     controller.passoutYear.value.isEmpty
                         ? '--'
                         : controller.passoutYear.value,
                   ),
+
                   _infoRow(
                     'Interested Degree',
                     controller.degree.value.isEmpty
                         ? '--'
                         : controller.degree.value,
                   ),
+
                   _infoRow(
                     'Phone Number',
                     controller.userPhone.value.isEmpty
                         ? '--'
                         : controller.userPhone.value,
                   ),
+
                   _infoRow(
                     'Target Country',
                     controller.country.value.isEmpty

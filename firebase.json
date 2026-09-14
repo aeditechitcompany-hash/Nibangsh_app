@@ -1,0 +1,27 @@
+```json
+{
+"flutter": {
+"platforms": {
+"android": {
+"default": {
+"projectId": "nibangsh-ubt-app-41372",
+"appId": "1:835851472767:android:9fd532dd892fcbaca6944a",
+"fileOutput": "android/app/google-services.json"
+}
+}
+},
+"dart": {
+"lib/firebase_options.dart": {
+"projectId": "nibangsh-ubt-app-41372",
+"configurations": {
+"android": "1:835851472767:android:9fd532dd892fcbaca6944a",
+"ios": "1:835851472767:ios:a208737bbd3ad663a6944a",
+"macos": "1:835851472767:ios:a208737bbd3ad663a6944a",
+"web": "1:835851472767:web:98a64d2e0153fc8fa6944a",
+"windows": "1:835851472767:web:688db547c2dbe9a0a6944a"
+}
+}
+}
+}
+}
+```

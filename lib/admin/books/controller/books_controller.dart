@@ -1,12 +1,15 @@
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../common/api_services/api_constants.dart';
+import '../../../common/api_services/api_service.dart';
 import '../../../common/models/book_resource.dart';
 import '../../../common/services/books_repository.dart';
 
 class AdminBooksController extends GetxController {
   final BooksRepository _repo = BooksRepository.to;
+  final ApiService _api = const ApiService();
 
   List<BookResource> get books => _repo.books;
 
@@ -34,32 +37,31 @@ class AdminBooksController extends GetxController {
     isPicking.value = true;
 
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final file = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
       );
 
-      if (result == null || result.files.isEmpty) {
+      if (file == null) {
         return;
       }
 
-      final file = result.files.single;
+      final filePath = file.path;
 
-      if (file.path == null) {
-        Get.snackbar(
-          'Error',
-          'Could not access that file on this device.',
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-        );
-
+      if (filePath == null) {
         return;
       }
 
       pickedFileName.value = file.name;
       pickedFilePath.value = file.path!;
-      pickedFileSize.value = _formatSize(file.size);
-    } catch (e) {
+
+      if (filePath == null || filePath.isEmpty) {
+        pickedFileSize.value = '';
+      } else {
+        final selectedFile = File(filePath);
+        final sizeBytes = await selectedFile.length();
+        pickedFileSize.value = _formatSize(sizeBytes);
+      }    } catch (e) {
       debugPrint('PDF picker failed: $e');
 
       Get.snackbar(
@@ -291,5 +293,42 @@ class AdminBooksController extends GetxController {
     descriptionController.dispose();
 
     super.onClose();
+  }
+  @override
+  void onInit() {
+    super.onInit();
+    loadBooks();
+  }
+
+  Future<void> loadBooks() async {
+    try {
+      final response = await _api.get(
+        url: ApiConstants.books,
+      );
+
+      debugPrint('========== ADMIN BOOKS ==========');
+      debugPrint('$response');
+      debugPrint('=================================');
+
+      if (response is List) {
+        final books = response
+            .map(
+              (json) => BookResource.fromJson(
+            Map<String, dynamic>.from(json),
+          ),
+        )
+            .toList();
+
+        _repo.setBooks(books);
+      }
+    } catch (e) {
+      debugPrint('LOAD ADMIN BOOKS ERROR: $e');
+
+      Get.snackbar(
+        'Error',
+        'Could not load books from server.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 }

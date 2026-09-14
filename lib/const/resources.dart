@@ -12,4 +12,5 @@ class AppResources {
   // static const String userIcon = 'assets/icons/user.svg';
   // static const String phoneIcon = 'assets/icons/phone.svg';
   // static const String locationIcon = 'assets/icons/location.svg';
+
 }
