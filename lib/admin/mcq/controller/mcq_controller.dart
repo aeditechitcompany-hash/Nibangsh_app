@@ -1,16 +1,27 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../common/api_services/api_constants.dart';
+import '../../../common/api_services/api_service.dart';
 import '../../../common/models/mcq_model.dart';
 import '../../../common/services/mcq_repository.dart';
 
 class AdminMcqController extends GetxController {
   final McqRepository _repo = McqRepository.to;
+  final ApiService _api = const ApiService();
+
+  // ============================================================
+  // DATA
+  // ============================================================
 
   List<McqQuestion> get questions => _repo.questions;
+
+  final isLoadingQuestions = false.obs;
+
+  // ============================================================
+  // FORM
+  // ============================================================
 
   final questionController = TextEditingController();
 
@@ -19,11 +30,23 @@ class AdminMcqController extends GetxController {
 
   final correctOptionIndex = Rx<int?>(null);
 
+  // ============================================================
+  // QUESTION AUDIO
+  // ============================================================
+
   final pickedAudioName = ''.obs;
   final pickedAudioPath = ''.obs;
 
+  // ============================================================
+  // QUESTION IMAGE
+  // ============================================================
+
   final questionImageName = ''.obs;
   final questionImagePath = ''.obs;
+
+  // ============================================================
+  // OPTION IMAGES
+  // ============================================================
 
   final optionImageNames =
   RxList<String>.from(['', '', '', '']);
@@ -31,21 +54,36 @@ class AdminMcqController extends GetxController {
   final optionImagePaths =
   RxList<String>.from(['', '', '', '']);
 
+  // ============================================================
+  // OPTION AUDIO
+  // ============================================================
+
   final optionAudioNames =
   RxList<String>.from(['', '', '', '']);
 
   final optionAudioPaths =
   RxList<String>.from(['', '', '', '']);
 
+  // ============================================================
+  // FILE PICKING
+  // ============================================================
+
   final isPicking = false.obs;
 
-  // The set the current add/edit sheet is scoped to.
+  // ============================================================
+  // CURRENT SET
+  // ============================================================
+
   final selectedSet = ''.obs;
 
-  // Set when editing an existing question instead of adding a new one.
+  // ============================================================
+  // EDITING
+  // ============================================================
+
   final editingQuestionId = Rxn<String>();
 
-  bool get isEditing => editingQuestionId.value != null;
+  bool get isEditing =>
+      editingQuestionId.value != null;
 
   bool get hasPickedAudio =>
       pickedAudioPath.value.isNotEmpty;
@@ -58,6 +96,121 @@ class AdminMcqController extends GetxController {
 
   bool hasPickedOptionAudio(int index) =>
       optionAudioPaths[index].isNotEmpty;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    loadAdminMcqs();
+  }
+
+  // ============================================================
+  // LOAD ALL ADMIN MCQS
+  // ============================================================
+
+  Future<void> loadAdminMcqs() async {
+    try {
+      isLoadingQuestions.value = true;
+
+      debugPrint('====================================');
+      debugPrint('LOADING ADMIN MCQS');
+      debugPrint('====================================');
+
+      final questionSets =
+      await _repo.fetchQuestionSets();
+
+      final allQuestions = <McqQuestion>[];
+
+      debugPrint(
+        'QUESTION SETS FOUND: ${questionSets.length}',
+      );
+
+      // ----------------------------------------------------------
+      // The list endpoint only gives question-set metadata.
+      //
+      // Therefore we must retrieve each question set individually
+      // to get:
+      //
+      // questions
+      // options
+      // is_correct
+      // explanation
+      // ----------------------------------------------------------
+
+      for (final set in questionSets) {
+        final setId =
+        set['id']?.toString();
+
+        if (setId == null ||
+            setId.isEmpty) {
+          continue;
+        }
+
+        debugPrint(
+          'Loading question set: $setId',
+        );
+
+        final detail =
+        await _repo.fetchAdminQuestionSet(
+          setId,
+        );
+
+        if (detail == null) {
+          debugPrint(
+            'Could not load question set: $setId',
+          );
+          continue;
+        }
+
+        final setQuestions =
+        _repo.questionsFromBackend(
+          detail,
+          admin: true,
+        );
+
+        debugPrint(
+          'SET "${detail['title']}" '
+              'QUESTIONS: ${setQuestions.length}',
+        );
+
+        allQuestions.addAll(
+          setQuestions,
+        );
+      }
+
+      _repo.setQuestions(
+        allQuestions,
+      );
+
+      debugPrint(
+        'TOTAL ADMIN QUESTIONS: '
+            '${allQuestions.length}',
+      );
+
+      debugPrint('====================================');
+    } catch (e, stackTrace) {
+      debugPrint(
+        'LOAD ADMIN MCQS ERROR: $e',
+      );
+
+      debugPrint(
+        stackTrace.toString(),
+      );
+
+      Get.snackbar(
+        'Error',
+        'Could not load MCQs from server.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+    } finally {
+      isLoadingQuestions.value = false;
+    }
+  }
 
   // ============================================================
   // QUESTION AUDIO
@@ -77,10 +230,11 @@ class AdminMcqController extends GetxController {
 
       final path = file.path;
 
-      if (path == null || path.isEmpty) {
+      if (path == null ||
+          path.isEmpty) {
         Get.snackbar(
           'Error',
-          'Could not access that audio file on this device.',
+          'Could not access that audio file.',
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(16),
         );
@@ -90,7 +244,9 @@ class AdminMcqController extends GetxController {
       pickedAudioName.value = file.name;
       pickedAudioPath.value = path;
     } catch (e) {
-      debugPrint('Audio picker failed: $e');
+      debugPrint(
+        'Audio picker failed: $e',
+      );
 
       Get.snackbar(
         'Error',
@@ -101,6 +257,11 @@ class AdminMcqController extends GetxController {
     } finally {
       isPicking.value = false;
     }
+  }
+
+  void clearPickedAudio() {
+    pickedAudioName.value = '';
+    pickedAudioPath.value = '';
   }
 
   // ============================================================
@@ -127,20 +288,26 @@ class AdminMcqController extends GetxController {
 
       final path = file.path;
 
-      if (path == null || path.isEmpty) {
+      if (path == null ||
+          path.isEmpty) {
         Get.snackbar(
           'Error',
-          'Could not access that image on this device.',
+          'Could not access that image.',
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(16),
         );
         return;
       }
 
-      questionImageName.value = file.name;
-      questionImagePath.value = path;
+      questionImageName.value =
+          file.name;
+
+      questionImagePath.value =
+          path;
     } catch (e) {
-      debugPrint('Question image picker failed: $e');
+      debugPrint(
+        'Question image picker failed: $e',
+      );
 
       Get.snackbar(
         'Error',
@@ -158,16 +325,13 @@ class AdminMcqController extends GetxController {
     questionImagePath.value = '';
   }
 
-  void clearPickedAudio() {
-    pickedAudioName.value = '';
-    pickedAudioPath.value = '';
-  }
-
   // ============================================================
   // OPTION IMAGE
   // ============================================================
 
-  Future<void> pickOptionImage(int index) async {
+  Future<void> pickOptionImage(
+      int index,
+      ) async {
     isPicking.value = true;
 
     try {
@@ -187,20 +351,26 @@ class AdminMcqController extends GetxController {
 
       final path = file.path;
 
-      if (path == null || path.isEmpty) {
+      if (path == null ||
+          path.isEmpty) {
         Get.snackbar(
           'Error',
-          'Could not access that image on this device.',
+          'Could not access that image.',
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(16),
         );
         return;
       }
 
-      optionImageNames[index] = file.name;
-      optionImagePaths[index] = path;
+      optionImageNames[index] =
+          file.name;
+
+      optionImagePaths[index] =
+          path;
     } catch (e) {
-      debugPrint('Option image picker failed: $e');
+      debugPrint(
+        'Option image picker failed: $e',
+      );
 
       Get.snackbar(
         'Error',
@@ -213,7 +383,9 @@ class AdminMcqController extends GetxController {
     }
   }
 
-  void clearOptionImage(int index) {
+  void clearOptionImage(
+      int index,
+      ) {
     optionImageNames[index] = '';
     optionImagePaths[index] = '';
   }
@@ -222,7 +394,9 @@ class AdminMcqController extends GetxController {
   // OPTION AUDIO
   // ============================================================
 
-  Future<void> pickOptionAudio(int index) async {
+  Future<void> pickOptionAudio(
+      int index,
+      ) async {
     isPicking.value = true;
 
     try {
@@ -243,20 +417,26 @@ class AdminMcqController extends GetxController {
 
       final path = file.path;
 
-      if (path == null || path.isEmpty) {
+      if (path == null ||
+          path.isEmpty) {
         Get.snackbar(
           'Error',
-          'Could not access that audio file on this device.',
+          'Could not access that audio file.',
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(16),
         );
         return;
       }
 
-      optionAudioNames[index] = file.name;
-      optionAudioPaths[index] = path;
+      optionAudioNames[index] =
+          file.name;
+
+      optionAudioPaths[index] =
+          path;
     } catch (e) {
-      debugPrint('Option audio picker failed: $e');
+      debugPrint(
+        'Option audio picker failed: $e',
+      );
 
       Get.snackbar(
         'Error',
@@ -269,7 +449,9 @@ class AdminMcqController extends GetxController {
     }
   }
 
-  void clearOptionAudio(int index) {
+  void clearOptionAudio(
+      int index,
+      ) {
     optionAudioNames[index] = '';
     optionAudioPaths[index] = '';
   }
@@ -288,7 +470,8 @@ class AdminMcqController extends GetxController {
 
     questionController.clear();
 
-    for (final controller in optionControllers) {
+    for (final controller
+    in optionControllers) {
       controller.clear();
     }
 
@@ -307,8 +490,11 @@ class AdminMcqController extends GetxController {
   // START EDIT
   // ============================================================
 
-  void startEdit(McqQuestion q) {
-    editingQuestionId.value = q.id;
+  void startEdit(
+      McqQuestion q,
+      ) {
+    editingQuestionId.value =
+        q.id;
 
     selectedSet.value =
         q.setName ?? '';
@@ -316,49 +502,12 @@ class AdminMcqController extends GetxController {
     questionController.text =
         q.question;
 
-    for (var i = 0;
-    i < optionControllers.length;
-    i++) {
-      optionControllers[i].text =
-      i < q.options.length
-          ? q.options[i]
-          : '';
+    // ----------------------------------------------------------
+    // QUESTION IMAGE
+    // ----------------------------------------------------------
 
-      optionImageNames[i] =
-      q.optionImagePaths != null &&
-          i < q.optionImagePaths!.length
-          ? q.optionImagePaths![i]
-          .split('/')
-          .last
-          : '';
-
-      optionImagePaths[i] =
-      q.optionImagePaths != null &&
-          i < q.optionImagePaths!.length
-          ? q.optionImagePaths![i]
-          : '';
-
-      optionAudioNames[i] =
-      q.optionAudioPaths != null &&
-          i < q.optionAudioPaths!.length
-          ? q.optionAudioPaths![i]
-          .split('/')
-          .last
-          : '';
-
-      optionAudioPaths[i] =
-      q.optionAudioPaths != null &&
-          i < q.optionAudioPaths!.length
-          ? q.optionAudioPaths![i]
-          : '';
-    }
-
-    correctOptionIndex.value =
-        q.correctOptionIndex;
-
-    // Existing question audio is preserved.
-    pickedAudioName.value = '';
-    pickedAudioPath.value = '';
+    questionImagePath.value =
+        q.questionImagePath ?? '';
 
     questionImageName.value =
         q.questionImagePath
@@ -366,252 +515,374 @@ class AdminMcqController extends GetxController {
             .last ??
             '';
 
-    questionImagePath.value =
-        q.questionImagePath ?? '';
+    // ----------------------------------------------------------
+    // QUESTION AUDIO
+    // ----------------------------------------------------------
+
+    // Do NOT put an existing remote URL into pickedAudioPath.
+    //
+    // pickedAudioPath is specifically for a NEW local file.
+    //
+    // Existing server audio is preserved by the model.
+    pickedAudioName.value = '';
+    pickedAudioPath.value = '';
+
+    // ----------------------------------------------------------
+    // OPTIONS
+    // ----------------------------------------------------------
+
+    for (
+    var i = 0;
+    i < optionControllers.length;
+    i++
+    ) {
+      optionControllers[i].text =
+      i < q.options.length
+          ? q.options[i]
+          : '';
+
+      // Option image
+      if (q.optionImagePaths != null &&
+          i < q.optionImagePaths!.length) {
+        optionImagePaths[i] =
+        q.optionImagePaths![i];
+
+        optionImageNames[i] =
+            q.optionImagePaths![i]
+                .split('/')
+                .last;
+      } else {
+        optionImagePaths[i] = '';
+        optionImageNames[i] = '';
+      }
+
+      // Option audio
+      if (q.optionAudioPaths != null &&
+          i < q.optionAudioPaths!.length) {
+        optionAudioPaths[i] =
+        q.optionAudioPaths![i];
+
+        optionAudioNames[i] =
+            q.optionAudioPaths![i]
+                .split('/')
+                .last;
+      } else {
+        optionAudioPaths[i] = '';
+        optionAudioNames[i] = '';
+      }
+    }
+
+    correctOptionIndex.value =
+        q.correctOptionIndex;
   }
 
   // ============================================================
   // SAVE QUESTION
   // ============================================================
 
-  void saveQuestion() {
+  Future<void> saveQuestion() async {
     final question =
     questionController.text.trim();
 
     final options = optionControllers
-        .map((c) => c.text.trim())
+        .map(
+          (controller) =>
+          controller.text.trim(),
+    )
         .toList();
 
     final editingId =
         editingQuestionId.value;
 
-    final hasOptionMedia =
-    List.generate(
-      options.length,
-          (i) =>
-      optionImagePaths[i].isNotEmpty ||
-          optionAudioPaths[i].isNotEmpty,
-    );
-
-    // ------------------------------------------------------------
-    // Validate set
-    // ------------------------------------------------------------
+    // ----------------------------------------------------------
+    // VALIDATE SET
+    // ----------------------------------------------------------
 
     if (editingId == null &&
         selectedSet.value.isEmpty) {
       Get.snackbar(
         'Missing Set',
-        'Open this form from inside a set before adding an MCQ.',
+        'Open this form from inside a question set.',
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(16),
       );
       return;
     }
 
-    // ------------------------------------------------------------
-    // Validate question
-    // ------------------------------------------------------------
+    // ----------------------------------------------------------
+    // VALIDATE QUESTION
+    // ----------------------------------------------------------
+
+    final hasQuestionImage =
+        questionImagePath.value.isNotEmpty;
+
+    final hasQuestionAudio =
+        pickedAudioPath.value.isNotEmpty;
 
     if (question.isEmpty &&
-        !hasPickedAudio &&
-        questionImagePath.value.isEmpty) {
+        !hasQuestionImage &&
+        !hasQuestionAudio) {
       Get.snackbar(
         'Missing info',
-        'Add the question text, image, or audio first.',
+        'Add question text, image, or audio.',
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(16),
       );
       return;
     }
 
-    // ------------------------------------------------------------
-    // Validate options
-    // ------------------------------------------------------------
+    // ----------------------------------------------------------
+    // VALIDATE OPTIONS
+    // ----------------------------------------------------------
 
-    if (options.asMap().entries.any((entry) {
-      final i = entry.key;
-      final text = entry.value.trim();
+    for (var i = 0;
+    i < options.length;
+    i++) {
+      final hasImage =
+          optionImagePaths[i].isNotEmpty;
 
-      return text.isEmpty &&
-          !hasOptionMedia[i];
-    })) {
-      Get.snackbar(
-        'Missing info',
-        'Add text, image, or audio for all 4 options.',
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-      );
-      return;
-    }
+      final hasAudio =
+          optionAudioPaths[i].isNotEmpty;
 
-    // ------------------------------------------------------------
-    // Validate correct answer
-    // ------------------------------------------------------------
-
-    if (correctOptionIndex.value == null) {
-      Get.snackbar(
-        'Missing info',
-        'Select which option is the correct answer.',
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-      );
-      return;
-    }
-
-    // Keep indexes aligned with options.
-    final optionImageList =
-    List<String>.from(optionImagePaths);
-
-    final optionAudioList =
-    List<String>.from(optionAudioPaths);
-
-    final hasAnyOptionImage =
-    optionImageList.any(
-          (path) => path.isNotEmpty,
-    );
-
-    final hasAnyOptionAudio =
-    optionAudioList.any(
-          (path) => path.isNotEmpty,
-    );
-
-    // ============================================================
-    // EDIT EXISTING QUESTION
-    // ============================================================
-
-    if (editingId != null) {
-      final existing =
-      questions.firstWhereOrNull(
-            (q) => q.id == editingId,
-      );
-
-      if (existing == null) {
+      if (options[i].isEmpty &&
+          !hasImage &&
+          !hasAudio) {
+        Get.snackbar(
+          'Missing option',
+          'Option ${i + 1} needs text, image, or audio.',
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(16),
+        );
         return;
       }
+    }
 
-      _repo.updateQuestion(
-        existing.copyWith(
-          question: question,
-          options: options,
-          correctOptionIndex:
-          correctOptionIndex.value!,
+    // ----------------------------------------------------------
+    // VALIDATE CORRECT ANSWER
+    // ----------------------------------------------------------
 
-          audioFileName:
-          hasPickedAudio
-              ? pickedAudioName.value
-              : existing.audioFileName,
+    final correctIndex =
+        correctOptionIndex.value;
 
-          audioFilePath:
-          hasPickedAudio
-              ? pickedAudioPath.value
-              : existing.audioFilePath,
+    if (correctIndex == null ||
+        correctIndex < 0 ||
+        correctIndex >= options.length) {
+      Get.snackbar(
+        'Missing answer',
+        'Select the correct answer.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
 
-          questionImagePath:
-          hasPickedQuestionImage
-              ? questionImagePath.value
-              : existing.questionImagePath,
+    // ==========================================================
+    // EDIT EXISTING QUESTION
+    // ==========================================================
 
-          optionImagePaths:
-          hasAnyOptionImage
-              ? optionImageList
-              : null,
+    if (editingId != null) {
+      await _updateExistingQuestion(
+        editingId: editingId,
+        question: question,
+        options: options,
+        correctIndex: correctIndex,
+      );
 
-          optionAudioPaths:
-          hasAnyOptionAudio
-              ? optionAudioList
-              : null,
+      return;
+    }
 
-          setName:
-          existing.setName ??
-              selectedSet.value,
-        ),
+    // ==========================================================
+    // ADD NEW QUESTION
+    // ==========================================================
+
+    await _createNewQuestion(
+      question: question,
+      options: options,
+      correctIndex: correctIndex,
+    );
+  }
+
+  // ============================================================
+  // UPDATE EXISTING QUESTION
+  // ============================================================
+
+  Future<void> _updateExistingQuestion({
+    required String editingId,
+    required String question,
+    required List<String> options,
+    required int correctIndex,
+  }) async {
+    final existing =
+    questions.firstWhereOrNull(
+          (q) => q.id == editingId,
+    );
+
+    if (existing == null) {
+      Get.snackbar(
+        'Error',
+        'Question could not be found.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      isPicking.value = true;
+
+      final updated =
+      existing.copyWith(
+        question: question,
+        options: options,
+        correctOptionIndex:
+        correctIndex,
+        setName:
+        existing.setName ??
+            selectedSet.value,
+      );
+
+      await _repo.updateQuestionOnServer(
+        updated,
       );
 
       Get.back();
 
       Get.snackbar(
         'Updated',
-        'Changes are now visible to students.',
+        'MCQ has been updated successfully.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor:
         const Color(0xFF16A34A),
         colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-      );
-    }
-
-    // ============================================================
-    // ADD NEW QUESTION
-    // ============================================================
-
-    else {
-      _repo.addQuestion(
-        McqQuestion(
-          id: DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString(),
-
-          question: question,
-
-          options: options,
-
-          correctOptionIndex:
-          correctOptionIndex.value!,
-
-          audioFileName:
-          hasPickedAudio
-              ? pickedAudioName.value
-              : null,
-
-          audioFilePath:
-          hasPickedAudio
-              ? pickedAudioPath.value
-              : null,
-
-          questionImagePath:
-          questionImagePath.value.isNotEmpty
-              ? questionImagePath.value
-              : null,
-
-          optionImagePaths:
-          hasAnyOptionImage
-              ? optionImageList
-              : null,
-
-          optionAudioPaths:
-          hasAnyOptionAudio
-              ? optionAudioList
-              : null,
-
-          setName:
-          selectedSet.value,
-
-          createdAt:
-          DateTime.now(),
-        ),
+        margin:
+        const EdgeInsets.all(16),
       );
 
-      Get.back();
+      await loadAdminMcqs();
+    } catch (e) {
+      debugPrint(
+        'UPDATE MCQ ERROR: $e',
+      );
 
       Get.snackbar(
-        'Added',
-        'MCQ is now visible to students.',
+        'Error',
+        'Could not update MCQ: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor:
-        const Color(0xFF16A34A),
-        colorText: Colors.white,
+        margin:
+        const EdgeInsets.all(16),
+      );
+    } finally {
+      isPicking.value = false;
+    }
+  }
+
+  // ============================================================
+  // CREATE NEW QUESTION
+  // ============================================================
+
+  Future<void> _createNewQuestion({
+    required String question,
+    required List<String> options,
+    required int correctIndex,
+  }) async {
+    try {
+      isPicking.value = true;
+
+      // --------------------------------------------------------
+      // IMPORTANT
+      //
+      // Your current repository does NOT yet have a server
+      // createQuestion() method.
+      //
+      // So we should NOT pretend that the new question has been
+      // saved to Django.
+      // --------------------------------------------------------
+
+      Get.snackbar(
+        'Not implemented yet',
+        'Creating a new MCQ on the server needs the question/option POST API.',
+        snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(16),
       );
+
+      debugPrint(
+        'CREATE MCQ requested',
+      );
+
+      debugPrint(
+        'SET: ${selectedSet.value}',
+      );
+
+      debugPrint(
+        'QUESTION: $question',
+      );
+
+      debugPrint(
+        'OPTIONS: $options',
+      );
+
+      debugPrint(
+        'CORRECT INDEX: $correctIndex',
+      );
+    } finally {
+      isPicking.value = false;
+    }
+  }
+
+  // ============================================================
+  // DELETE QUESTION
+  // ============================================================
+
+  Future<void> deleteQuestion(
+      String id,
+      ) async {
+    if (id.isEmpty) {
+      return;
     }
 
-    // ============================================================
-    // RESET FORM
-    // ============================================================
+    try {
+      isLoadingQuestions.value = true;
 
+      debugPrint(
+        'DELETE MCQ: $id',
+      );
+
+      await _repo.deleteQuestionOnServer(
+        id,
+      );
+
+      Get.snackbar(
+        'Removed',
+        'MCQ has been removed successfully.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin:
+        const EdgeInsets.all(16),
+      );
+    } catch (e) {
+      debugPrint(
+        'DELETE MCQ ERROR: $e',
+      );
+
+      Get.snackbar(
+        'Error',
+        'Could not delete MCQ: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        margin:
+        const EdgeInsets.all(16),
+      );
+    } finally {
+      isLoadingQuestions.value = false;
+    }
+  }
+
+  // ============================================================
+  // RESET FORM
+  // ============================================================
+
+  void resetForm() {
     questionController.clear();
 
-    for (final controller in optionControllers) {
+    for (final controller
+    in optionControllers) {
       controller.clear();
     }
 
@@ -620,22 +891,13 @@ class AdminMcqController extends GetxController {
     clearPickedAudio();
     clearPickedQuestionImage();
 
+    for (var i = 0; i < 4; i++) {
+      clearOptionImage(i);
+      clearOptionAudio(i);
+    }
+
     editingQuestionId.value = null;
-  }
-
-  // ============================================================
-  // DELETE
-  // ============================================================
-
-  void deleteQuestion(String id) {
-    _repo.removeQuestion(id);
-
-    Get.snackbar(
-      'Removed',
-      'MCQ removed from the quiz.',
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-    );
+    selectedSet.value = '';
   }
 
   // ============================================================
@@ -646,7 +908,8 @@ class AdminMcqController extends GetxController {
   void onClose() {
     questionController.dispose();
 
-    for (final controller in optionControllers) {
+    for (final controller
+    in optionControllers) {
       controller.dispose();
     }
 
