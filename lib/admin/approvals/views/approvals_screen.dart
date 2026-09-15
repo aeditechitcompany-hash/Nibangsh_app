@@ -12,7 +12,10 @@ class ApprovalsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ApprovalsController());
+    final controller = Get.put(
+      ApprovalsController(),
+      permanent: false,
+    );
 
     return SingleChildScrollView(
       child: Column(
@@ -706,17 +709,13 @@ class ApprovalsScreen extends StatelessWidget {
       StudentRecord student,
       ) {
     final isDone =
-    ApprovalsController.isFullyDone(
-      student,
-    );
+    ApprovalsController.isFullyDone(student);
 
     final baseColor = isDone
         ? const Color(0xFF16A34A)
-        : ApprovalsController
-        .metaFor(
+        : ApprovalsController.metaFor(
       student.currentStep,
-    )
-        .color;
+    ).color;
 
     final activeColor =
         Color.lerp(
@@ -731,19 +730,22 @@ class ApprovalsScreen extends StatelessWidget {
         ApprovalsController.adminStepsCount,
             (index) {
           final stepId =
-              ApprovalsController.adminStepsStart +
-                  index;
+              ApprovalsController.adminStepsStart + index;
+
+          final isCompleted =
+          student.completedSteps.contains(stepId);
+
+          final isCurrent =
+              !isDone && stepId == student.currentStep;
 
           Color color;
 
-          if (stepId < student.currentStep) {
+          if (isCompleted) {
             color = baseColor;
-          } else if (stepId ==
-              student.currentStep) {
+          } else if (isCurrent) {
             color = activeColor;
           } else {
-            color =
-                AppColors.borderGrey;
+            color = AppColors.borderGrey;
           }
 
           return Expanded(
@@ -751,19 +753,13 @@ class ApprovalsScreen extends StatelessWidget {
               height: 6,
               margin: EdgeInsets.only(
                 right: index ==
-                    ApprovalsController
-                        .adminStepsCount -
-                        1
+                    ApprovalsController.adminStepsCount - 1
                     ? 0
                     : 3,
               ),
-              decoration:
-              BoxDecoration(
+              decoration: BoxDecoration(
                 color: color,
-                borderRadius:
-                BorderRadius.circular(
-                  4,
-                ),
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
           );
@@ -771,6 +767,7 @@ class ApprovalsScreen extends StatelessWidget {
       ),
     );
   }
+
 
   // ── Confirm process completion ──
   void _confirmProcessStep(

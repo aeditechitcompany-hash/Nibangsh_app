@@ -161,7 +161,7 @@ class StudentsController extends GetxController {
   // FORCE REFRESH
   // ============================================================
 
-  Future<void> refreshStudents({required bool force}) async {
+  Future<void> refreshStudents({bool force = false}) async {
     await fetchStudents(force: force);
   }
 

@@ -101,7 +101,9 @@ class ApprovalsController extends GetxController {
   static AdminStepMeta metaFor(int stepId) {
     return adminSteps.firstWhere(
           (step) => step.id == stepId,
-      orElse: () => adminSteps.first,
+      orElse: () => throw Exception(
+        'Invalid admin process step: $stepId',
+      ),
     );
   }
 
@@ -330,7 +332,6 @@ class ApprovalsController extends GetxController {
       final response = await _processService.completeStage(
         processId: processId,
       );
-
       debugPrint('========================================');
       debugPrint('COMPLETE STAGE API RESPONSE');
       debugPrint(response.toString());

@@ -148,6 +148,8 @@ class Step10Controller extends GetxController {
         processId: processId,
       );
 
+
+
       final finished = response['finished'] == true;
 
       if (!finished) {
