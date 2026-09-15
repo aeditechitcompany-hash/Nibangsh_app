@@ -34,6 +34,11 @@ class ApiConstants {
 
   static String mcqOption(String id) =>
       '$mcqOptions$id/';
+  static const String myStudentApplication =
+      '$baseUrl/students/applications/me/';
+
+  static String studentApplication(String id) =>
+      '$baseUrl/students/applications/$id/';
 
   static const String studentProfiles =
       '$baseUrl/students/profiles/';

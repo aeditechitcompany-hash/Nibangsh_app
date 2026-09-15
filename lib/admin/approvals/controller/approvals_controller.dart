@@ -101,7 +101,9 @@ class ApprovalsController extends GetxController {
   static AdminStepMeta metaFor(int stepId) {
     return adminSteps.firstWhere(
           (step) => step.id == stepId,
-      orElse: () => adminSteps.first,
+      orElse: () => throw Exception(
+        'Invalid admin process step: $stepId',
+      ),
     );
   }
 
@@ -137,8 +139,8 @@ class ApprovalsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
     _loadStudents();
+
   }
 
   Future<void> _loadStudents() async {
@@ -148,8 +150,7 @@ class ApprovalsController extends GetxController {
 
       // IMPORTANT:
       // Always refresh from Django when Approvals opens.
-      await studentsController.refreshStudents();
-
+      await studentsController.refreshStudents(force: true);
       if (studentsController.errorMessage.value.isNotEmpty) {
         errorMessage.value =
             studentsController.errorMessage.value;
@@ -191,9 +192,13 @@ class ApprovalsController extends GetxController {
       return adminStepsCount;
     }
 
-    return (student.currentStep - adminStepsStart)
-        .clamp(0, adminStepsCount)
-        .toInt();
+    return student.completedSteps
+        .where(
+          (step) =>
+      step >= adminStepsStart &&
+          step <= 10,
+    )
+        .length;
   }
 
   // ============================================================
@@ -304,14 +309,9 @@ class ApprovalsController extends GetxController {
     try {
       isCompletingStep[studentId] = true;
 
-      // --------------------------------------------------------
-      // PROCESS ID
-      // --------------------------------------------------------
-
       final processId = student.processId;
 
-      if (processId == null ||
-          processId.trim().isEmpty) {
+      if (processId == null || processId.trim().isEmpty) {
         throw Exception(
           'Student process was not found for this student.',
         );
@@ -322,47 +322,61 @@ class ApprovalsController extends GetxController {
       debugPrint('Student: ${student.name}');
       debugPrint('Student ID: $studentId');
       debugPrint('Process ID: $processId');
-      debugPrint('Current Step: ${student.currentStep}');
+      debugPrint('OLD CURRENT STEP: ${student.currentStep}');
       debugPrint('========================================');
 
-      // --------------------------------------------------------
-      // API
-      // --------------------------------------------------------
+      // ==========================================================
+      // COMPLETE CURRENT STAGE
+      // ==========================================================
 
-      final response =
-      await _processService.completeStage(
+      final response = await _processService.completeStage(
         processId: processId,
       );
-
       debugPrint('========================================');
-      debugPrint('COMPLETE STEP RESPONSE');
+      debugPrint('COMPLETE STAGE API RESPONSE');
       debugPrint(response.toString());
       debugPrint('========================================');
 
-      final finished =
-          response['finished'] == true;
+      final finished = response['finished'] == true;
 
-      // --------------------------------------------------------
-      // IMPORTANT:
-      //
-      // When the final step is completed, the backend may return:
-      //
-      // {
-      //   "finished": true,
-      //   "current_stage": null
-      // }
-      //
-      // Therefore DO NOT require current_stage when finished.
-      // --------------------------------------------------------
+      // ==========================================================
+      // FINAL STAGE
+      // ==========================================================
 
       if (finished) {
+        debugPrint(
+          'PROCESS FINISHED FOR ${student.name}',
+        );
+
         studentsController.updateStudent(
           studentId,
               (current) => current.copyWith(
-            processCompleted: true,
             currentStep: 10,
+            processCompleted: true,
           ),
         );
+
+        // Fetch the actual backend state.
+        await studentsController.refreshStudents(
+          force: true,
+        );
+
+        final refreshedStudent =
+        studentsController.byId(studentId);
+
+        debugPrint('========================================');
+        debugPrint('AFTER FINAL REFRESH');
+        debugPrint(
+          'Student: ${refreshedStudent?.name}',
+        );
+        debugPrint(
+          'Current Step: ${refreshedStudent?.currentStep}',
+        );
+        debugPrint(
+          'Process Completed: '
+              '${refreshedStudent?.processCompleted}',
+        );
+        debugPrint('========================================');
 
         Get.snackbar(
           'Process Completed',
@@ -375,19 +389,14 @@ class ApprovalsController extends GetxController {
           duration: const Duration(seconds: 3),
         );
 
-        // Refresh from Django so local state exactly matches
-        // the backend.
-        await studentsController.refreshStudents();
-
         return;
       }
 
-      // --------------------------------------------------------
-      // NOT FINISHED
-      // --------------------------------------------------------
+      // ==========================================================
+      // NEXT STAGE
+      // ==========================================================
 
-      final currentStage =
-      response['current_stage'];
+      final currentStage = response['current_stage'];
 
       if (currentStage is! Map) {
         throw Exception(
@@ -396,7 +405,7 @@ class ApprovalsController extends GetxController {
       }
 
       final currentOrder = int.tryParse(
-        currentStage['order'].toString(),
+        currentStage['order']?.toString() ?? '',
       );
 
       if (currentOrder == null) {
@@ -409,9 +418,15 @@ class ApprovalsController extends GetxController {
           currentStage['name']?.toString() ??
               meta.title;
 
-      // --------------------------------------------------------
-      // UPDATE LOCAL STATE
-      // --------------------------------------------------------
+      debugPrint('========================================');
+      debugPrint('NEXT STAGE FROM BACKEND');
+      debugPrint('Order: $currentOrder');
+      debugPrint('Name: $currentStageName');
+      debugPrint('========================================');
+
+      // ==========================================================
+      // UPDATE LOCAL STATE IMMEDIATELY
+      // ==========================================================
 
       studentsController.updateStudent(
         studentId,
@@ -421,15 +436,63 @@ class ApprovalsController extends GetxController {
         ),
       );
 
-      // --------------------------------------------------------
-      // REFRESH FROM SERVER
-      // --------------------------------------------------------
+      // ==========================================================
+      // VERIFY LOCAL STATE
+      // ==========================================================
 
-      await studentsController.refreshStudents();
+      final locallyUpdatedStudent =
+      studentsController.byId(studentId);
 
-      // --------------------------------------------------------
+      debugPrint('========================================');
+      debugPrint('LOCAL STUDENT AFTER UPDATE');
+      debugPrint(
+        'Current Step: '
+            '${locallyUpdatedStudent?.currentStep}',
+      );
+      debugPrint(
+        'Process Completed: '
+            '${locallyUpdatedStudent?.processCompleted}',
+      );
+      debugPrint('========================================');
+
+      // ==========================================================
+      // REFRESH FROM DJANGO
+      // ==========================================================
+
+      await studentsController.refreshStudents(
+        force: true,
+      );
+
+      // ==========================================================
+      // VERIFY SERVER STATE
+      // ==========================================================
+
+      final refreshedStudent =
+      studentsController.byId(studentId);
+
+      debugPrint('========================================');
+      debugPrint('SERVER STATE AFTER REFRESH');
+      debugPrint(
+        'Student: ${refreshedStudent?.name}',
+      );
+      debugPrint(
+        'Current Step: ${refreshedStudent?.currentStep}',
+      );
+      debugPrint(
+        'Process Completed: '
+            '${refreshedStudent?.processCompleted}',
+      );
+      debugPrint('========================================');
+
+      if (refreshedStudent == null) {
+        throw Exception(
+          'Student disappeared after refreshing the student list.',
+        );
+      }
+
+      // ==========================================================
       // SUCCESS MESSAGE
-      // --------------------------------------------------------
+      // ==========================================================
 
       Get.snackbar(
         'Step Completed',
@@ -466,4 +529,4 @@ class ApprovalsController extends GetxController {
       isCompletingStep[studentId] = false;
     }
   }
-}
+  }

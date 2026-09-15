@@ -3,9 +3,29 @@ import 'package:get/get.dart';
 
 import '../../../common/models/quiz_models.dart';
 import '../../../common/util/app_colors.dart';
+import '../../../common/util/secure_screen.dart';
 
-class McqReviewScreen extends StatelessWidget {
+class McqReviewScreen extends StatefulWidget {
   const McqReviewScreen({super.key});
+
+  @override
+  State<McqReviewScreen> createState() => _McqReviewScreenState();
+}
+
+class _McqReviewScreenState extends State<McqReviewScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    SecureScreen.enable();
+  }
+
+  @override
+  void dispose() {
+    SecureScreen.disable();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +38,9 @@ class McqReviewScreen extends StatelessWidget {
 
     final List<int> correctAnswers =
     _parseCorrectAnswers(args['correctAnswers']);
+
+
+
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -66,9 +89,6 @@ class McqReviewScreen extends StatelessWidget {
   }
 
   // ============================================================
-  // PARSE SELECTED ANSWERS
-  // ============================================================
-
   List<int?> _parseSelectedAnswers(dynamic value) {
     if (value == null) {
       return <int?>[];
@@ -92,9 +112,6 @@ class McqReviewScreen extends StatelessWidget {
   }
 
   // ============================================================
-  // PARSE CORRECT ANSWERS
-  // ============================================================
-
   List<int> _parseCorrectAnswers(dynamic value) {
     if (value == null) {
       return <int>[];
@@ -114,9 +131,6 @@ class McqReviewScreen extends StatelessWidget {
   }
 
   // ============================================================
-  // QUESTION CARD
-  // ============================================================
-
   Widget _buildQuestionCard({
     required BuildContext context,
     required int questionNumber,
@@ -362,9 +376,6 @@ class McqReviewScreen extends StatelessWidget {
   }
 
   // ============================================================
-  // OPTION
-  // ============================================================
-
   Widget _buildOption({
     required QuizQuestion question,
     required int optionIndex,
@@ -659,9 +670,6 @@ class McqReviewScreen extends StatelessWidget {
   }
 
   // ============================================================
-  // STATUS BADGE
-  // ============================================================
-
   Widget _statusBadge({
     required String text,
     required Color background,
@@ -705,9 +713,6 @@ class McqReviewScreen extends StatelessWidget {
   }
 
   // ============================================================
-  // NO OPTIONS
-  // ============================================================
-
   Widget _noOptionsMessage() {
     return Container(
       width: double.infinity,

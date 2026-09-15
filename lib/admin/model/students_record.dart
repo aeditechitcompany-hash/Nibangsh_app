@@ -542,59 +542,23 @@ class StudentRecord {
   factory StudentRecord.fromJson(
       Map<String, dynamic> json,
       ) {
-    // ========================================================
-    // USER OBJECT
-    //
-    // Supports both:
-    //
-    // {
-    //   "first_name": "...",
-    //   "last_name": "..."
-    // }
-    //
-    // and:
-    //
-    // {
-    //   "user": {
-    //      "first_name": "...",
-    //      "last_name": "..."
-    //   }
-    // }
-    // ========================================================
-
-    final userJson =
-    json['user'] is Map
+    final userJson = json['user'] is Map
         ? Map<String, dynamic>.from(
       json['user'] as Map,
     )
         : <String, dynamic>{};
 
-    // ========================================================
-    // FIRST NAME
-    // ========================================================
-
-    final firstName =
-    _firstNonEmpty([
+    final firstName = _firstNonEmpty([
       json['first_name'],
       userJson['first_name'],
     ]);
 
-    // ========================================================
-    // LAST NAME
-    // ========================================================
-
-    final lastName =
-    _firstNonEmpty([
+    final lastName = _firstNonEmpty([
       json['last_name'],
       userJson['last_name'],
     ]);
 
-    // ========================================================
-    // FULL NAME
-    // ========================================================
-
-    final apiFullName =
-    _firstNonEmpty([
+    final apiFullName = _firstNonEmpty([
       json['full_name'],
       userJson['full_name'],
     ]);
@@ -602,26 +566,10 @@ class StudentRecord {
     final calculatedName =
     '$firstName $lastName'.trim();
 
-    // ========================================================
-    // USERNAME
-    // ========================================================
-
-    final username =
-    _firstNonEmpty([
+    final username = _firstNonEmpty([
       json['username'],
       userJson['username'],
     ]);
-
-    // ========================================================
-    // FINAL NAME
-    //
-    // Priority:
-    //
-    // 1. full_name
-    // 2. first_name + last_name
-    // 3. username
-    // 4. Unknown Student
-    // ========================================================
 
     final resolvedName =
     apiFullName.isNotEmpty
@@ -632,46 +580,54 @@ class StudentRecord {
         ? username
         : 'Unknown Student';
 
-    // ========================================================
-    // EMAIL
-    // ========================================================
-
-    final email =
-    _firstNonEmpty([
+    final email = _firstNonEmpty([
       json['email'],
       userJson['email'],
     ]);
 
-    // ========================================================
-    // PHONE
-    // ========================================================
-
-    final phone =
-    _firstNonEmpty([
+    final phone = _firstNonEmpty([
       json['phone_number'],
       json['phone'],
       userJson['phone_number'],
       userJson['phone'],
     ]);
 
-    // ========================================================
-    // ROLE
-    // ========================================================
-
-    final role =
-    _firstNonEmpty([
+    final rawRole = _firstNonEmpty([
       json['role'],
       userJson['role'],
-    ]).isNotEmpty
-        ? _firstNonEmpty([
-      json['role'],
-      userJson['role'],
-    ]).trim().toLowerCase()
-        : 'student';
+    ]);
 
-    // ========================================================
-    // COMPLETED PROCESS STEPS
-    // ========================================================
+    final role = rawRole.isEmpty
+        ? 'student'
+        : rawRole.toLowerCase();
+
+    final processId =
+    json['process_id']?.toString();
+
+    int parseStep(dynamic value) {
+      if (value == null) {
+        return 1;
+      }
+
+      if (value is int) {
+        return value;
+      }
+
+      return int.tryParse(
+        value.toString(),
+      ) ??
+          1;
+    }
+
+    // Backend process state is the source of truth.
+    final currentStep = parseStep(
+      json['current_process_step'] ??
+          json['current_step'] ??
+          1,
+    );
+
+    final processCompleted =
+        json['process_completed'] == true;
 
     final rawCompleted =
     json['completed_process_steps'];
@@ -689,53 +645,31 @@ class StudentRecord {
         .toList()
         : <int>[];
 
-    // ========================================================
-    // REAL BACKEND DOCUMENTS
-    //
-    // Expected:
-    //
-    // "documents": [
-    //   {
-    //     "name": "Transcript",
-    //     "field": "transcript_file",
-    //     "url": "https://..."
-    //   }
-    // ]
-    // ========================================================
+    final documents =
+    <RequiredDocument>[];
 
     final documentsJson =
     json['documents'];
 
-    final documents =
-    <RequiredDocument>[];
-
     if (documentsJson is List) {
       for (final item in documentsJson) {
-        if (item is Map) {
-          try {
-            final document =
+        if (item is! Map) {
+          continue;
+        }
+
+        try {
+          documents.add(
             RequiredDocument.fromBackendJson(
               Map<String, dynamic>.from(item),
-            );
-
-            if (document.filePath != null &&
-                document.filePath!
-                    .trim()
-                    .isNotEmpty) {
-              documents.add(document);
-            }
-          } catch (e) {
-            debugPrint(
-              'DOCUMENT PARSE ERROR: $e',
-            );
-          }
+            ),
+          );
+        } catch (e) {
+          debugPrint(
+            'DOCUMENT PARSE ERROR: $e',
+          );
         }
       }
     }
-
-    // ========================================================
-    // DEBUG DOCUMENT RESPONSE
-    // ========================================================
 
     debugPrint(
       '===========================================',
@@ -746,15 +680,34 @@ class StudentRecord {
     );
 
     debugPrint(
-      'DOCUMENTS FROM BACKEND: '
-          '${documents.length}',
+      'PROCESS ID: $processId',
+    );
+
+    debugPrint(
+      'BACKEND current_process_step: '
+          '${json['current_process_step']}',
+    );
+
+    debugPrint(
+      'BACKEND current_step: '
+          '${json['current_step']}',
+    );
+
+    debugPrint(
+      'PARSED CURRENT STEP: $currentStep',
+    );
+
+    debugPrint(
+      'PROCESS COMPLETED: $processCompleted',
+    );
+
+    debugPrint(
+      'DOCUMENTS: ${documents.length}',
     );
 
     for (final document in documents) {
       debugPrint(
-        'DOCUMENT: '
-            '${document.title} -> '
-            '${document.filePath}',
+        '${document.title}: ${document.fileUrl}',
       );
     }
 
@@ -762,79 +715,40 @@ class StudentRecord {
       '===========================================',
     );
 
-    // ========================================================
-    // ACTIVE STATUS
-    // ========================================================
-
     final isActive =
         json['is_active_student'] ??
             json['is_active'] ??
             true;
 
-    // ========================================================
-    // CURRENT PROCESS STEP
-    // ========================================================
-
-    final currentStep =
-        int.tryParse(
-          json['current_step'] ?? json['current_process_step']              ?.toString() ??
-              '',
-        ) ??
-            1;
-    debugPrint(
-      'BACKEND CURRENT STEP: ${json['current_step']}',
-    );
-
-    debugPrint(
-      'PARSED CURRENT STEP: $currentStep',
-    );
-    // ========================================================
-    // RETURN STUDENT
-    // ========================================================
-
     return StudentRecord(
-      id:
-      json['id']?.toString() ?? '',
+      id: json['id']?.toString() ?? '',
 
-      processId:
-      json['process_id']?.toString(),
+      processId: processId,
 
-      name:
-      resolvedName,
+      name: resolvedName,
 
-      email:
-      email,
+      email: email,
 
-      phone:
-      phone,
+      phone: phone,
 
-      role:
-      role,
+      role: role,
 
-      // ======================================================
-      // ACADEMIC / COUNTRY DATA
-      // ======================================================
-
-      countryCode:
-      _firstNonEmpty([
+      countryCode: _firstNonEmpty([
         json['country_code'],
         json['country'],
       ]),
 
-      countryName:
-      _firstNonEmpty([
+      countryName: _firstNonEmpty([
         json['country_name'],
         json['country'],
       ]),
 
-      university:
-      _firstNonEmpty([
+      university: _firstNonEmpty([
         json['university'],
         json['university_name'],
       ]),
 
-      course:
-      _firstNonEmpty([
+      course: _firstNonEmpty([
         json['course'],
         json['course_name'],
       ]),
@@ -842,47 +756,31 @@ class StudentRecord {
       gpa:
       json['gpa']?.toString() ?? '',
 
-      degree:
-      _firstNonEmpty([
+      degree: _firstNonEmpty([
         json['degree'],
         json['degree_name'],
       ]),
 
-      passoutYear:
-      _firstNonEmpty([
+      passoutYear: _firstNonEmpty([
         json['passout_year'],
         json['graduation_year'],
         json['passoutYear'],
       ]),
 
-      // ======================================================
-      // LANGUAGE TEST
-      // ======================================================
-
-      languageTestName:
-      _firstNonEmpty([
+      languageTestName: _firstNonEmpty([
         json['language_test_name'],
         json['language_test'],
       ]),
 
-      languageTestScore:
-      _firstNonEmpty([
+      languageTestScore: _firstNonEmpty([
         json['language_test_score'],
         json['language_score'],
       ]),
-
-      // ======================================================
-      // JOINED DATE
-      // ======================================================
 
       joinedDate:
       _formatJoinedDate(
         json['created_at'],
       ),
-
-      // ======================================================
-      // VISA / FLIGHT
-      // ======================================================
 
       visaStatus:
       _firstNonEmpty([
@@ -906,35 +804,21 @@ class StudentRecord {
       ])
           : 'Not booked',
 
-      // ======================================================
-      // PROCESS
-      // ======================================================
-
       currentStep:
       currentStep,
 
       completedSteps:
       completedSteps,
 
-      status:
-      isActive == true
+      processCompleted:
+      processCompleted,
+
+      status: isActive == true
           ? StudentStatus.active
           : StudentStatus.pending,
 
-      processCompleted:
-      json['process_completed'] == true,
-
-      // ======================================================
-      // IMPORTANT:
-      // USE REAL BACKEND DOCUMENTS
-      // ======================================================
-
       documents:
       documents,
-
-      // ======================================================
-      // STEP 4
-      // ======================================================
 
       interviewDate:
       _parseDate(
@@ -942,24 +826,16 @@ class StudentRecord {
       ),
 
       interviewMode:
-      json['interview_mode']
-          ?.toString(),
+      json['interview_mode']?.toString(),
 
       interviewResult:
-      json['interview_result']
-          ?.toString(),
+      json['interview_result']?.toString(),
 
       interviewNotes:
-      json['interview_notes']
-          ?.toString(),
-
-      // ======================================================
-      // STEP 5
-      // ======================================================
+      json['interview_notes']?.toString(),
 
       applicationRefNo:
-      json['application_ref_no']
-          ?.toString(),
+      json['application_ref_no']?.toString(),
 
       submissionDate:
       _parseDate(
@@ -969,10 +845,6 @@ class StudentRecord {
       confirmationFileName:
       json['confirmation_file']
           ?.toString(),
-
-      // ======================================================
-      // STEP 6
-      // ======================================================
 
       offerFileName:
       json['offer_file']
@@ -987,20 +859,12 @@ class StudentRecord {
         json['offer_expiry_date'],
       ),
 
-      // ======================================================
-      // STEP 7
-      // ======================================================
-
       locFileName:
       json['loc_file']
           ?.toString(),
 
       locVerified:
       json['loc_verified'] == true,
-
-      // ======================================================
-      // STEP 8
-      // ======================================================
 
       courseCommencementDate:
       _parseDate(
@@ -1019,10 +883,6 @@ class StudentRecord {
       json['final_selection_confirmed'] ==
           true,
 
-      // ======================================================
-      // STEP 9
-      // ======================================================
-
       visaRefNo:
       json['visa_ref_no']
           ?.toString(),
@@ -1034,10 +894,6 @@ class StudentRecord {
       visaApprovalLetterFileName:
       json['visa_approval_letter_file']
           ?.toString(),
-
-      // ======================================================
-      // STEP 10
-      // ======================================================
 
       flightNumber:
       json['flight_number']
