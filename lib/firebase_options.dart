@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC654-duXbzXPE1h8AhyQnwPXVffJVl8JE',
-    appId: '1:835851472767:android:9fd532dd892fcbaca6944a',
+    appId: '1:835851472767:android:77e050431d645605a6944a',
     messagingSenderId: '835851472767',
     projectId: 'nibangsh-ubt-app-41372',
     storageBucket: 'nibangsh-ubt-app-41372.firebasestorage.app',

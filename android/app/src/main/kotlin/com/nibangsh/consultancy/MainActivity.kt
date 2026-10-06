@@ -1,6 +1,5 @@
 
-package com.example.nibangsh_consultancy
-
+package com.nibangsh.consultancy
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
