@@ -81,6 +81,8 @@ class ApiConstants {
   static String attemptAnswer(String attemptId) {
     return '$attempts$attemptId/answer/';
   }
+  static const String appleLogin =
+      '$baseUrl/accounts/auth/apple/';
 
   static String attemptFinish(String attemptId) {
     return '$attempts$attemptId/finish/';

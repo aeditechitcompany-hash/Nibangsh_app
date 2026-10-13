@@ -94,6 +94,34 @@ class AuthService {
     return auth;
   }
 
+  Future<AuthResponse> loginWithApple({
+    required String identityToken,
+    String? firstName,
+    String? lastName,
+  }) async {
+    final response = await _api.post(
+      url: ApiConstants.appleLogin,
+      authenticated: false,
+      body: {
+        'identity_token': identityToken,
+        'first_name': firstName ?? '',
+        'last_name': lastName ?? '',
+      },
+    );
+
+    final auth = AuthResponse.fromJson(response);
+
+    await TokenStorageService.saveTokens(
+      accessToken: auth.access,
+      refreshToken: auth.refresh,
+    );
+
+    await FirebaseNotificationService.instance
+        .registerCurrentDeviceToken();
+
+    return auth;
+  }
+
   Future<void> logout() async {
     await TokenStorageService.clearStorage();
   }
