@@ -323,6 +323,19 @@ class LoginScreen extends StatelessWidget {
                             ),
                             shadow: AppColors.primaryBlue.withOpacity(0.2),
                           ),
+
+			const SizedBox(width: 20),
+
+// Apple
+_buildSocialCircle(
+  onTap: controller.signInWithApple,
+  child: const Icon(
+    Icons.apple,
+    size: 26,
+    color: Colors.black,
+  ),
+  shadow: Colors.black.withOpacity(0.2),
+), 
                         ],
                       ),
 

@@ -9,6 +9,8 @@ import '../../../common/services/storage.dart';
 import '../../../common/util/app_colors.dart';
 import '../../../common/util/app_route.dart';
 
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -234,6 +236,76 @@ class LoginController extends GetxController {
       _showError(
         'Facebook Sign-In Failed',
         e.toString(),
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    isLoading.value = true;
+
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final identityToken = credential.identityToken;
+
+      if (identityToken == null || identityToken.isEmpty) {
+        throw Exception('Apple did not return an identity token.');
+      }
+
+      final auth = await _authService.loginWithApple(
+        identityToken: identityToken,
+        firstName: credential.givenName,
+        lastName: credential.familyName,
+      );
+
+      final role = auth.user.role.trim().toLowerCase();
+
+      await StorageService.saveUserInfo(
+        id: auth.user.id,
+        email: auth.user.email,
+        name: auth.user.fullName.trim().isNotEmpty
+            ? auth.user.fullName.trim()
+            : auth.user.email.split('@').first,
+        phone: auth.user.phoneNumber,
+        role: auth.user.role,
+      );
+
+      if (role == 'admin') {
+        Get.offAllNamed(AppRoute.adminDashboard);
+        return;
+      }
+
+      if (role == 'counselor') {
+        Get.offAllNamed(AppRoute.home);
+        return;
+      }
+
+      if (role == 'ubt') {
+        Get.offAllNamed(AppRoute.ubtHome);
+        return;
+      }
+
+      if (role == 'student') {
+        await _navigateAfterLogin(auth.user.email);
+        return;
+      }
+
+      throw Exception('Unknown account role: ${auth.user.role}');
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code != AuthorizationErrorCode.canceled) {
+        _showError('Apple Sign-In Failed', e.message);
+      }
+    } catch (e) {
+      _showError(
+        'Apple Sign-In Failed',
+        e.toString().replaceFirst('Exception: ', ''),
       );
     } finally {
       isLoading.value = false;

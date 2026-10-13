@@ -174,7 +174,7 @@ class StudentsController extends GetxController {
     final query =
     searchQuery.value
         .toLowerCase();
-
+//dfd
     return students.where(
           (student) {
         final matchesStatus =
