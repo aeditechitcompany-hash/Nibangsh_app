@@ -26,33 +26,57 @@ class McqRepository extends GetxService {
   // LOAD QUESTION SETS
   // ============================================================
 
+
+  // ============================================================
+  // LOAD ONE QUESTION SET
+  // ============================================================
+
   Future<List<Map<String, dynamic>>> fetchQuestionSets() async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final response = await _apiService.get(
-        url: ApiConstants.questionSets,
-      );
+      final allSets = <Map<String, dynamic>>[];
+      String? nextUrl = ApiConstants.questionSets;
 
-      if (response is List) {
-        return response
-            .map(
-              (item) => Map<String, dynamic>.from(item),
-        )
-            .toList();
+      while (nextUrl != null) {
+        final response = await _apiService.get(
+          url: nextUrl,
+        );
+
+        if (response is List) {
+          allSets.addAll(
+            response.map(
+                  (item) => Map<String, dynamic>.from(item),
+            ),
+          );
+          break;
+        }
+
+        if (response is Map) {
+          final results = response['results'];
+
+          if (results is List) {
+            allSets.addAll(
+              results.map(
+                    (item) => Map<String, dynamic>.from(item),
+              ),
+            );
+          } else {
+            break;
+          }
+
+          final next = response['next'];
+          nextUrl = next is String && next.isNotEmpty
+              ? next
+              : null;
+        } else {
+          break;
+        }
       }
 
-      if (response is Map &&
-          response['results'] is List) {
-        return (response['results'] as List)
-            .map(
-              (item) => Map<String, dynamic>.from(item),
-        )
-            .toList();
-      }
-
-      return [];
+      debugPrint('QUESTION SETS FOUND: ${allSets.length}');
+      return allSets;
     } catch (e) {
       errorMessage.value = e.toString();
       rethrow;
@@ -60,10 +84,6 @@ class McqRepository extends GetxService {
       isLoading.value = false;
     }
   }
-
-  // ============================================================
-  // LOAD ONE QUESTION SET
-  // ============================================================
 
   Future<Map<String, dynamic>?> fetchQuestionSet(
       String questionSetId,
