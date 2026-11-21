@@ -2,11 +2,11 @@ class ApiConstants {
   // BASE URL
 
   static const String baseUrl =
-      'https://backend-1-mltk.onrender.com/api';
+      'https://13-140-75-5.sslip.io/api';
   static const String deviceToken =
       '$baseUrl/notifications/device-token/';
   static const String serverUrl =
-      'https://backend-1-mltk.onrender.com';
+      'https://13-140-75-5.sslip.io';
 
   // AUTH
 
@@ -69,7 +69,7 @@ class ApiConstants {
   static const String myMcqAccess =
       '$baseUrl/students/profiles/my-mcq-access/';
 
-  // MCQ ATTEMPTS
+  // MCQ ATTEMPTS new
 
   static const String attempts =
       '$baseUrl/mcq/attempts/';
