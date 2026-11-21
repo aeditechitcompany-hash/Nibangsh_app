@@ -135,7 +135,7 @@ class _McqQuizScreenState extends State<McqQuizScreen> {
 
     if (path.startsWith('/')) {
       final url =
-          'https://backend-1-mltk.onrender.com$path';
+          'https://13-140-75-5.sslip.io$path';
 
       return Image.network(
         url,
